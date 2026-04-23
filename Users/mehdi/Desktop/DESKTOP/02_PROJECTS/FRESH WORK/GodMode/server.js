@@ -9,6 +9,11 @@ const { exec, spawn } = require('child_process');
 const path = require('path');
 const fs   = require('fs');
 const os   = require('os');
+const dns  = require('dns').promises;
+const tls  = require('tls');
+const http = require('http');
+const https = require('https');
+const net  = require('net');
 
 const app  = express();
 const PORT = 9999;
@@ -409,6 +414,236 @@ app.post('/api/ports/check', (req, res) => {
     });
     res.json(ports.map(p => ({ port: parseInt(p), open: inUse.has(parseInt(p)) })));
   });
+});
+
+// ── Domain / Network Tools ────────────────────────────────────────────────────
+
+function httpGet(url, opts = {}) {
+  return new Promise((resolve, reject) => {
+    let parsed;
+    try { parsed = new URL(url); } catch(e) { return reject(e); }
+    const mod = parsed.protocol === 'https:' ? https : http;
+    const req = mod.get({
+      hostname: parsed.hostname,
+      path: parsed.pathname + (parsed.search || ''),
+      port: parsed.port || undefined,
+      headers: { 'User-Agent': 'DesktopControlPanel/1.0', 'Accept': 'application/json', ...(opts.headers || {}) },
+      rejectUnauthorized: false,
+      timeout: opts.timeout || 12000,
+    }, res => {
+      let data = '';
+      res.on('data', d => { if (data.length < 512000) data += d; });
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: data }));
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Request timeout')); });
+  });
+}
+
+app.get('/api/tools/dns', async (req, res) => {
+  const domain = (req.query.host || req.query.domain || '').trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
+  if (!domain) return res.status(400).json({ error: 'host required' });
+  const results = {};
+  await Promise.allSettled([
+    dns.resolve4(domain).then(r => { results.A = r; }).catch(e => { results.A_error = e.code; }),
+    dns.resolve6(domain).then(r => { results.AAAA = r; }).catch(() => {}),
+    dns.resolveMx(domain).then(r => { results.MX = r.sort((a,b) => a.priority - b.priority); }).catch(() => {}),
+    dns.resolveNs(domain).then(r => { results.NS = r.sort(); }).catch(() => {}),
+    dns.resolveTxt(domain).then(r => { results.TXT = r.map(t => t.join('')); }).catch(() => {}),
+    dns.resolveCname(domain).then(r => { results.CNAME = r; }).catch(() => {}),
+    dns.resolveSoa(domain).then(r => { results.SOA = r; }).catch(() => {}),
+    dns.resolveCaa(domain).then(r => { results.CAA = r; }).catch(() => {}),
+  ]);
+  res.json({ domain, records: results, ts: new Date().toISOString() });
+});
+
+app.get('/api/tools/whois', async (req, res) => {
+  const domain = (req.query.domain || req.query.host || '').trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
+  if (!domain) return res.status(400).json({ error: 'domain required' });
+  try {
+    const r = await httpGet(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+    const d = JSON.parse(r.body);
+    const getName = (ents, role) => {
+      const e = (ents || []).find(x => x.roles?.includes(role));
+      return e?.vcardArray?.[1]?.find(v => v[0] === 'fn')?.[3] || null;
+    };
+    const getDate = (events, action) => (events || []).find(e => e.eventAction === action)?.eventDate || null;
+    res.json({
+      domain: d.ldhName, status: d.status || [],
+      registrar: getName(d.entities, 'registrar'),
+      registrant: getName(d.entities, 'registrant'),
+      created: getDate(d.events, 'registration'),
+      updated: getDate(d.events, 'last changed'),
+      expires: getDate(d.events, 'expiration'),
+      nameservers: (d.nameservers || []).map(ns => ns.ldhName),
+    });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/tools/ipgeo', async (req, res) => {
+  const ip = (req.query.host || req.query.ip || '').trim().replace(/^https?:\/\//, '').split('/')[0];
+  if (!ip) return res.status(400).json({ error: 'host required' });
+  try {
+    const fields = 'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,hosting,query';
+    const r = await httpGet(`http://ip-api.com/json/${encodeURIComponent(ip)}?fields=${fields}`);
+    res.json(JSON.parse(r.body));
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/tools/ssl', (req, res) => {
+  const raw = (req.query.host || '').trim().replace(/^https?:\/\//, '').split('/')[0];
+  if (!raw) return res.status(400).json({ error: 'host required' });
+  const sock = tls.connect({ host: raw, port: 443, servername: raw, rejectUnauthorized: false, timeout: 10000 }, () => {
+    try {
+      const cert = sock.getPeerCertificate(true);
+      const authorized = sock.authorized;
+      sock.destroy();
+      if (!cert?.subject) return res.status(500).json({ error: 'No certificate' });
+      const now = Date.now();
+      const validTo = new Date(cert.valid_to);
+      const daysLeft = Math.floor((validTo - now) / 86400000);
+      const san = cert.subjectaltname ? cert.subjectaltname.split(', ').map(s => s.replace(/^DNS:/,'')) : [];
+      res.json({
+        host: raw, valid: true, authorized,
+        subject: { CN: cert.subject?.CN, O: cert.subject?.O, C: cert.subject?.C },
+        issuer: { CN: cert.issuer?.CN, O: cert.issuer?.O },
+        validFrom: cert.valid_from, validTo: cert.valid_to,
+        daysLeft, expired: daysLeft < 0,
+        fingerprint: cert.fingerprint256 || cert.fingerprint,
+        serialNumber: cert.serialNumber,
+        subjectAltNames: san,
+        keyBits: cert.bits,
+        selfSigned: cert.subject?.CN === cert.issuer?.CN,
+      });
+    } catch(e) { if (!res.headersSent) res.status(500).json({ error: e.message }); }
+  });
+  sock.on('error', e => { if (!res.headersSent) res.status(500).json({ error: e.message }); });
+  sock.on('timeout', () => { sock.destroy(); if (!res.headersSent) res.status(500).json({ error: 'Timeout' }); });
+});
+
+app.get('/api/tools/headers', (req, res) => {
+  let target = (req.query.url || '').trim();
+  if (!target) return res.status(400).json({ error: 'url required' });
+  if (!target.startsWith('http')) target = 'https://' + target;
+  let parsed;
+  try { parsed = new URL(target); } catch { return res.status(400).json({ error: 'Invalid URL' }); }
+  const mod = parsed.protocol === 'https:' ? https : http;
+  const start = Date.now();
+  const r = mod.request({
+    hostname: parsed.hostname,
+    port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
+    path: parsed.pathname + (parsed.search || '') || '/',
+    method: 'GET', rejectUnauthorized: false, timeout: 12000,
+    headers: { 'User-Agent': 'DesktopControlPanel/1.0', 'Accept': '*/*' },
+  }, response => {
+    const timing = Date.now() - start;
+    const SEC_HEADERS = [
+      { header: 'strict-transport-security', description: 'Forces HTTPS connections' },
+      { header: 'content-security-policy',   description: 'Prevents XSS & injection' },
+      { header: 'x-frame-options',           description: 'Prevents clickjacking' },
+      { header: 'x-content-type-options',    description: 'Prevents MIME sniffing' },
+      { header: 'x-xss-protection',          description: 'XSS filter (legacy)' },
+      { header: 'referrer-policy',           description: 'Controls referrer info' },
+      { header: 'permissions-policy',        description: 'Controls browser features' },
+    ];
+    const security = SEC_HEADERS.map(s => ({
+      header: s.header, description: s.description,
+      present: !!response.headers[s.header],
+      value: response.headers[s.header] || null,
+    }));
+    res.json({ url: target, status: response.statusCode, statusText: response.statusMessage,
+      headers: response.headers, timing, security,
+      server: response.headers['server'] || null, powered_by: response.headers['x-powered-by'] || null });
+    response.destroy();
+  });
+  r.on('error', e => { if (!res.headersSent) res.status(500).json({ error: e.message }); });
+  r.on('timeout', () => { r.destroy(); if (!res.headersSent) res.status(500).json({ error: 'Timeout' }); });
+  r.end();
+});
+
+app.get('/api/tools/ping', (req, res) => {
+  const host = (req.query.host || '').trim().replace(/[^a-zA-Z0-9.\-_:]/g, '');
+  if (!host) return res.status(400).json({ error: 'host required' });
+  exec(`ping -n 4 "${host}"`, { windowsHide: true, timeout: 20000 }, (err, stdout) => {
+    if (!stdout) return res.status(500).json({ error: err?.message || 'No output' });
+    const times = [];
+    (stdout.match(/time[=<]\d+ms/gi) || []).forEach(m => times.push(parseInt(m.match(/\d+/)[0])));
+    res.json({ host, output: stdout.trim(),
+      stats: {
+        avg: times.length ? Math.round(times.reduce((a,b)=>a+b,0)/times.length)+'ms' : null,
+        min: times.length ? Math.min(...times)+'ms' : null,
+        max: times.length ? Math.max(...times)+'ms' : null,
+        loss: stdout.match(/(\d+)%\s+loss/i)?.[1]+'%' || null,
+      }
+    });
+  });
+});
+
+app.get('/api/tools/traceroute', (req, res) => {
+  const host = (req.query.host || '').trim().replace(/[^a-zA-Z0-9.\-_]/g, '');
+  if (!host) return res.status(400).json({ error: 'host required' });
+  exec(`tracert -h 20 -w 2000 "${host}"`, { windowsHide: true, timeout: 90000 }, (err, stdout) => {
+    if (!stdout) return res.status(500).json({ error: err?.message || 'No output' });
+    const hops = stdout.trim().split('\n').filter(l => /^\s*\d+/.test(l)).map(l => {
+      const num = parseInt(l.match(/^\s*(\d+)/)?.[1]);
+      const timesArr = (l.match(/\d+\s*ms/gi) || []).map(t => parseInt(t));
+      const avg = timesArr.length ? Math.round(timesArr.reduce((a,b)=>a+b,0)/timesArr.length)+'ms' : null;
+      const host2 = l.match(/\[([^\]]+)\]/)?.[1] || l.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)?.[0] || null;
+      const name = l.match(/\[([^\]]+)\]/) ? l.match(/^\s*\d+\s+[\d\s<ms*]+\s+([^\[]+)\[/)?.[1]?.trim() || null : null;
+      return { hop: num, host: name || host2 || '*', time: avg };
+    });
+    res.json({ host, raw: stdout.trim(), hops });
+  });
+});
+
+app.get('/api/tools/blacklist', async (req, res) => {
+  const ip = (req.query.ip || '').trim();
+  const parts = ip.split('.');
+  if (parts.length !== 4 || parts.some(p => isNaN(+p))) return res.status(400).json({ error: 'Valid IPv4 required' });
+  const rev = parts.slice().reverse().join('.');
+  const LISTS = [
+    { name: 'Spamhaus ZEN',  host: 'zen.spamhaus.org' },
+    { name: 'SpamCop',       host: 'bl.spamcop.net' },
+    { name: 'SORBS Spam',    host: 'spam.dnsbl.sorbs.net' },
+    { name: 'Barracuda',     host: 'b.barracudacentral.org' },
+    { name: 'UCEProtect L1', host: 'dnsbl-1.uceprotect.net' },
+    { name: 'UCEProtect L2', host: 'dnsbl-2.uceprotect.net' },
+    { name: 'Abuse.ch',      host: 'dnsbl.abuse.ch' },
+    { name: 'CBL Abuseat',   host: 'cbl.abuseat.org' },
+    { name: 'DroneBL',       host: 'dnsbl.dronebl.org' },
+    { name: 'SORBS HTTP',    host: 'http.dnsbl.sorbs.net' },
+    { name: 'SORBS SOCKS',   host: 'socks.dnsbl.sorbs.net' },
+    { name: 'Mailspike',     host: 'bl.mailspike.net' },
+  ];
+  const results = await Promise.allSettled(LISTS.map(l =>
+    dns.resolve4(`${rev}.${l.host}`)
+      .then(() => ({ list: l.name, host: l.host, listed: true }))
+      .catch(() => ({ list: l.name, host: l.host, listed: false }))
+  ));
+  const data = results.map(r => r.value || { name: '?', list: '?', listed: false });
+  res.json({ ip, results: data, listedCount: data.filter(r => r.listed).length, total: data.length });
+});
+
+app.post('/api/tools/portscan', (req, res) => {
+  const host = (req.body.host || '').trim().replace(/[^a-zA-Z0-9.\-_]/g, '');
+  const ports = (req.body.ports || []).map(Number).filter(p => p > 0 && p < 65536).slice(0, 50);
+  if (!host || !ports.length) return res.status(400).json({ error: 'host and ports[] required' });
+  Promise.allSettled(ports.map(port => new Promise(resolve => {
+    const sock = new net.Socket();
+    const start = Date.now();
+    sock.setTimeout(2500);
+    sock.on('connect', () => { sock.destroy(); resolve({ port, open: true, ms: Date.now() - start }); });
+    sock.on('error',   () => { sock.destroy(); resolve({ port, open: false }); });
+    sock.on('timeout', () => { sock.destroy(); resolve({ port, open: false }); });
+    sock.connect(port, host);
+  }))).then(r => res.json({ host, results: r.map(x => x.value) }));
+});
+
+app.get('/api/tools/rdns', async (req, res) => {
+  const ip = (req.query.ip || '').trim();
+  if (!ip) return res.status(400).json({ error: 'ip required' });
+  try { res.json({ ip, hostnames: await dns.reverse(ip) }); }
+  catch(e) { res.json({ ip, hostnames: [], error: e.code || e.message }); }
 });
 
 // ── Start ─────────────────────────────────────────────────────────────────────

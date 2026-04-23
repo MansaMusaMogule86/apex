@@ -405,6 +405,177 @@ table.proctable tbody td { padding: 7px 16px; font-size: 12px; white-space: nowr
 .trans-swap:hover { border-color: var(--border2); color: var(--text); transform: rotate(180deg); }
 .trans-lang-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
 
+/* ══════════════════════════════════════════
+   NET TOOLS PAGE
+═══════════════════════════════════════════ */
+.nt-bar { display:flex; gap:10px; align-items:center; margin-bottom:10px; }
+.nt-bar-wrap { display:flex; align-items:center; flex:1; background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:0 14px; gap:10px; transition:border-color .15s; }
+.nt-bar-wrap:focus-within { border-color:var(--cpu-c); }
+.nt-bar-icon { font-size:17px; flex-shrink:0; }
+.nt-bar-input { flex:1; background:transparent; border:none; outline:none; color:var(--text); font-size:14px; font-family:'JetBrains Mono',monospace; padding:13px 0; }
+.nt-bar-input::placeholder { color:var(--muted); }
+.nt-bar-clear { background:transparent; border:none; color:var(--muted); font-size:13px; cursor:pointer; padding:4px; transition:color .15s; }
+.nt-bar-clear:hover { color:var(--text); }
+.btn-nt-scan { border:1px solid var(--cpu-c); background:rgba(129,140,248,.12); color:var(--cpu-c); border-radius:9px; padding:12px 22px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .15s; letter-spacing:.04em; white-space:nowrap; }
+.btn-nt-scan:hover { background:rgba(129,140,248,.22); box-shadow:0 0 20px -5px rgba(129,140,248,.4); }
+.btn-nt-scan:disabled { opacity:.5; pointer-events:none; }
+.nt-presets { display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+.nt-preset { border:1px solid var(--border); background:var(--s2); color:var(--muted); border-radius:6px; padding:4px 10px; font-size:11px; font-family:'JetBrains Mono',monospace; cursor:pointer; transition:all .15s; }
+.nt-preset:hover { border-color:var(--border2); color:var(--text); }
+
+/* Summary cards */
+.nt-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+.nt-sum-card { background:var(--s1); border:1px solid var(--border); border-radius:10px; padding:14px 16px; position:relative; overflow:hidden; transition:border-color .2s; }
+.nt-sum-card.loaded { border-color:var(--border2); }
+.nt-sum-title { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.nt-sum-main { font-size:18px; font-weight:700; color:var(--text); line-height:1.2; margin-bottom:4px; }
+.nt-sum-sub { font-size:11px; color:var(--muted); }
+.nt-sum-tag { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:3px; letter-spacing:.06em; margin-top:6px; }
+
+/* Sub tabs */
+.nt-tabs { display:flex; gap:3px; flex-wrap:wrap; margin-bottom:14px; background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:10px; padding:4px; }
+.nt-tab { border:none; background:transparent; color:var(--muted); border-radius:7px; padding:6px 11px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap; letter-spacing:.03em; }
+.nt-tab:hover { color:var(--text); background:rgba(255,255,255,.04); }
+.nt-tab.active { background:var(--s2); color:#fff; }
+
+/* Panels */
+.nt-panel { background:var(--s1); border:1px solid var(--border); border-radius:12px; padding:18px; min-height:240px; }
+.nt-pbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.nt-ptitle { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.btn-nt-run { border:1px solid var(--green); background:rgba(34,197,94,.08); color:var(--green); border-radius:7px; padding:6px 16px; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .15s; letter-spacing:.04em; }
+.btn-nt-run:hover { background:rgba(34,197,94,.16); }
+.btn-nt-run:disabled { opacity:.5; pointer-events:none; }
+.nt-placeholder { color:var(--muted); font-size:12px; font-style:italic; padding:20px 0; }
+.nt-loading { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:12px; padding:20px 0; }
+.nt-error { color:var(--red); font-size:12px; padding:10px 0; }
+
+/* DNS */
+.dns-section { margin-bottom:14px; }
+.dns-type-bar { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.dns-badge { font-size:10px; font-weight:700; letter-spacing:.08em; padding:2px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; }
+.dns-badge.A    { background:rgba(129,140,248,.15); color:#818cf8; }
+.dns-badge.AAAA { background:rgba(34,211,238,.12);  color:#22d3ee; }
+.dns-badge.MX   { background:rgba(167,139,250,.12); color:#a78bfa; }
+.dns-badge.NS   { background:rgba(34,197,94,.12);   color:#22c55e; }
+.dns-badge.TXT  { background:rgba(245,158,11,.12);  color:#f59e0b; }
+.dns-badge.SOA  { background:rgba(249,115,22,.12);  color:#f97316; }
+.dns-badge.CNAME{ background:rgba(236,72,153,.12);  color:#ec4899; }
+.dns-badge.CAA  { background:rgba(6,182,212,.12);   color:#06b6d4; }
+.dns-cnt { font-size:10px; color:var(--muted); }
+.dns-records { display:flex; flex-direction:column; gap:4px; }
+.dns-rec { background:var(--s2); border:1px solid var(--border); border-radius:7px; padding:8px 12px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text); display:flex; align-items:flex-start; gap:10px; word-break:break-all; }
+.dns-prio { font-size:10px; color:var(--cpu-c); min-width:36px; flex-shrink:0; }
+
+/* SSL */
+.ssl-hero { display:flex; align-items:center; gap:16px; padding:16px; background:var(--s2); border-radius:10px; margin-bottom:14px; }
+.ssl-icon { font-size:36px; line-height:1; }
+.ssl-info { flex:1; }
+.ssl-title { font-size:16px; font-weight:700; margin-bottom:3px; }
+.ssl-sub { font-size:12px; color:var(--muted); }
+.ssl-days { text-align:right; }
+.ssl-days-num { font-size:30px; font-weight:700; font-family:'JetBrains Mono',monospace; line-height:1; }
+.ssl-days-lbl { font-size:10px; color:var(--muted); margin-top:2px; }
+.ssl-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.ssl-field { background:var(--s2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; }
+.ssl-field-lbl { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px; }
+.ssl-field-val { font-size:12px; color:var(--text); font-family:'JetBrains Mono',monospace; word-break:break-all; }
+.ssl-sans { display:flex; flex-wrap:wrap; gap:5px; }
+.ssl-san { background:rgba(129,140,248,.08); border:1px solid rgba(129,140,248,.2); color:var(--cpu-c); padding:2px 8px; border-radius:4px; font-size:11px; font-family:'JetBrains Mono',monospace; }
+
+/* HTTP Headers */
+.http-hero { display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--s2); border-radius:10px; margin-bottom:14px; }
+.http-code { font-size:30px; font-weight:700; font-family:'JetBrains Mono',monospace; line-height:1; }
+.http-code.s2 { color:var(--green); } .http-code.s3 { color:#f59e0b; } .http-code.s4,.http-code.s5 { color:var(--red); }
+.http-meta { flex:1; }
+.http-text { font-size:14px; font-weight:600; margin-bottom:2px; }
+.http-server { font-size:11px; color:var(--muted); }
+.http-time { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); text-align:right; }
+.http-time span { font-size:20px; font-weight:700; color:var(--text); display:block; }
+.sec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(165px,1fr)); gap:6px; margin-bottom:14px; }
+.sec-hdr { display:flex; align-items:center; gap:8px; background:var(--s2); border-radius:7px; padding:8px 10px; }
+.sec-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.sec-dot.ok { background:var(--green); } .sec-dot.miss { background:#2d3548; }
+.sec-name { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hdrs-table { width:100%; border-collapse:collapse; }
+.hdrs-table tr { border-bottom:1px solid var(--border); }
+.hdrs-table td { padding:6px 8px; font-size:11px; font-family:'JetBrains Mono',monospace; vertical-align:top; }
+.hdrs-table td:first-child { color:var(--cpu-c); width:220px; white-space:nowrap; }
+.hdrs-table td:last-child  { color:var(--muted); word-break:break-all; }
+
+/* IP Geo */
+.geo-hero { background:var(--s2); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:14px; }
+.geo-top { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+.geo-flag { font-size:52px; line-height:1; }
+.geo-main { flex:1; }
+.geo-city { font-size:22px; font-weight:700; }
+.geo-region { font-size:13px; color:var(--muted); margin-top:2px; }
+.geo-ip { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cpu-c); margin-top:6px; }
+.geo-badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.geo-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; letter-spacing:.04em; }
+.geo-badge.proxy   { background:rgba(239,68,68,.12); color:var(--red); }
+.geo-badge.hosting { background:rgba(129,140,248,.12); color:var(--cpu-c); }
+.geo-badge.mobile  { background:rgba(34,197,94,.12); color:var(--green); }
+.geo-badge.clean   { background:rgba(34,197,94,.12); color:var(--green); }
+.geo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.geo-field-lbl { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px; }
+.geo-field-val { font-size:12px; color:var(--text); font-family:'JetBrains Mono',monospace; word-break:break-word; }
+
+/* Ping */
+.ping-stats { display:flex; gap:10px; margin-bottom:12px; }
+.ping-stat { background:var(--s2); border:1px solid var(--border); border-radius:8px; padding:10px 14px; flex:1; text-align:center; }
+.ping-stat-val { font-size:22px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.ping-stat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
+.nt-terminal { background:#07080f; border:1px solid var(--border); border-radius:8px; padding:12px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#4ade80; line-height:1.7; white-space:pre-wrap; max-height:260px; overflow-y:auto; }
+
+/* Traceroute */
+.trace-table { width:100%; border-collapse:collapse; }
+.trace-table thead th { padding:6px 12px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-align:left; border-bottom:1px solid var(--border); }
+.trace-table tbody tr { border-bottom:1px solid rgba(255,255,255,.025); }
+.trace-table tbody tr:hover { background:rgba(255,255,255,.025); }
+.trace-table tbody td { padding:7px 12px; font-size:11px; font-family:'JetBrains Mono',monospace; }
+.trace-hop { color:var(--muted); width:40px; }
+.trace-addr { color:var(--cpu-c); }
+.trace-time { color:var(--green); }
+
+/* Blacklist */
+.bl-hero { display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--s2); border-radius:10px; margin-bottom:14px; }
+.bl-score { font-size:34px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.bl-score.clean { color:var(--green); } .bl-score.warn { color:#f59e0b; } .bl-score.danger { color:var(--red); }
+.bl-score-lbl { font-size:12px; color:var(--muted); }
+.bl-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:6px; }
+.bl-row { display:flex; align-items:center; gap:10px; background:var(--s2); border:1px solid var(--border); border-radius:7px; padding:9px 12px; }
+.bl-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.bl-dot.listed { background:var(--red); box-shadow:0 0 6px rgba(239,68,68,.5); }
+.bl-dot.clean  { background:var(--green); }
+.bl-name { font-size:11px; font-weight:600; color:var(--text); flex:1; }
+.bl-status { font-size:10px; font-weight:700; letter-spacing:.06em; }
+.bl-status.listed { color:var(--red); } .bl-status.clean { color:var(--green); }
+
+/* Remote Port Scan */
+.ps-presets { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.ps-preset { border:1px solid var(--border); background:var(--s2); color:var(--muted); border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; font-family:inherit; transition:all .15s; }
+.ps-preset:hover { border-color:var(--border2); color:var(--text); }
+.ps-custom-row { display:flex; gap:8px; margin-bottom:12px; }
+.ps-input { flex:1; background:var(--s2); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:var(--text); font-size:12px; font-family:'JetBrains Mono',monospace; outline:none; transition:border-color .15s; }
+.ps-input:focus { border-color:var(--border2); }
+.ps-input::placeholder { color:var(--muted); }
+.ps-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:6px; margin-top:6px; }
+.ps-item { display:flex; flex-direction:column; align-items:center; gap:4px; background:var(--s2); border:1px solid var(--border); border-radius:8px; padding:10px 6px; transition:border-color .2s; }
+.ps-item.open { border-color:rgba(34,197,94,.4); background:rgba(34,197,94,.04); }
+.ps-port-num { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; }
+.ps-port-num.open { color:var(--green); } .ps-port-num.closed { color:var(--muted); }
+.ps-svc { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+.ps-st { font-size:9px; font-weight:700; letter-spacing:.06em; }
+.ps-st.open { color:var(--green); } .ps-st.closed { color:#2d3548; }
+
+/* rDNS */
+.rdns-result { background:var(--s2); border:1px solid var(--border); border-radius:9px; padding:14px 16px; font-family:'JetBrains Mono',monospace; }
+.rdns-hostname { font-size:14px; color:var(--cpu-c); margin-bottom:4px; }
+
+/* Responsive */
+@media (max-width:900px) { .nt-summary { grid-template-columns:1fr 1fr; } .geo-grid { grid-template-columns:1fr 1fr; } }
+@media (max-width:600px) { .nt-summary { grid-template-columns:1fr; } .ssl-grid { grid-template-columns:1fr; } }
+
 /* ── Responsive ── */
 @media (max-width: 1200px) { .tools-grid { grid-template-columns: 1fr 1fr; } .translator-body { grid-template-columns: 1fr auto 1fr; } }
 @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } .right-panel { display: grid; grid-template-columns: 1fr 1fr; } .monitor-top { grid-template-columns: 1fr; } .monitor-bottom { grid-template-columns: 1fr; } }
@@ -424,6 +595,7 @@ table.proctable tbody td { padding: 7px 16px; font-size: 12px; white-space: nowr
     <button class="tab-btn active" id="tab-dashboard" onclick="switchTab('dashboard',this)" data-i18n="tab_dashboard">⚡ Dashboard</button>
     <button class="tab-btn" id="tab-monitor" onclick="switchTab('monitor',this)" data-i18n="tab_monitor">📊 Monitor</button>
     <button class="tab-btn" id="tab-tools" onclick="switchTab('tools',this)" data-i18n="tab_tools">🛠 Tools</button>
+    <button class="tab-btn" id="tab-nettools" onclick="switchTab('nettools',this)">🌐 Net Tools</button>
     <button class="tab-btn" id="tab-settings" onclick="switchTab('settings',this)" data-i18n="tab_settings">⊞ Windows Settings</button>
   </div>
   <div class="header-center" id="header-center">—</div>
@@ -728,6 +900,155 @@ table.proctable tbody td { padding: 7px 16px; font-size: 12px; white-space: nowr
   </div>
 
 </div><!-- /page-tools -->
+
+<!-- ═══════════════════ NET TOOLS TAB ═══════════════════ -->
+<div id="page-nettools" style="display:none">
+
+  <!-- Target Bar -->
+  <div class="nt-bar">
+    <div class="nt-bar-wrap">
+      <span class="nt-bar-icon">🔍</span>
+      <input class="nt-bar-input" id="nt-target" type="text" placeholder="domain.com · IP address · URL" onkeydown="if(event.key==='Enter') ntAnalyzeAll()">
+      <button class="nt-bar-clear" onclick="document.getElementById('nt-target').value=''" title="Clear">✕</button>
+    </div>
+    <button class="btn-primary" onclick="ntAnalyzeAll()" id="nt-analyze-btn">⚡ Analyze</button>
+  </div>
+
+  <!-- Preset chips -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+    <span style="font-size:11px;color:var(--muted);align-self:center;">Try:</span>
+    <button class="nt-preset" onclick="ntSet('google.com')">google.com</button>
+    <button class="nt-preset" onclick="ntSet('cloudflare.com')">cloudflare.com</button>
+    <button class="nt-preset" onclick="ntSet('github.com')">github.com</button>
+    <button class="nt-preset" onclick="ntSet('8.8.8.8')">8.8.8.8</button>
+    <button class="nt-preset" onclick="ntSet('1.1.1.1')">1.1.1.1</button>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="nt-summary" id="nt-summary" style="display:none">
+    <div class="nt-sum-card" id="nts-ssl"></div>
+    <div class="nt-sum-card" id="nts-dns"></div>
+    <div class="nt-sum-card" id="nts-geo"></div>
+    <div class="nt-sum-card" id="nts-headers"></div>
+  </div>
+
+  <!-- Sub-tabs -->
+  <div class="nt-tabs">
+    <button class="nt-tab active" id="nttab-dns"       onclick="ntSwitch('dns',this)">🔤 DNS</button>
+    <button class="nt-tab" id="nttab-whois"    onclick="ntSwitch('whois',this)">📋 WHOIS</button>
+    <button class="nt-tab" id="nttab-ipgeo"    onclick="ntSwitch('ipgeo',this)">🌍 IP Geo</button>
+    <button class="nt-tab" id="nttab-ssl"      onclick="ntSwitch('ssl',this)">🔒 SSL</button>
+    <button class="nt-tab" id="nttab-headers"  onclick="ntSwitch('headers',this)">📡 Headers</button>
+    <button class="nt-tab" id="nttab-ping"     onclick="ntSwitch('ping',this)">📶 Ping</button>
+    <button class="nt-tab" id="nttab-traceroute" onclick="ntSwitch('traceroute',this)">🛤 Traceroute</button>
+    <button class="nt-tab" id="nttab-blacklist" onclick="ntSwitch('blacklist',this)">🚫 Blacklist</button>
+    <button class="nt-tab" id="nttab-portscan" onclick="ntSwitch('portscan',this)">⚡ Port Scan</button>
+    <button class="nt-tab" id="nttab-rdns"     onclick="ntSwitch('rdns',this)">↩ rDNS</button>
+  </div>
+
+  <!-- ── DNS panel ── -->
+  <div class="nt-panel" id="ntpanel-dns">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">DNS Records</h3>
+      <button class="btn-primary" onclick="ntRunDns()">Lookup</button>
+    </div>
+    <div id="dns-results"><div style="color:var(--muted);font-size:12px;">Enter a domain and click Lookup.</div></div>
+  </div>
+
+  <!-- ── WHOIS panel ── -->
+  <div class="nt-panel" id="ntpanel-whois" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">WHOIS / RDAP</h3>
+      <button class="btn-primary" onclick="ntRunWhois()">Lookup</button>
+    </div>
+    <div id="whois-results"><div style="color:var(--muted);font-size:12px;">Enter a domain to fetch registration info.</div></div>
+  </div>
+
+  <!-- ── IP Geo panel ── -->
+  <div class="nt-panel" id="ntpanel-ipgeo" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">IP Geolocation</h3>
+      <button class="btn-primary" onclick="ntRunIpGeo()">Lookup</button>
+    </div>
+    <div id="ipgeo-results"><div style="color:var(--muted);font-size:12px;">Enter a domain or IP address.</div></div>
+  </div>
+
+  <!-- ── SSL panel ── -->
+  <div class="nt-panel" id="ntpanel-ssl" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">SSL Certificate</h3>
+      <button class="btn-primary" onclick="ntRunSsl()">Inspect</button>
+    </div>
+    <div id="ssl-results"><div style="color:var(--muted);font-size:12px;">Enter a domain to inspect its TLS certificate.</div></div>
+  </div>
+
+  <!-- ── Headers panel ── -->
+  <div class="nt-panel" id="ntpanel-headers" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">HTTP Headers &amp; Security Audit</h3>
+      <button class="btn-primary" onclick="ntRunHeaders()">Fetch</button>
+    </div>
+    <div id="headers-results"><div style="color:var(--muted);font-size:12px;">Enter a URL or domain to audit HTTP headers.</div></div>
+  </div>
+
+  <!-- ── Ping panel ── -->
+  <div class="nt-panel" id="ntpanel-ping" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">Ping</h3>
+      <button class="btn-primary" onclick="ntRunPing()">Ping</button>
+    </div>
+    <div id="ping-results"><div style="color:var(--muted);font-size:12px;">Enter a host to ping.</div></div>
+  </div>
+
+  <!-- ── Traceroute panel ── -->
+  <div class="nt-panel" id="ntpanel-traceroute" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">Traceroute</h3>
+      <button class="btn-primary" onclick="ntRunTraceroute()">Trace</button>
+    </div>
+    <div id="traceroute-results"><div style="color:var(--muted);font-size:12px;">Enter a host to traceroute. May take up to 30s.</div></div>
+  </div>
+
+  <!-- ── Blacklist panel ── -->
+  <div class="nt-panel" id="ntpanel-blacklist" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">DNS Blacklist Check</h3>
+      <button class="btn-primary" onclick="ntRunBlacklist()">Check</button>
+    </div>
+    <div id="blacklist-results"><div style="color:var(--muted);font-size:12px;">Enter an IP address to check against 12 DNSBL lists.</div></div>
+  </div>
+
+  <!-- ── Port Scan panel ── -->
+  <div class="nt-panel" id="ntpanel-portscan" style="display:none">
+    <div style="margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;margin-bottom:10px;">Port Scanner</h3>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+        <span style="font-size:11px;color:var(--muted);align-self:center;">Presets:</span>
+        <button class="nt-preset" onclick="ntSetPorts('80,443,8080,8443')">Web</button>
+        <button class="nt-preset" onclick="ntSetPorts('25,587,465,110,995,143,993')">Mail</button>
+        <button class="nt-preset" onclick="ntSetPorts('3306,5432,27017,6379,1433')">Database</button>
+        <button class="nt-preset" onclick="ntSetPorts('22,21,23,3389,5900')">Remote</button>
+        <button class="nt-preset" onclick="ntSetPorts('53,67,68,123,161,162')">Network</button>
+        <button class="nt-preset" onclick="ntSetPorts('80,443,22,21,25,53,3306,3389,8080,8443,27017,6379,5432,1433,587,465,110,995,143,993,5900,23')">All Common</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input class="nt-bar-input" id="ps-ports-input" type="text" placeholder="80,443,22 or 8000-8010" style="background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;flex:1;">
+        <button class="btn-primary" onclick="ntRunPortScan()">Scan</button>
+      </div>
+    </div>
+    <div id="portscan-results"><div style="color:var(--muted);font-size:12px;">Enter a host above and select ports to scan.</div></div>
+  </div>
+
+  <!-- ── rDNS panel ── -->
+  <div class="nt-panel" id="ntpanel-rdns" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <h3 style="font-size:13px;font-weight:600;">Reverse DNS</h3>
+      <button class="btn-primary" onclick="ntRunRdns()">Lookup</button>
+    </div>
+    <div id="rdns-results"><div style="color:var(--muted);font-size:12px;">Enter an IP address to resolve hostnames.</div></div>
+  </div>
+
+</div><!-- /page-nettools -->
 
 <!-- ═══════════════════ SETTINGS TAB ═══════════════════ -->
 <div id="page-settings" style="display:none">
@@ -1297,12 +1618,12 @@ async function purgeTop3() {
 //  Tab Navigation
 // ══════════════════════════════════════════
 
-let monitorLoaded = false, toolsLoaded = false, settingsLoaded = false;
+let monitorLoaded = false, toolsLoaded = false, settingsLoaded = false, nettoolsLoaded = false;
 
 function switchTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  ['dashboard','monitor','tools','settings'].forEach(n => {
+  ['dashboard','monitor','tools','nettools','settings'].forEach(n => {
     const p = document.getElementById(`page-${n}`);
     if (p) p.style.display = n === name ? 'block' : 'none';
   });
@@ -1628,6 +1949,404 @@ async function killAllServers() {
 }
 
 setInterval(loadServers, 5000);
+
+// ══════════════════════════════════════════
+//  Net Tools
+// ══════════════════════════════════════════
+
+function ntSet(val) {
+  document.getElementById('nt-target').value = val;
+}
+
+function ntSetPorts(val) {
+  document.getElementById('ps-ports-input').value = val;
+}
+
+function ntGetTarget() {
+  return document.getElementById('nt-target').value.trim().replace(/^https?:\/\//,'').split('/')[0];
+}
+
+function ntSwitch(name, btn) {
+  document.querySelectorAll('.nt-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.nt-panel').forEach(p => p.style.display = 'none');
+  document.getElementById(`ntpanel-${name}`).style.display = '';
+}
+
+function ntLoading(el) {
+  el.innerHTML = '<div class="nt-loading"><span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> Loading…</div>';
+}
+
+function ntErr(el, msg) {
+  el.innerHTML = `<div class="nt-error">✕ ${msg || 'Request failed'}</div>`;
+}
+
+async function ntAnalyzeAll() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a domain or IP','inf'); return; }
+
+  const btn = document.getElementById('nt-analyze-btn');
+  btn.disabled = true; btn.textContent = '⟳ Analyzing…';
+
+  const sum = document.getElementById('nt-summary');
+  sum.style.display = 'grid';
+  ['nts-ssl','nts-dns','nts-geo','nts-headers'].forEach(id => {
+    document.getElementById(id).innerHTML = '<div style="color:var(--muted);font-size:11px;">Loading…</div>';
+  });
+
+  const [dnsR, sslR, geoR, hdrR] = await Promise.all([
+    api(`/api/tools/dns?host=${encodeURIComponent(target)}`).catch(() => null),
+    api(`/api/tools/ssl?host=${encodeURIComponent(target)}`).catch(() => null),
+    api(`/api/tools/ipgeo?host=${encodeURIComponent(target)}`).catch(() => null),
+    api(`/api/tools/headers?url=${encodeURIComponent('https://'+target)}`).catch(() => null),
+  ]);
+
+  // DNS summary
+  const dnsEl = document.getElementById('nts-dns');
+  if (dnsR && !dnsR.error) {
+    const types = Object.keys(dnsR.records || {}).filter(k => (dnsR.records[k]||[]).length);
+    dnsEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">DNS RECORDS</div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:4px;">${types.length}</div>
+      <div style="font-size:11px;color:var(--muted);">${types.join(' · ') || 'none'}</div>`;
+  } else { dnsEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">DNS</div><div style="color:var(--red);font-size:12px;">Failed</div>`; }
+
+  // SSL summary
+  const sslEl = document.getElementById('nts-ssl');
+  if (sslR && !sslR.error && sslR.valid) {
+    const days = sslR.daysLeft;
+    const col = days > 30 ? 'var(--green)' : days > 7 ? 'var(--amber)' : 'var(--red)';
+    sslEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">SSL CERT</div>
+      <div style="font-size:20px;font-weight:700;color:${col};margin-bottom:4px;">${days}d</div>
+      <div style="font-size:11px;color:var(--muted);">until expiry</div>`;
+  } else { sslEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">SSL</div><div style="color:var(--red);font-size:12px;">${sslR?.error || 'No SSL'}</div>`; }
+
+  // Geo summary
+  const geoEl = document.getElementById('nts-geo');
+  if (geoR && geoR.status !== 'fail') {
+    geoEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">LOCATION</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px;">${geoR.country || '—'}</div>
+      <div style="font-size:11px;color:var(--muted);">${geoR.city || ''} · ${geoR.isp || ''}</div>`;
+  } else { geoEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">GEO</div><div style="color:var(--muted);font-size:12px;">N/A</div>`; }
+
+  // Headers summary
+  const hdrEl = document.getElementById('nts-headers');
+  if (hdrR && !hdrR.error) {
+    const pass = (hdrR.security || []).filter(s => s.present).length;
+    const total = (hdrR.security || []).length;
+    const col = pass >= total*0.75 ? 'var(--green)' : pass >= total*0.5 ? 'var(--amber)' : 'var(--red)';
+    hdrEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">SECURITY HEADERS</div>
+      <div style="font-size:20px;font-weight:700;color:${col};margin-bottom:4px;">${pass}/${total}</div>
+      <div style="font-size:11px;color:var(--muted);">headers present</div>`;
+  } else { hdrEl.innerHTML = `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">HEADERS</div><div style="color:var(--red);font-size:12px;">Failed</div>`; }
+
+  btn.disabled = false; btn.textContent = '⚡ Analyze';
+
+  // Auto-render first active panel
+  ntRunDns();
+}
+
+async function ntRunDns() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a domain','inf'); return; }
+  const el = document.getElementById('dns-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/dns?host=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'DNS lookup failed'); return; }
+  const records = r.records || {};
+  const types = Object.keys(records);
+  if (!types.length) { el.innerHTML = '<div class="nt-placeholder">No DNS records found.</div>'; return; }
+  el.innerHTML = types.map(type => {
+    const vals = records[type] || [];
+    if (!vals.length) return '';
+    const items = vals.map(v => {
+      const display = typeof v === 'object' ? JSON.stringify(v) : String(v);
+      return `<div style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);">
+        <span class="dns-badge ${type}">${type}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);word-break:break-all;">${display.replace(/</g,'&lt;')}</span>
+      </div>`;
+    }).join('');
+    return `<div class="dns-section">
+      <div class="dns-type-bar"><span class="dns-badge ${type}">${type}</span><span class="dns-cnt">${vals.length} record${vals.length!==1?'s':''}</span></div>
+      ${items}
+    </div>`;
+  }).join('');
+}
+
+async function ntRunWhois() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a domain','inf'); return; }
+  const el = document.getElementById('whois-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/whois?domain=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'WHOIS lookup failed'); return; }
+  const rows = [
+    ['Domain', r.domain],
+    ['Registrar', r.registrar],
+    ['Status', Array.isArray(r.status) ? r.status.join(', ') : r.status],
+    ['Created', r.created],
+    ['Updated', r.updated],
+    ['Expires', r.expires],
+    ['Name Servers', Array.isArray(r.nameservers) ? r.nameservers.join(', ') : r.nameservers],
+    ['Organisation', r.org],
+    ['Country', r.country],
+  ].filter(([, v]) => v);
+  el.innerHTML = `
+    <div class="ssl-grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+      ${rows.map(([k,v]) => `
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;">${k}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);word-break:break-all;">${String(v).replace(/</g,'&lt;')}</div>
+        </div>`).join('')}
+    </div>
+    ${r.raw ? `<details style="margin-top:14px;"><summary style="cursor:pointer;font-size:11px;color:var(--muted);">Raw RDAP data</summary><pre style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:8px;white-space:pre-wrap;word-break:break-all;">${JSON.stringify(r.raw,null,2).replace(/</g,'&lt;').slice(0,4000)}</pre></details>` : ''}`;
+}
+
+async function ntRunIpGeo() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a domain or IP','inf'); return; }
+  const el = document.getElementById('ipgeo-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/ipgeo?host=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.status === 'fail') { ntErr(el, r?.message || 'IP geo lookup failed'); return; }
+  const flagCode = (r.countryCode || '').toLowerCase();
+  el.innerHTML = `
+    <div class="geo-hero">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+        <div style="font-size:40px;">${flagCode ? `&#x1F1${String.fromCodePoint(0x1F1E6 + flagCode.charCodeAt(0) - 97).codePointAt(0)?.toString(16).toUpperCase() || ''}` : '🌍'}</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;">${r.query}</div>
+          <div style="font-size:12px;color:var(--muted);">${r.city || ''} ${r.regionName ? '· '+r.regionName : ''} · ${r.country || ''}</div>
+        </div>
+        ${r.proxy || r.hosting ? `<div style="margin-left:auto;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--amber);">${r.proxy ? '⚠ Proxy/VPN' : '🖥 Hosting'}</div>` : ''}
+      </div>
+    </div>
+    <div class="geo-grid">
+      ${[
+        ['IP', r.query],
+        ['Country', r.country + (r.countryCode ? ` (${r.countryCode})` : '')],
+        ['Region', r.regionName],
+        ['City', r.city],
+        ['Timezone', r.timezone],
+        ['Lat/Lon', r.lat && r.lon ? `${r.lat}, ${r.lon}` : null],
+        ['ISP', r.isp],
+        ['Organisation', r.org],
+        ['AS Number', r.as],
+        ['Proxy', r.proxy ? 'Yes ⚠' : 'No'],
+        ['Hosting', r.hosting ? 'Yes' : 'No'],
+        ['Mobile', r.mobile ? 'Yes' : 'No'],
+      ].filter(([,v]) => v).map(([k,v]) => `
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em;">${k}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;">${String(v).replace(/</g,'&lt;')}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function ntRunSsl() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a domain','inf'); return; }
+  const el = document.getElementById('ssl-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/ssl?host=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'SSL inspection failed'); return; }
+  if (!r.valid) { el.innerHTML = `<div class="nt-error">No valid SSL certificate found.</div>`; return; }
+  const days = r.daysLeft;
+  const col = days > 30 ? 'var(--green)' : days > 7 ? 'var(--amber)' : 'var(--red)';
+  el.innerHTML = `
+    <div class="ssl-hero">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,.1);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🔒</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:3px;">${(r.subject?.CN || target).replace(/</g,'&lt;')}</div>
+        <div style="font-size:12px;color:var(--muted);">${r.issuer?.O || r.issuer?.CN || ''}</div>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <div style="font-size:24px;font-weight:700;color:${col};">${days}d</div>
+        <div style="font-size:10px;color:var(--muted);">until expiry</div>
+      </div>
+    </div>
+    <div class="ssl-grid">
+      ${[
+        ['Subject CN', r.subject?.CN],
+        ['Subject O', r.subject?.O],
+        ['Issuer', r.issuer?.O || r.issuer?.CN],
+        ['Valid From', r.validFrom],
+        ['Valid Until', r.validTo],
+        ['Days Left', `${days} days`],
+        ['Serial', r.serialNumber],
+        ['Protocol', r.protocol],
+        ['Cipher', r.cipher],
+        ['SANs', r.subjectAltNames?.slice(0,5).join(', ')],
+        ['Key Bits', r.keyBits ? `${r.keyBits} bit` : null],
+        ['Self-signed', r.selfSigned ? 'Yes ⚠' : 'No'],
+      ].filter(([,v]) => v).map(([k,v]) => `
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.07em;">${k}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;word-break:break-all;">${String(v).replace(/</g,'&lt;')}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function ntRunHeaders() {
+  const raw = document.getElementById('nt-target').value.trim();
+  const url = raw.startsWith('http') ? raw : `https://${raw}`;
+  if (!raw) { toast('Enter a URL or domain','inf'); return; }
+  const el = document.getElementById('headers-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/headers?url=${encodeURIComponent(url)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'Headers fetch failed'); return; }
+  const statusColor = r.status < 300 ? 'var(--green)' : r.status < 400 ? 'var(--amber)' : 'var(--red)';
+  const headersHtml = Object.entries(r.headers || {}).map(([k,v]) =>
+    `<tr><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cpu-c);padding:5px 8px;white-space:nowrap;">${k}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 8px;word-break:break-all;">${String(v).replace(/</g,'&lt;')}</td></tr>`
+  ).join('');
+  const secHtml = (r.security || []).map(s => `
+    <div style="background:var(--s2);border:1px solid ${s.present ? 'rgba(34,197,94,.2)' : 'rgba(239,68,68,.15)'};border-radius:8px;padding:10px 13px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <span style="color:${s.present ? 'var(--green)' : 'var(--red)'};font-size:14px;">${s.present ? '✓' : '✗'}</span>
+        <span style="font-size:11px;font-weight:600;">${s.header}</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);">${s.description || ''}</div>
+      ${s.value ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);margin-top:4px;word-break:break-all;">${String(s.value).replace(/</g,'&lt;')}</div>` : ''}
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="http-hero" style="background:var(--s2);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+      <span style="font-size:22px;font-weight:700;color:${statusColor};">${r.status}</span>
+      <span style="font-size:12px;color:var(--muted);">${r.statusText || ''}</span>
+      <span style="margin-left:auto;font-size:11px;color:var(--muted);">${r.timing}ms</span>
+    </div>
+    ${secHtml ? `<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;">Security Headers</div><div class="sec-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">${secHtml}</div></div>` : ''}
+    <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;">All Headers</div>
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:8px;overflow:auto;max-height:300px;">
+      <table style="width:100%;border-collapse:collapse;">${headersHtml}</table>
+    </div></div>`;
+}
+
+async function ntRunPing() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a host','inf'); return; }
+  const el = document.getElementById('ping-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/ping?host=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'Ping failed'); return; }
+  const stats = r.stats || {};
+  el.innerHTML = `
+    <div class="ping-stats">
+      ${[['Min',stats.min],['Avg',stats.avg],['Max',stats.max],['Loss',stats.loss]].map(([k,v]) => `
+        <div style="flex:1;background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em;">${k}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;">${v != null ? v : '—'}</div>
+        </div>`).join('')}
+    </div>
+    <div class="nt-terminal">${(r.output || '').replace(/</g,'&lt;')}</div>`;
+}
+
+async function ntRunTraceroute() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a host','inf'); return; }
+  const el = document.getElementById('traceroute-results');
+  el.innerHTML = '<div class="nt-loading"><span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> Tracing route… (up to 30s)</div>';
+  const r = await api(`/api/tools/traceroute?host=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'Traceroute failed'); return; }
+  const hops = r.hops || [];
+  if (!hops.length) { el.innerHTML = '<div class="nt-placeholder">No hops captured.</div>'; return; }
+  el.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table class="trace-table" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:11px;">
+        <thead><tr style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em;">
+          <th style="padding:6px 8px;text-align:left;">#</th>
+          <th style="padding:6px 8px;text-align:left;">Host</th>
+          <th style="padding:6px 8px;text-align:right;">Time</th>
+        </tr></thead>
+        <tbody>${hops.map(h => `<tr style="border-top:1px solid var(--border);">
+          <td style="padding:6px 8px;color:var(--muted);">${h.hop}</td>
+          <td style="padding:6px 8px;color:var(--text);">${(h.host || '*').replace(/</g,'&lt;')}</td>
+          <td style="padding:6px 8px;text-align:right;color:var(--cpu-c);">${h.time || '*'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div class="nt-terminal" style="margin-top:10px;">${(r.raw || '').replace(/</g,'&lt;')}</div>`;
+}
+
+async function ntRunBlacklist() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter an IP address','inf'); return; }
+  const el = document.getElementById('blacklist-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/blacklist?ip=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'Blacklist check failed'); return; }
+  const results = r.results || [];
+  const listed = results.filter(x => x.listed).length;
+  const col = listed === 0 ? 'var(--green)' : listed < 3 ? 'var(--amber)' : 'var(--red)';
+  el.innerHTML = `
+    <div class="bl-hero" style="margin-bottom:14px;">
+      <div style="width:48px;height:48px;border-radius:50%;background:rgba(34,197,94,.08);border:2px solid ${col};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">${listed === 0 ? '✓' : '⚠'}</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:${col};">${listed === 0 ? 'Clean' : `Listed on ${listed} DNSBL${listed!==1?'s':''}`}</div>
+        <div style="font-size:11px;color:var(--muted);">${r.ip} · ${results.length} lists checked</div>
+      </div>
+    </div>
+    <div class="bl-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;">
+      ${results.map(x => `
+        <div style="background:var(--s2);border:1px solid ${x.listed ? 'rgba(239,68,68,.25)' : 'var(--border)'};border-radius:7px;padding:9px 12px;display:flex;align-items:center;gap:8px;">
+          <span style="color:${x.listed ? 'var(--red)' : 'var(--green)'};font-size:14px;">${x.listed ? '✗' : '✓'}</span>
+          <span style="font-size:11px;font-family:'JetBrains Mono',monospace;word-break:break-all;">${x.list}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function ntRunPortScan() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter a host','inf'); return; }
+  const input = document.getElementById('ps-ports-input').value.trim();
+  if (!input) { toast('Select a preset or enter ports','inf'); return; }
+
+  const ports = [];
+  input.split(',').forEach(part => {
+    part = part.trim();
+    if (part.includes('-')) {
+      const [a,b] = part.split('-').map(Number);
+      for (let i = a; i <= Math.min(b, a+50); i++) ports.push(i);
+    } else {
+      const n = parseInt(part);
+      if (!isNaN(n)) ports.push(n);
+    }
+  });
+  const uniq = [...new Set(ports)].filter(p => p > 0 && p < 65536).slice(0, 50);
+  if (!uniq.length) { toast('No valid ports','inf'); return; }
+
+  const el = document.getElementById('portscan-results');
+  el.innerHTML = `<div class="nt-loading"><span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> Scanning ${uniq.length} ports on ${target}…</div>`;
+
+  const r = await api('/api/tools/portscan','POST',{host: target, ports: uniq}).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'Port scan failed'); return; }
+  const results = r.results || [];
+  const open = results.filter(x => x.open);
+  el.innerHTML = `
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">${open.length} open · ${results.length - open.length} closed · ${target}</div>
+    <div class="ps-grid">
+      ${results.map(x => `
+        <div class="ps-item" style="background:var(--s2);border:1px solid ${x.open ? 'rgba(34,197,94,.25)' : 'var(--border)'};border-radius:7px;padding:8px 10px;text-align:center;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${x.open ? 'var(--green)' : 'var(--muted)'};">:${x.port}</div>
+          <div style="font-size:10px;color:${x.open ? 'var(--green)' : 'var(--muted)'};">${x.open ? 'OPEN' : 'closed'}</div>
+          ${x.service ? `<div style="font-size:9px;color:var(--muted);margin-top:2px;">${x.service}</div>` : ''}
+        </div>`).join('')}
+    </div>`;
+}
+
+async function ntRunRdns() {
+  const target = ntGetTarget();
+  if (!target) { toast('Enter an IP address','inf'); return; }
+  const el = document.getElementById('rdns-results');
+  ntLoading(el);
+  const r = await api(`/api/tools/rdns?ip=${encodeURIComponent(target)}`).catch(() => null);
+  if (!r || r.error) { ntErr(el, r?.error || 'rDNS lookup failed'); return; }
+  const hosts = r.hostnames || [];
+  if (!hosts.length) { el.innerHTML = '<div class="nt-placeholder">No PTR records found.</div>'; return; }
+  el.innerHTML = `
+    <div class="rdns-result">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em;">${target}</div>
+      ${hosts.map(h => `<div class="rdns-hostname">↩ ${h.replace(/</g,'&lt;')}</div>`).join('')}
+    </div>`;
+}
 
 // ══════════════════════════════════════════
 //  Boot
