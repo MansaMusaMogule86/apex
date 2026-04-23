@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desktop Control Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #06070d;
+  --s1:     #0c0e18;
+  --s2:     #10131f;
+  --border: rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.11);
+  --text:   #dde4f0;
+  --muted:  #445066;
+  --cpu-c:  #818cf8;
+  --ram-c:  #22d3ee;
+  --disk-c: #a78bfa;
+  --green:  #22c55e;
+  --amber:  #f59e0b;
+  --red:    #ef4444;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 15% 40%, rgba(129,140,248,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(34,211,238,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 90%, rgba(167,139,250,0.03) 0%, transparent 50%);
+  color: var(--text);
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  font-size: 13px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1e2535; border-radius: 2px; }
+
+/* ── Header ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 52px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(6,7,13,0.9);
+  backdrop-filter: blur(20px);
+  position: sticky; top: 0; z-index: 100;
+  gap: 12px;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 16px; font-weight: 700; letter-spacing: 0.12em; color: #fff;
+  flex-shrink: 0;
+}
+.logo-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cpu-c); box-shadow: 0 0 10px var(--cpu-c);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.header-center { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; flex: 1; text-align: center; }
+.header-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+#clock { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); letter-spacing: 0.05em; }
+#hostname { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ── Health badge ── */
+.health-hdr {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--muted);
+  font-size: 13px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+  transition: border-color 0.5s, color 0.5s; color: var(--muted);
+  cursor: help;
+}
+
+/* ── Language Toggle ── */
+.lang-toggle {
+  display: flex; gap: 2px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 8px; padding: 2px;
+}
+.lang-btn {
+  border: none; background: transparent; color: var(--muted);
+  border-radius: 5px; padding: 3px 9px;
+  font-size: 10px; font-weight: 700; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.15s; letter-spacing: 0.04em;
+}
+.lang-btn.active { background: var(--s2); color: var(--text); }
+
+/* ── Layout ── */
+.page { padding: 20px 24px 40px; max-width: 1600px; margin: 0 auto; }
+
+/* ── Tabs ── */
+.tab-nav {
+  display: flex; gap: 3px; align-items: center;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 10px; padding: 3px; flex-shrink: 0;
+}
+.tab-btn {
+  border: none; background: transparent; color: var(--muted);
+  border-radius: 7px; padding: 5px 12px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+  cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.tab-btn.active { background: var(--s2); color: #fff; }
+
+/* ── Metrics bar ── */
+.metrics-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.metric-card {
+  background: var(--s1); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 20px; display: flex; align-items: center; gap: 16px;
+  transition: border-color 0.2s;
+}
+.metric-card:hover { border-color: var(--border2); }
+.gauge-wrap { position: relative; width: 68px; height: 68px; flex-shrink: 0; }
+.gauge-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.gauge-track { stroke: #161b2e; }
+.gauge-arc { transition: stroke-dasharray 0.7s cubic-bezier(0.4,0,0.2,1); }
+.gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.gauge-pct { font-size: 14px; font-weight: 700; line-height: 1; }
+.gauge-unit { font-size: 9px; color: var(--muted); letter-spacing: 0.06em; margin-top: 1px; }
+.metric-info { flex: 1; min-width: 0; }
+.metric-title { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.metric-val { font-size: 15px; font-weight: 600; color: var(--text); }
+.metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.uptime-card {
+  background: var(--s1); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 20px; display: flex; flex-direction: column; justify-content: center;
+  gap: 6px; transition: border-color 0.2s;
+}
+.uptime-card:hover { border-color: var(--border2); }
+.uptime-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.uptime-val { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; font-family: 'JetBrains Mono', monospace; }
+.uptime-sub { font-size: 11px; color: var(--muted); }
+
+/* ── Main grid ── */
+.main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 16px; margin-bottom: 20px; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.panel-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.panel-title span { color: var(--text); margin-left: 6px; }
+
+/* ── Projects ── */
+.projects-panel { min-width: 0; }
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.project-card {
+  background: var(--s1); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+}
+.project-card:hover {
+  border-color: var(--card-color, #444);
+  box-shadow: 0 0 20px -5px rgba(var(--card-rgb, 100,100,100), 0.25);
+  transform: translateY(-1px);
+}
+.card-top-bar { height: 3px; background: var(--card-color, #444); opacity: 0.9; }
+.card-body { padding: 14px 16px 12px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.card-name { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; margin-right: 8px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; }
+.badge.running { background: rgba(34,197,94,0.12); color: var(--green); }
+.badge.stopped { background: rgba(71,80,102,0.3); color: var(--muted); }
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.badge.running .badge-dot { animation: pulse 1.5s infinite; }
+.card-branch { font-size: 11px; color: var(--muted); margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+.card-branch .icon { color: var(--card-color, #666); }
+.card-commit { font-size: 11px; color: #5a6478; font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 12px; }
+.card-no-path { font-size: 11px; color: var(--red); opacity: 0.7; margin-bottom: 12px; font-style: italic; }
+.card-actions { display: flex; gap: 6px; border-top: 1px solid var(--border); padding-top: 10px; }
+.btn { border: 1px solid var(--border2); background: transparent; color: var(--muted); border-radius: 7px; padding: 5px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; transition: all 0.15s; display: flex; align-items: center; gap: 4px; }
+.btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.btn-code:hover { border-color: #818cf8; color: #818cf8; }
+.btn-folder:hover { border-color: #f59e0b; color: #f59e0b; }
+.btn-dev { margin-left: auto; border-color: var(--card-color, #444); color: var(--card-color, #444); }
+.btn-dev:hover { background: rgba(var(--card-rgb, 100,100,100), 0.12); }
+.btn-dev.active { background: rgba(34,197,94,0.1); border-color: var(--green); color: var(--green); }
+.btn-refresh { border: 1px solid var(--border); background: transparent; color: var(--muted); border-radius: 7px; padding: 4px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; transition: all 0.15s; }
+.btn-refresh:hover { border-color: var(--border2); color: var(--text); }
+
+/* ── Right panel ── */
+.right-panel { display: flex; flex-direction: column; gap: 14px; }
+.control-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.scripts-list { display: flex; flex-direction: column; gap: 8px; }
+.script-btn { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); background: var(--s2); border-radius: 9px; padding: 10px 14px; cursor: pointer; transition: all 0.15s; width: 100%; text-align: left; color: var(--text); font-family: inherit; }
+.script-btn:hover { border-color: var(--script-color, #444); background: rgba(var(--script-rgb,100,100,100), 0.07); box-shadow: 0 0 14px -4px rgba(var(--script-rgb,100,100,100), 0.3); }
+.script-btn.loading { opacity: 0.6; pointer-events: none; }
+.script-icon { font-size: 16px; flex-shrink: 0; }
+.script-name { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--script-color, var(--muted)); }
+.script-arrow { margin-left: auto; color: var(--muted); font-size: 14px; opacity: 0.5; transition: opacity 0.15s; }
+.script-btn:hover .script-arrow { opacity: 1; }
+
+/* ── Servers ── */
+.servers-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.servers-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.server-row { display: flex; align-items: center; gap: 10px; background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; transition: border-color 0.15s; }
+.server-row:hover { border-color: var(--border2); }
+.server-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); flex-shrink: 0; animation: pulse 2s infinite; }
+.server-port { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--green); }
+.server-name { font-size: 12px; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.server-pid { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.btn-danger { border: 1px solid rgba(239,68,68,0.2); background: transparent; color: rgba(239,68,68,0.5); cursor: pointer; transition: all 0.15s; font-family: inherit; font-weight: 700; }
+.btn-danger:hover { border-color: var(--red); color: var(--red); background: rgba(239,68,68,0.08); }
+.btn-server-kill { border: 1px solid rgba(239,68,68,0.2); background: transparent; color: rgba(239,68,68,0.5); border-radius: 5px; padding: 2px 8px; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: inherit; flex-shrink: 0; }
+.btn-server-kill:hover { border-color: var(--red); color: var(--red); background: rgba(239,68,68,0.08); }
+.servers-empty { font-size: 11px; color: var(--muted); font-style: italic; padding: 6px 0; }
+.btn-killall { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(239,68,68,0.35); background: rgba(239,68,68,0.06); color: var(--red); border-radius: 9px; padding: 10px 14px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; font-family: inherit; transition: all 0.15s; margin-top: 10px; }
+.btn-killall:hover { background: rgba(239,68,68,0.14); border-color: var(--red); box-shadow: 0 0 18px -4px rgba(239,68,68,0.35); }
+.btn-killall:disabled { opacity: 0.4; pointer-events: none; }
+
+/* ── Console ── */
+.console-box { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; flex: 1; }
+.console-output { background: #07080f; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; height: 120px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #4ade80; line-height: 1.7; margin-top: 10px; white-space: pre-wrap; word-break: break-all; }
+.console-line { margin: 0; }
+.console-line.err { color: #f87171; }
+.console-line.muted { color: var(--muted); }
+
+/* ── Processes ── */
+.processes-section { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.processes-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+.proc-search { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; color: var(--text); font-size: 12px; font-family: inherit; width: 200px; outline: none; transition: border-color 0.15s; }
+.proc-search:focus { border-color: var(--border2); }
+.proc-search::placeholder { color: var(--muted); }
+.proc-count { font-size: 11px; color: var(--muted); margin-left: auto; }
+.proc-table-wrap { overflow-y: auto; max-height: 340px; }
+table.proctable { width: 100%; border-collapse: collapse; }
+table.proctable thead th { padding: 8px 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-align: left; position: sticky; top: 0; background: var(--s1); border-bottom: 1px solid var(--border); user-select: none; cursor: pointer; }
+table.proctable thead th:hover { color: var(--text); }
+table.proctable thead th.sort-active { color: var(--cpu-c); }
+table.proctable tbody tr { border-bottom: 1px solid rgba(255,255,255,0.025); transition: background 0.1s; }
+table.proctable tbody tr:hover { background: rgba(255,255,255,0.025); }
+table.proctable tbody td { padding: 7px 16px; font-size: 12px; white-space: nowrap; }
+.proc-name { font-weight: 500; max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+.proc-pid { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+.proc-cpu { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.proc-mem { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+.cpu-bar { display: inline-block; width: 50px; height: 4px; background: #1a1f2e; border-radius: 2px; margin-right: 6px; vertical-align: middle; overflow: hidden; }
+.cpu-bar-fill { height: 100%; border-radius: 2px; background: var(--cpu-c); transition: width 0.5s ease; }
+.btn-kill { border: 1px solid rgba(239,68,68,0.2); background: transparent; color: rgba(239,68,68,0.5); border-radius: 6px; padding: 3px 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.btn-kill:hover { border-color: var(--red); color: var(--red); background: rgba(239,68,68,0.08); }
+
+/* ── RAM Killers ── */
+.ram-card { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.ram-header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+.ram-list { display: flex; flex-direction: column; }
+.ram-row { display: flex; align-items: center; gap: 10px; padding: 8px 20px; border-bottom: 1px solid rgba(255,255,255,0.025); transition: background 0.1s; }
+.ram-row:last-child { border-bottom: none; }
+.ram-row:hover { background: rgba(255,255,255,0.025); }
+.ram-rank { width: 20px; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.ram-rank.top1 { color: #ef4444; }
+.ram-rank.top2 { color: #f59e0b; }
+.ram-rank.top3 { color: #f59e0b; opacity: 0.7; }
+.ram-row-name { font-size: 12px; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ram-bar { width: 80px; height: 5px; background: #1a1f2e; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.ram-bar-fill { height: 100%; border-radius: 3px; background: var(--ram-c); transition: width 0.6s ease; }
+.ram-pct { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--ram-c); min-width: 38px; text-align: right; }
+.btn-purge { border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.06); color: #ef4444; border-radius: 7px; padding: 4px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.btn-purge:hover { background: rgba(239,68,68,0.14); border-color: var(--red); }
+.sort-toggle { display: flex; gap: 4px; background: rgba(255,255,255,0.04); border-radius: 7px; padding: 2px; }
+.sort-tog-btn { border: none; background: transparent; color: var(--muted); border-radius: 5px; padding: 3px 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; font-family: inherit; transition: all 0.15s; text-transform: uppercase; }
+.sort-tog-btn.active { background: var(--s2); color: var(--text); }
+
+/* ── Toast ── */
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { display: flex; align-items: center; gap: 10px; background: var(--s2); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 16px; font-size: 12px; font-weight: 500; min-width: 220px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); animation: slideIn 0.25s ease; pointer-events: all; }
+.toast.ok  { border-left: 3px solid var(--green); }
+.toast.err { border-left: 3px solid var(--red); }
+.toast.inf { border-left: 3px solid var(--cpu-c); }
+@keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+@keyframes fadeOut { to{opacity:0;transform:translateX(20px)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+
+/* ── Windows Settings Page ── */
+.settings-search-wrap { margin-bottom: 20px; }
+.settings-search { width: 100%; max-width: 420px; background: var(--s1); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.15s; }
+.settings-search:focus { border-color: var(--border2); }
+.settings-search::placeholder { color: var(--muted); }
+.settings-categories { display: flex; flex-direction: column; gap: 20px; }
+.settings-cat-title { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.setting-btn { display: flex; align-items: center; gap: 10px; background: var(--s1); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: 12px; font-weight: 500; font-family: inherit; cursor: pointer; text-align: left; transition: all 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.setting-btn:hover { border-color: var(--border2); background: var(--s2); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+.setting-btn:active { transform: translateY(0); }
+.setting-icon { font-size: 16px; flex-shrink: 0; }
+.setting-name { overflow: hidden; text-overflow: ellipsis; }
+
+/* ══════════════════════════════════════════
+   MONITOR PAGE
+═══════════════════════════════════════════ */
+.monitor-top { display: grid; grid-template-columns: 260px 1fr; gap: 16px; margin-bottom: 16px; }
+.health-panel {
+  background: var(--s1); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.health-grade-wrap { position: relative; width: 100px; height: 100px; }
+.health-grade-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.health-grade-track { stroke: #161b2e; }
+.health-grade-arc { transition: stroke-dasharray 0.8s cubic-bezier(0.4,0,0.2,1); }
+.health-grade-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.health-grade-letter { font-size: 36px; font-weight: 700; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+.health-grade-score { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+.health-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.health-bars { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.hbar-row { display: flex; align-items: center; gap: 8px; }
+.hbar-label { width: 36px; font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.06em; }
+.hbar-track { flex: 1; height: 5px; background: #1a1f2e; border-radius: 3px; overflow: hidden; }
+.hbar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+.hbar-val { width: 34px; text-align: right; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
+
+/* Charts panel */
+.charts-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.chart-box { display: flex; flex-direction: column; gap: 6px; }
+.chart-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+.chart-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.chart-canvas { display: block; width: 100%; height: 100px; border-radius: 6px; background: #07080f; }
+
+/* Network */
+.monitor-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.network-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.net-list { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.net-row { display: flex; align-items: center; gap: 10px; background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.net-icon { font-size: 14px; flex-shrink: 0; }
+.net-info { flex: 1; min-width: 0; }
+.net-name { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.net-addr { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cpu-c); margin-top: 2px; }
+.net-family { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+
+/* Docker */
+.docker-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.docker-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.docker-row { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.docker-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.docker-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 5px var(--green); flex-shrink: 0; animation: pulse 2s infinite; }
+.docker-name { font-size: 12px; font-weight: 600; color: var(--text); flex: 1; }
+.docker-image { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.docker-status { font-size: 10px; color: var(--green); margin-top: 1px; }
+.docker-ports { font-size: 10px; color: var(--cpu-c); font-family: 'JetBrains Mono', monospace; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.monitor-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 12px 0; }
+
+/* ══════════════════════════════════════════
+   TOOLS PAGE
+═══════════════════════════════════════════ */
+.tools-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.tool-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; min-height: 380px; display: flex; flex-direction: column; }
+
+/* Notes */
+.note-input-wrap { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.note-input { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 12px; font-family: inherit; outline: none; transition: border-color 0.15s; resize: none; height: 64px; line-height: 1.5; }
+.note-input:focus { border-color: var(--border2); }
+.note-input::placeholder { color: var(--muted); }
+.btn-note-add { border: 1px solid var(--cpu-c); background: rgba(129,140,248,0.08); color: var(--cpu-c); border-radius: 7px; padding: 7px 14px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; letter-spacing: 0.04em; align-self: flex-end; }
+.btn-note-add:hover { background: rgba(129,140,248,0.18); }
+.notes-list { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; overflow-y: auto; flex: 1; }
+.note-item { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.note-text { font-size: 12px; color: var(--text); line-height: 1.5; white-space: pre-wrap; word-break: break-word; margin-bottom: 6px; }
+.note-footer { display: flex; align-items: center; justify-content: space-between; }
+.note-time { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.btn-note-del { border: 1px solid rgba(239,68,68,0.2); background: transparent; color: rgba(239,68,68,0.5); border-radius: 4px; padding: 2px 8px; font-size: 10px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.btn-note-del:hover { border-color: var(--red); color: var(--red); }
+.notes-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 8px 0; flex: 1; }
+
+/* Env Vars */
+.env-table-wrap { overflow-y: auto; flex: 1; margin-top: 10px; }
+.env-table { width: 100%; border-collapse: collapse; }
+.env-table tr { border-bottom: 1px solid var(--border); }
+.env-table tr:last-child { border-bottom: none; }
+.env-table td { padding: 7px 4px; vertical-align: top; }
+.env-key { font-size: 10px; font-weight: 700; color: var(--cpu-c); font-family: 'JetBrains Mono', monospace; width: 130px; word-break: break-all; }
+.env-val { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; word-break: break-all; padding-left: 8px; }
+.env-copy { border: 1px solid var(--border); background: transparent; color: var(--muted); border-radius: 4px; padding: 2px 7px; font-size: 9px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+.env-copy:hover { border-color: var(--border2); color: var(--text); }
+
+/* Port Scanner */
+.port-input-row { display: flex; gap: 8px; margin-top: 12px; }
+.port-input { flex: 1; background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-size: 12px; font-family: 'JetBrains Mono', monospace; outline: none; transition: border-color 0.15s; }
+.port-input:focus { border-color: var(--border2); }
+.port-input::placeholder { color: var(--muted); font-family: inherit; }
+.btn-port-scan { border: 1px solid var(--green); background: rgba(34,197,94,0.08); color: var(--green); border-radius: 8px; padding: 8px 14px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; letter-spacing: 0.04em; white-space: nowrap; }
+.btn-port-scan:hover { background: rgba(34,197,94,0.18); }
+.btn-port-scan:disabled { opacity: 0.5; pointer-events: none; }
+.port-results { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; overflow-y: auto; flex: 1; }
+.port-result-row { display: flex; align-items: center; justify-content: space-between; background: var(--s2); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; }
+.port-result-num { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; }
+.port-status { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; }
+.port-status.open { background: rgba(34,197,94,0.12); color: var(--green); }
+.port-status.closed { background: rgba(71,80,102,0.2); color: var(--muted); }
+
+/* Translator (full-width below tools) */
+.translator-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.translator-body { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; margin-top: 12px; align-items: start; }
+.trans-textarea { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; resize: none; height: 110px; width: 100%; line-height: 1.5; transition: border-color 0.15s; }
+.trans-textarea:focus { border-color: var(--border2); }
+.trans-textarea::placeholder { color: var(--muted); }
+.trans-textarea[readonly] { cursor: default; color: var(--text); }
+.trans-mid { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 36px; }
+.btn-translate { border: 1px solid var(--cpu-c); background: rgba(129,140,248,0.1); color: var(--cpu-c); border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+.btn-translate:hover { background: rgba(129,140,248,0.2); }
+.btn-translate:disabled { opacity: 0.5; pointer-events: none; }
+.trans-swap { border: 1px solid var(--border); background: transparent; color: var(--muted); border-radius: 6px; padding: 5px 10px; font-size: 14px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.trans-swap:hover { border-color: var(--border2); color: var(--text); transform: rotate(180deg); }
+.trans-lang-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+
+/* ── Responsive ── */
+@media (max-width: 1200px) { .tools-grid { grid-template-columns: 1fr 1fr; } .translator-body { grid-template-columns: 1fr auto 1fr; } }
+@media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } .right-panel { display: grid; grid-template-columns: 1fr 1fr; } .monitor-top { grid-template-columns: 1fr; } .monitor-bottom { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .chart-row { grid-template-columns: 1fr; } .tools-grid { grid-template-columns: 1fr; } .translator-body { grid-template-columns: 1fr; } .trans-mid { padding-top: 0; flex-direction: row; } }
+@media (max-width: 700px) { .metrics-bar { grid-template-columns: 1fr 1fr; } .right-panel { grid-template-columns: 1fr; } .header-center { display: none; } .tab-btn { padding: 5px 8px; font-size: 10px; } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    DESKTOP CONTROL PANEL
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tab-dashboard" onclick="switchTab('dashboard',this)" data-i18n="tab_dashboard">⚡ Dashboard</button>
+    <button class="tab-btn" id="tab-monitor" onclick="switchTab('monitor',this)" data-i18n="tab_monitor">📊 Monitor</button>
+    <button class="tab-btn" id="tab-tools" onclick="switchTab('tools',this)" data-i18n="tab_tools">🛠 Tools</button>
+    <button class="tab-btn" id="tab-settings" onclick="switchTab('settings',this)" data-i18n="tab_settings">⊞ Windows Settings</button>
+  </div>
+  <div class="header-center" id="header-center">—</div>
+  <div class="header-right">
+    <span id="health-hdr-badge" class="health-hdr" title="System Health">—</span>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="lang-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="lang-fr" onclick="setLang('fr')">FR</button>
+    </div>
+    <span id="hostname"></span>
+    <span id="clock"></span>
+  </div>
+</header>
+
+<div class="page">
+
+<!-- ═══════════════════ DASHBOARD TAB ═══════════════════ -->
+<div id="page-dashboard">
+
+  <!-- Metrics bar -->
+  <div class="metrics-bar">
+    <div class="metric-card">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 36 36" class="gauge-svg">
+          <circle class="gauge-track" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
+          <circle id="cpu-arc" class="gauge-arc" cx="18" cy="18" r="15.9" fill="none" stroke="#818cf8" stroke-width="3.5" stroke-dasharray="0 100" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-center">
+          <span class="gauge-pct" id="cpu-pct" style="color:#818cf8">0%</span>
+          <span class="gauge-unit">CPU</span>
+        </div>
+      </div>
+      <div class="metric-info">
+        <div class="metric-title" data-i18n="metric_cpu">Processor</div>
+        <div class="metric-val" id="cpu-val">—</div>
+        <div class="metric-sub" id="cpu-sub" data-i18n="metric_current_load">current load</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 36 36" class="gauge-svg">
+          <circle class="gauge-track" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
+          <circle id="ram-arc" class="gauge-arc" cx="18" cy="18" r="15.9" fill="none" stroke="#22d3ee" stroke-width="3.5" stroke-dasharray="0 100" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-center">
+          <span class="gauge-pct" id="ram-pct" style="color:#22d3ee">0%</span>
+          <span class="gauge-unit">RAM</span>
+        </div>
+      </div>
+      <div class="metric-info">
+        <div class="metric-title" data-i18n="metric_ram">Memory</div>
+        <div class="metric-val" id="ram-val">—</div>
+        <div class="metric-sub" id="ram-sub">Loading…</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 36 36" class="gauge-svg">
+          <circle class="gauge-track" cx="18" cy="18" r="15.9" fill="none" stroke-width="3.5"/>
+          <circle id="disk-arc" class="gauge-arc" cx="18" cy="18" r="15.9" fill="none" stroke="#a78bfa" stroke-width="3.5" stroke-dasharray="0 100" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-center">
+          <span class="gauge-pct" id="disk-pct" style="color:#a78bfa">—</span>
+          <span class="gauge-unit">DISK</span>
+        </div>
+      </div>
+      <div class="metric-info">
+        <div class="metric-title" data-i18n="metric_disk">Storage C:</div>
+        <div class="metric-val" id="disk-val">—</div>
+        <div class="metric-sub" id="disk-sub">Loading…</div>
+      </div>
+    </div>
+    <div class="uptime-card">
+      <div class="uptime-label" data-i18n="metric_uptime">System Uptime</div>
+      <div class="uptime-val" id="uptime-val">—</div>
+      <div class="uptime-sub" id="uptime-sub">—</div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+    <div class="projects-panel">
+      <div class="panel-header">
+        <div class="panel-title" data-i18n="projects_title">Projects <span id="proj-count"></span></div>
+        <button class="btn-refresh" id="proj-refresh-btn" onclick="loadProjects()" data-i18n="proj_refresh">↻ Refresh</button>
+      </div>
+      <div class="projects-grid" id="projects-grid">
+        <div style="color:var(--muted);font-size:12px;padding:20px;" data-i18n="proj_loading">Loading projects…</div>
+      </div>
+    </div>
+    <div class="right-panel">
+      <div class="control-panel">
+        <div class="panel-header" style="margin-bottom:12px;">
+          <div class="panel-title" data-i18n="scripts_title">System Scripts</div>
+        </div>
+        <div class="scripts-list" id="scripts-list">Loading…</div>
+      </div>
+      <div class="servers-panel">
+        <div class="panel-header" style="margin-bottom:0;">
+          <div class="panel-title"><span data-i18n="servers_title">Running Servers</span> <span id="srv-count"></span></div>
+          <button class="btn-refresh" onclick="loadServers()">↻</button>
+        </div>
+        <div class="servers-list" id="servers-list">
+          <div class="servers-empty" data-i18n="servers_scanning">Scanning…</div>
+        </div>
+        <button class="btn-killall" id="killall-btn" onclick="killAllServers()" data-i18n="servers_kill_all">⚡ KILL ALL SERVERS</button>
+      </div>
+      <div class="console-box">
+        <div class="panel-title" style="margin-bottom:0;" data-i18n="console_title">Console</div>
+        <div class="console-output" id="console-out">
+          <p class="console-line muted" data-i18n-content="console_ready">// Ready. Run a script or action to see output.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memory Killers -->
+  <div class="ram-card">
+    <div class="ram-header">
+      <div class="panel-title" style="margin:0;" data-i18n="mem_killers_title">🧠 Memory Killers</div>
+      <div class="sort-toggle" style="margin-left:auto;">
+        <button class="sort-tog-btn active" id="sort-cpu-btn" onclick="setProcSort('cpu',this)" data-i18n="mem_sort_cpu">CPU</button>
+        <button class="sort-tog-btn" id="sort-mem-btn" onclick="setProcSort('mem',this)" data-i18n="mem_sort_mem">MEM</button>
+      </div>
+      <button class="btn-purge" onclick="purgeTop3()" data-i18n="mem_purge_top3">💀 Purge Top 3</button>
+    </div>
+    <div class="ram-list" id="ram-list">
+      <div style="padding:12px 20px;color:var(--muted);font-size:12px;" data-i18n="loading">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Processes -->
+  <div class="processes-section">
+    <div class="processes-header">
+      <div class="panel-title" style="margin:0;" data-i18n="procs_title">Processes</div>
+      <input class="proc-search" id="proc-search" type="text" oninput="debouncedRenderProcs()" data-i18n-placeholder="procs_filter">
+      <button class="btn-refresh" onclick="renderProcs()">↻</button>
+      <span class="proc-count" id="proc-count"></span>
+    </div>
+    <div class="proc-table-wrap">
+      <table class="proctable">
+        <thead>
+          <tr>
+            <th onclick="sortProcs('name')" data-i18n="proc_col_process">Process</th>
+            <th onclick="sortProcs('pid')" data-i18n="proc_col_pid">PID</th>
+            <th onclick="sortProcs('cpu')" class="sort-active" data-i18n="proc_col_cpu">CPU %</th>
+            <th onclick="sortProcs('mem')" data-i18n="proc_col_mem">MEM %</th>
+            <th style="width:70px;"></th>
+          </tr>
+        </thead>
+        <tbody id="proc-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /page-dashboard -->
+
+<!-- ═══════════════════ MONITOR TAB ═══════════════════ -->
+<div id="page-monitor" style="display:none">
+
+  <div class="monitor-top">
+    <!-- Health Score -->
+    <div class="health-panel">
+      <div class="panel-title" data-i18n="monitor_health">System Health</div>
+      <div class="health-grade-wrap">
+        <svg viewBox="0 0 36 36" class="health-grade-svg">
+          <circle class="health-grade-track" cx="18" cy="18" r="15.9" fill="none" stroke-width="3"/>
+          <circle id="health-arc" class="health-grade-arc" cx="18" cy="18" r="15.9" fill="none"
+            stroke="#22c55e" stroke-width="3" stroke-dasharray="0 100" stroke-linecap="round"/>
+        </svg>
+        <div class="health-grade-center">
+          <span id="health-grade-letter" class="health-grade-letter" style="color:#22c55e">—</span>
+          <span id="health-grade-score" class="health-grade-score">—/100</span>
+        </div>
+      </div>
+      <div class="health-label" id="health-status-label">—</div>
+      <div class="health-bars">
+        <div class="hbar-row">
+          <span class="hbar-label">CPU</span>
+          <div class="hbar-track"><div class="hbar-fill" id="hbar-cpu" style="width:0%;background:#818cf8"></div></div>
+          <span class="hbar-val" id="hbar-cpu-val">—</span>
+        </div>
+        <div class="hbar-row">
+          <span class="hbar-label">RAM</span>
+          <div class="hbar-track"><div class="hbar-fill" id="hbar-ram" style="width:0%;background:#22d3ee"></div></div>
+          <span class="hbar-val" id="hbar-ram-val">—</span>
+        </div>
+        <div class="hbar-row">
+          <span class="hbar-label">DISK</span>
+          <div class="hbar-track"><div class="hbar-fill" id="hbar-disk" style="width:0%;background:#a78bfa"></div></div>
+          <span class="hbar-val" id="hbar-disk-val">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Charts -->
+    <div class="charts-panel">
+      <div class="panel-title" data-i18n="monitor_charts">Performance Charts</div>
+      <div class="chart-row">
+        <div class="chart-box">
+          <div class="chart-label">
+            <span data-i18n="monitor_cpu_history">CPU History</span>
+            <span class="chart-val" id="chart-cpu-val" style="color:#818cf8">0%</span>
+          </div>
+          <canvas id="cpu-chart" class="chart-canvas" width="800" height="100"></canvas>
+        </div>
+        <div class="chart-box">
+          <div class="chart-label">
+            <span data-i18n="monitor_ram_history">RAM History</span>
+            <span class="chart-val" id="chart-ram-val" style="color:#22d3ee">0%</span>
+          </div>
+          <canvas id="ram-chart" class="chart-canvas" width="800" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="monitor-bottom">
+    <!-- Network -->
+    <div class="network-panel">
+      <div class="panel-header" style="margin-bottom:0;">
+        <div class="panel-title" data-i18n="monitor_network">Network Interfaces</div>
+        <button class="btn-refresh" onclick="loadNetwork()">↻</button>
+      </div>
+      <div class="net-list" id="net-list">
+        <div class="monitor-empty" data-i18n="loading">Loading…</div>
+      </div>
+    </div>
+    <!-- Docker -->
+    <div class="docker-panel">
+      <div class="panel-header" style="margin-bottom:0;">
+        <div class="panel-title" data-i18n="monitor_docker">Docker Containers</div>
+        <button class="btn-refresh" onclick="loadDocker()">↻</button>
+      </div>
+      <div class="docker-list" id="docker-list">
+        <div class="monitor-empty" data-i18n="loading">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-monitor -->
+
+<!-- ═══════════════════ TOOLS TAB ═══════════════════ -->
+<div id="page-tools" style="display:none">
+
+  <div class="tools-grid">
+    <!-- Notes -->
+    <div class="tool-panel">
+      <div class="panel-title" data-i18n="tools_notes">📝 Quick Notes</div>
+      <div class="note-input-wrap">
+        <textarea class="note-input" id="note-input" data-i18n-placeholder="notes_placeholder"></textarea>
+        <button class="btn-note-add" onclick="addNote()" data-i18n="notes_add">Add</button>
+      </div>
+      <div class="notes-list" id="notes-list">
+        <div class="notes-empty" data-i18n="notes_empty">No notes yet.</div>
+      </div>
+    </div>
+
+    <!-- Env vars -->
+    <div class="tool-panel">
+      <div class="panel-header" style="margin-bottom:0;">
+        <div class="panel-title" data-i18n="tools_env">⚙ Environment Variables</div>
+        <button class="btn-refresh" onclick="loadEnvVars()">↻</button>
+      </div>
+      <div class="env-table-wrap" id="env-table-wrap">
+        <div style="color:var(--muted);font-size:12px;margin-top:10px;" data-i18n="loading">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Port scanner -->
+    <div class="tool-panel">
+      <div class="panel-title" data-i18n="tools_ports">🔍 Port Scanner</div>
+      <div class="port-input-row">
+        <input class="port-input" id="port-input" type="text" data-i18n-placeholder="ports_placeholder">
+        <button class="btn-port-scan" id="port-scan-btn" onclick="scanPorts()" data-i18n="ports_scan">Scan</button>
+      </div>
+      <div class="port-results" id="port-results">
+        <div style="color:var(--muted);font-size:12px;padding:8px 0;font-style:italic;" data-i18n="ports_hint">Enter ports separated by commas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Translator -->
+  <div class="translator-panel">
+    <div class="panel-header" style="margin-bottom:0;">
+      <div class="panel-title" data-i18n="tools_translate">🌐 Translate (EN ↔ FR)</div>
+    </div>
+    <div class="translator-body">
+      <div>
+        <div class="trans-lang-label" id="trans-src-label">English</div>
+        <textarea class="trans-textarea" id="trans-input" data-i18n-placeholder="trans_placeholder"></textarea>
+      </div>
+      <div class="trans-mid">
+        <button class="trans-swap" onclick="swapTranslation()" title="Swap">⇄</button>
+        <button class="btn-translate" id="btn-translate" onclick="doTranslate()" data-i18n="trans_btn">Translate</button>
+      </div>
+      <div>
+        <div class="trans-lang-label" id="trans-dst-label">Français</div>
+        <textarea class="trans-textarea" id="trans-output" readonly data-i18n-placeholder="trans_output_placeholder"></textarea>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-tools -->
+
+<!-- ═══════════════════ SETTINGS TAB ═══════════════════ -->
+<div id="page-settings" style="display:none">
+  <div class="settings-search-wrap">
+    <input class="settings-search" id="settings-search" type="text" oninput="filterSettings()" data-i18n-placeholder="settings_search">
+  </div>
+  <div class="settings-categories" id="settings-categories">
+    <div style="color:var(--muted);font-size:13px;" data-i18n="loading">Loading settings…</div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<div id="toast-container"></div>
+
+<script>
+const API = '';
+
+// ══════════════════════════════════════════
+//  i18n
+// ══════════════════════════════════════════
+
+const T = {
+  en: {
+    tab_dashboard:'⚡ Dashboard', tab_monitor:'📊 Monitor', tab_tools:'🛠 Tools', tab_settings:'⊞ Windows Settings',
+    platform_info:'Platform: Windows 11  |  Host:',
+    metric_cpu:'Processor', metric_ram:'Memory', metric_disk:'Storage C:', metric_uptime:'System Uptime',
+    metric_current_load:'current load', metric_free:'free',
+    projects_title:'Projects', proj_refresh:'↻ Refresh', proj_loading:'Loading projects…',
+    proj_code:'⎇ Code', proj_install:'⬇ Install', proj_dev:'▶ Dev', proj_stop:'■ Stop',
+    proj_path_not_found:'path not found', proj_no_node_modules:'⚠ no node_modules — install deps first',
+    scripts_title:'System Scripts',
+    servers_title:'Running Servers', servers_empty:'No dev servers running.', servers_scanning:'Scanning…',
+    servers_kill_all:'⚡ KILL ALL SERVERS', servers_killing:'Killing…',
+    console_title:'Console', console_ready:'// Ready. Run a script or action to see output.',
+    mem_killers_title:'🧠 Memory Killers', mem_sort_cpu:'CPU', mem_sort_mem:'MEM', mem_purge_top3:'💀 Purge Top 3',
+    mem_no_data:'No process data yet.',
+    procs_title:'Processes', procs_filter:'Filter by name…', procs_count:'processes',
+    proc_col_process:'Process', proc_col_pid:'PID', proc_col_cpu:'CPU %', proc_col_mem:'MEM %', proc_kill:'KILL',
+    monitor_health:'System Health', monitor_charts:'Performance Charts',
+    monitor_cpu_history:'CPU History', monitor_ram_history:'RAM History',
+    monitor_network:'Network Interfaces', monitor_docker:'Docker Containers',
+    monitor_no_docker:'Docker not available or no containers running.', monitor_no_network:'No network interfaces found.',
+    health_excellent:'Excellent', health_good:'Good', health_fair:'Fair', health_poor:'Poor', health_critical:'Critical',
+    tools_notes:'📝 Quick Notes', tools_env:'⚙ Environment Variables', tools_ports:'🔍 Port Scanner',
+    tools_translate:'🌐 Translate (EN ↔ FR)',
+    notes_placeholder:'Add a note…', notes_add:'Add', notes_empty:'No notes yet.',
+    ports_placeholder:'Ports (e.g. 3000,8080,5432)', ports_scan:'Scan', ports_hint:'Enter ports separated by commas.',
+    ports_result_open:'OPEN', ports_result_closed:'CLOSED',
+    trans_placeholder:'Enter text to translate…', trans_output_placeholder:'Translation will appear here…',
+    trans_btn:'Translate',
+    settings_search:'🔍  Search settings… (e.g. bluetooth, firewall, startup)',
+    loading:'Loading…', no_results:'No results.',
+    dev_started:'Dev server started', dev_stopped:'Dev server stopped',
+    killed:'killed', kill_failed:'Kill failed',
+    btn_env_copy:'Copy', btn_note_delete:'Delete',
+    opened:'Opened', failed:'Failed',
+  },
+  fr: {
+    tab_dashboard:'⚡ Tableau de bord', tab_monitor:'📊 Moniteur', tab_tools:'🛠 Outils', tab_settings:'⊞ Paramètres Windows',
+    platform_info:'Plateforme: Windows 11  |  Hôte:',
+    metric_cpu:'Processeur', metric_ram:'Mémoire', metric_disk:'Stockage C:', metric_uptime:'Durée active',
+    metric_current_load:'charge actuelle', metric_free:'libre',
+    projects_title:'Projets', proj_refresh:'↻ Actualiser', proj_loading:'Chargement des projets…',
+    proj_code:'⎇ Code', proj_install:'⬇ Installer', proj_dev:'▶ Démarrer', proj_stop:'■ Arrêter',
+    proj_path_not_found:'chemin introuvable', proj_no_node_modules:'⚠ node_modules absent — installez les dépendances',
+    scripts_title:'Scripts Système',
+    servers_title:'Serveurs Actifs', servers_empty:'Aucun serveur actif.', servers_scanning:'Scan en cours…',
+    servers_kill_all:'⚡ ARRÊTER TOUS LES SERVEURS', servers_killing:'Arrêt en cours…',
+    console_title:'Console', console_ready:'// Prêt. Exécutez un script pour voir la sortie.',
+    mem_killers_title:'🧠 Processus gourmands', mem_sort_cpu:'CPU', mem_sort_mem:'MEM', mem_purge_top3:'💀 Purger les 3 premiers',
+    mem_no_data:'Aucune donnée de processus.',
+    procs_title:'Processus', procs_filter:'Filtrer par nom…', procs_count:'processus',
+    proc_col_process:'Processus', proc_col_pid:'PID', proc_col_cpu:'CPU %', proc_col_mem:'MEM %', proc_kill:'TUER',
+    monitor_health:'Santé du Système', monitor_charts:'Graphiques de performance',
+    monitor_cpu_history:'Historique CPU', monitor_ram_history:'Historique RAM',
+    monitor_network:'Interfaces Réseau', monitor_docker:'Conteneurs Docker',
+    monitor_no_docker:'Docker indisponible ou aucun conteneur actif.', monitor_no_network:'Aucune interface réseau trouvée.',
+    health_excellent:'Excellent', health_good:'Bien', health_fair:'Moyen', health_poor:'Mauvais', health_critical:'Critique',
+    tools_notes:'📝 Notes Rapides', tools_env:'⚙ Variables d\'environnement', tools_ports:'🔍 Scanner de ports',
+    tools_translate:'🌐 Traduction (EN ↔ FR)',
+    notes_placeholder:'Ajouter une note…', notes_add:'Ajouter', notes_empty:'Aucune note.',
+    ports_placeholder:'Ports (ex: 3000,8080,5432)', ports_scan:'Scanner', ports_hint:'Entrez les ports séparés par des virgules.',
+    ports_result_open:'OUVERT', ports_result_closed:'FERMÉ',
+    trans_placeholder:'Entrez le texte à traduire…', trans_output_placeholder:'La traduction apparaîtra ici…',
+    trans_btn:'Traduire',
+    settings_search:'🔍  Rechercher les paramètres… (ex: bluetooth, pare-feu)',
+    loading:'Chargement…', no_results:'Aucun résultat.',
+    dev_started:'Serveur démarré', dev_stopped:'Serveur arrêté',
+    killed:'supprimé', kill_failed:'Échec de suppression',
+    btn_env_copy:'Copier', btn_note_delete:'Supprimer',
+    opened:'Ouvert', failed:'Échec',
+  }
+};
+
+let lang = localStorage.getItem('gm-lang') || 'en';
+
+function t(key) { return (T[lang] && T[lang][key]) || T.en[key] || key; }
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (T[lang][k] !== undefined) el.textContent = T[lang][k];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const k = el.getAttribute('data-i18n-placeholder');
+    if (T[lang][k] !== undefined) el.placeholder = T[lang][k];
+  });
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  document.getElementById('lang-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('trans-src-label').textContent = lang === 'en' ? 'English' : 'Français';
+  document.getElementById('trans-dst-label').textContent = lang === 'en' ? 'Français' : 'English';
+  transLangPair = lang === 'en' ? { src: 'en', dst: 'fr' } : { src: 'fr', dst: 'en' };
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('gm-lang', l);
+  applyLang();
+}
+
+// ══════════════════════════════════════════
+//  Utilities
+// ══════════════════════════════════════════
+
+function fmt(bytes) {
+  if (bytes >= 1e9) return (bytes / 1e9).toFixed(1) + ' GB';
+  if (bytes >= 1e6) return (bytes / 1e6).toFixed(0) + ' MB';
+  return (bytes / 1e3).toFixed(0) + ' KB';
+}
+
+function fmtUptime(sec) {
+  const d = Math.floor(sec / 86400), h = Math.floor((sec % 86400) / 3600), m = Math.floor((sec % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function setArc(id, pct) {
+  document.getElementById(id).setAttribute('stroke-dasharray', `${Math.min(pct, 100)} 100`);
+}
+
+function toast(msg, type = 'ok') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => { t.style.animation = 'fadeOut 0.3s ease forwards'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+function log(line, cls = '') {
+  const box = document.getElementById('console-out');
+  const p = document.createElement('p');
+  p.className = `console-line ${cls}`;
+  p.textContent = line;
+  box.appendChild(p);
+  box.scrollTop = box.scrollHeight;
+}
+
+function clearConsole() { document.getElementById('console-out').innerHTML = ''; }
+
+async function api(path, method = 'GET', body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  return r.json();
+}
+
+function hexToRgb(hex) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '100,100,100';
+}
+
+// ══════════════════════════════════════════
+//  Clock
+// ══════════════════════════════════════════
+
+function tickClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  const days = lang === 'fr'
+    ? ['DIM','LUN','MAR','MER','JEU','VEN','SAM']
+    : ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  document.getElementById('clock').textContent = `${days[now.getDay()]} ${hh}:${mm}:${ss}`;
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// ══════════════════════════════════════════
+//  System Stats
+// ══════════════════════════════════════════
+
+async function updateStats() {
+  try {
+    const s = await api('/api/system');
+    setArc('cpu-arc', s.cpu);
+    document.getElementById('cpu-pct').textContent = s.cpu + '%';
+    document.getElementById('cpu-val').textContent = s.cpu + '%';
+    const cpuColor = s.cpu > 80 ? '#ef4444' : s.cpu > 60 ? '#f59e0b' : '#818cf8';
+    document.getElementById('cpu-arc').setAttribute('stroke', cpuColor);
+    document.getElementById('cpu-pct').style.color = cpuColor;
+    document.getElementById('cpu-sub').textContent = t('metric_current_load');
+
+    setArc('ram-arc', s.ram.pct);
+    document.getElementById('ram-pct').textContent = s.ram.pct + '%';
+    document.getElementById('ram-val').textContent = fmt(s.ram.used) + ' / ' + fmt(s.ram.total);
+    const ramColor = s.ram.pct > 85 ? '#ef4444' : s.ram.pct > 65 ? '#f59e0b' : '#22d3ee';
+    document.getElementById('ram-arc').setAttribute('stroke', ramColor);
+    document.getElementById('ram-pct').style.color = ramColor;
+    document.getElementById('ram-sub').textContent = fmt(s.ram.total - s.ram.used) + ' ' + t('metric_free');
+
+    if (s.disk) {
+      setArc('disk-arc', s.disk.pct);
+      document.getElementById('disk-pct').textContent = s.disk.pct + '%';
+      document.getElementById('disk-val').textContent = fmt(s.disk.used) + ' / ' + fmt(s.disk.size);
+      document.getElementById('disk-sub').textContent = fmt(s.disk.size - s.disk.used) + ' ' + t('metric_free');
+    }
+
+    document.getElementById('uptime-val').textContent = fmtUptime(s.uptime);
+    document.getElementById('uptime-sub').textContent = s.host || '—';
+    document.getElementById('hostname').textContent = s.host || '';
+    document.getElementById('header-center').textContent = `${t('platform_info')} ${s.host}`;
+
+    cpuChartData.push(s.cpu); if (cpuChartData.length > 60) cpuChartData.shift();
+    ramChartData.push(s.ram.pct); if (ramChartData.length > 60) ramChartData.shift();
+    if (chartsVisible && (s.cpu !== lastChartCpu || s.ram.pct !== lastChartRam)) {
+      lastChartCpu = s.cpu; lastChartRam = s.ram.pct;
+      drawCharts();
+    }
+    document.getElementById('chart-cpu-val').textContent = s.cpu + '%';
+    document.getElementById('chart-ram-val').textContent = s.ram.pct + '%';
+  } catch(e) {}
+}
+
+setInterval(updateStats, 2000);
+updateStats();
+
+// ══════════════════════════════════════════
+//  Health Score
+// ══════════════════════════════════════════
+
+async function updateHealth() {
+  try {
+    const h = await api('/api/health');
+    const gradeEl = document.getElementById('health-grade-letter');
+    const scoreEl = document.getElementById('health-grade-score');
+    const statusEl = document.getElementById('health-status-label');
+    const badge = document.getElementById('health-hdr-badge');
+
+    gradeEl.textContent = h.grade;
+    gradeEl.style.color = h.color;
+    scoreEl.textContent = h.score + '/100';
+    document.getElementById('health-arc').setAttribute('stroke', h.color);
+    document.getElementById('health-arc').setAttribute('stroke-dasharray', `${h.score} 100`);
+
+    const labels = { A: t('health_excellent'), B: t('health_good'), C: t('health_fair'), D: t('health_poor'), F: t('health_critical') };
+    statusEl.textContent = labels[h.grade] || '—';
+    statusEl.style.color = h.color;
+
+    badge.textContent = h.grade;
+    badge.style.color = h.color;
+    badge.style.borderColor = h.color;
+
+    document.getElementById('hbar-cpu').style.width = h.details.cpu + '%';
+    document.getElementById('hbar-cpu-val').textContent = h.details.cpu + '%';
+    document.getElementById('hbar-ram').style.width = h.details.ram + '%';
+    document.getElementById('hbar-ram-val').textContent = h.details.ram + '%';
+    const dk = h.details.disk || 0;
+    document.getElementById('hbar-disk').style.width = dk + '%';
+    document.getElementById('hbar-disk-val').textContent = dk + '%';
+  } catch(e) {}
+}
+
+setInterval(updateHealth, 4000);
+updateHealth();
+
+// ══════════════════════════════════════════
+//  Performance Charts
+// ══════════════════════════════════════════
+
+let cpuChartData = Array(60).fill(0);
+let ramChartData = Array(60).fill(0);
+let chartsVisible = false;
+let lastChartCpu = -1, lastChartRam = -1;
+
+function drawLineChart(canvas, data, strokeColor, fillRgba) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  if (data.length < 2) return;
+
+  const step = W / (data.length - 1);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  [25, 50, 75].forEach(pct => {
+    const y = H - (pct / 100) * H;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.font = `${Math.max(10, H * 0.12)}px JetBrains Mono`;
+    ctx.fillText(pct + '%', 4, y - 3);
+  });
+
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const x = i * step;
+    const y = H - (Math.min(v, 100) / 100) * (H - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, fillRgba); grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad; ctx.fill();
+
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const x = i * step;
+    const y = H - (Math.min(v, 100) / 100) * (H - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = strokeColor; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+}
+
+function drawCharts() {
+  const cpuCanvas = document.getElementById('cpu-chart');
+  const ramCanvas = document.getElementById('ram-chart');
+  if (!cpuCanvas || !ramCanvas) return;
+  drawLineChart(cpuCanvas, cpuChartData, '#818cf8', 'rgba(129,140,248,0.25)');
+  drawLineChart(ramCanvas, ramChartData, '#22d3ee', 'rgba(34,211,238,0.25)');
+}
+
+// ══════════════════════════════════════════
+//  Projects
+// ══════════════════════════════════════════
+
+async function loadProjects() {
+  const btn = document.getElementById('proj-refresh-btn');
+  btn.textContent = '⟳'; btn.disabled = true;
+  try {
+    const projects = await api('/api/projects');
+    document.getElementById('proj-count').textContent = `(${projects.length})`;
+    const grid = document.getElementById('projects-grid');
+    grid.innerHTML = '';
+    projects.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.style.setProperty('--card-color', p.color);
+      card.style.setProperty('--card-rgb', hexToRgb(p.color));
+      const devLbl = p.running ? t('proj_stop') : t('proj_dev');
+      const runLbl = p.running ? t('proj_running') : t('proj_stopped');
+      card.innerHTML = `
+        <div class="card-top-bar"></div>
+        <div class="card-body">
+          <div class="card-head">
+            <span class="card-name">${p.name}</span>
+            <span class="badge ${p.running ? 'running' : 'stopped'}">
+              <span class="badge-dot"></span>${runLbl}
+            </span>
+          </div>
+          ${p.exists ? `
+            <div class="card-branch"><span class="icon">⎇</span><span>${p.branch}</span></div>
+            <div class="card-commit">${p.commit}</div>
+          ` : `<div class="card-no-path">${t('proj_path_not_found')}</div>`}
+          ${!p.hasNodeModules && p.exists ? `<div style="font-size:10px;color:#f97316;margin-bottom:8px;">${t('proj_no_node_modules')}</div>` : ''}
+          <div class="card-actions">
+            <button class="btn btn-code" onclick="openVscode('${p.id}')">${t('proj_code')}</button>
+            <button class="btn btn-folder" onclick="openExplorer('${p.id}')">📁</button>
+            ${p.exists ? `<button class="btn" id="install-btn-${p.id}" onclick="installDeps('${p.id}', this)" style="border-color:#f97316;color:#f97316;">${t('proj_install')}</button>` : ''}
+            <button class="btn btn-dev ${p.running ? 'active' : ''}" id="dev-btn-${p.id}"
+              onclick="toggleDev('${p.id}', this)"
+              style="--card-color:${p.color};--card-rgb:${hexToRgb(p.color)}">
+              ${devLbl}
+            </button>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  } catch(e) { toast(t('failed') + ': projects', 'err'); }
+  btn.textContent = t('proj_refresh'); btn.disabled = false;
+}
+
+async function installDeps(id, btn) {
+  btn.textContent = '⟳…'; btn.disabled = true;
+  log(`[${id}] npm install…`, 'muted');
+  try {
+    const r = await api('/api/project/install-deps', 'POST', { id });
+    if (r.error) { toast('Install failed: ' + r.error.slice(0,80), 'err'); log('['+id+'] ERROR: '+r.error,'err'); btn.textContent = t('proj_install'); btn.disabled = false; }
+    else { toast('Deps installed ✓', 'ok'); log('['+id+'] '+r.output); btn.remove(); loadProjects(); }
+  } catch(e) { toast('Install error','err'); btn.textContent = t('proj_install'); btn.disabled = false; }
+}
+
+async function openVscode(id) { await api('/api/project/open-vscode','POST',{id}); toast(t('opened')+': VS Code','ok'); }
+async function openExplorer(id) { await api('/api/project/open-explorer','POST',{id}); toast(t('opened')+': Explorer','ok'); }
+
+async function toggleDev(id, btn) {
+  const running = btn.classList.contains('active');
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    if (running) {
+      await api('/api/project/stop-dev','POST',{id});
+      btn.classList.remove('active'); btn.textContent = t('proj_dev');
+      const badge = btn.closest('.card-body').querySelector('.badge');
+      badge.className = 'badge stopped';
+      badge.innerHTML = `<span class="badge-dot"></span>${t('proj_stopped')}`;
+      toast(t('dev_stopped'),'inf');
+    } else {
+      const r = await api('/api/project/start-dev','POST',{id});
+      if (r.error) { toast(r.error,'err'); btn.textContent = t('proj_dev'); }
+      else {
+        btn.classList.add('active'); btn.textContent = t('proj_stop');
+        const badge = btn.closest('.card-body').querySelector('.badge');
+        badge.className = 'badge running';
+        badge.innerHTML = `<span class="badge-dot"></span>${t('proj_running')}`;
+        toast(`${t('dev_started')} (PID ${r.pid})`,'ok');
+      }
+    }
+  } catch(e) { toast('Action failed','err'); btn.textContent = running ? t('proj_dev') : t('proj_stop'); }
+  btn.disabled = false;
+}
+
+// ══════════════════════════════════════════
+//  Scripts
+// ══════════════════════════════════════════
+
+async function loadScripts() {
+  const { scripts } = await api('/api/meta');
+  const list = document.getElementById('scripts-list');
+  list.innerHTML = '';
+  scripts.forEach(s => {
+    const rgb = hexToRgb(s.color);
+    const btn = document.createElement('button');
+    btn.className = 'script-btn';
+    btn.style.setProperty('--script-color', s.color);
+    btn.style.setProperty('--script-rgb', rgb);
+    btn.innerHTML = `<span class="script-icon">${s.icon}</span><span class="script-name">${s.name}</span><span class="script-arrow">›</span>`;
+    btn.addEventListener('click', () => runScript(s.id, s.name, btn));
+    list.appendChild(btn);
+  });
+}
+
+async function runScript(id, name, btn) {
+  if (id === 'shutdown_pro' || id === 'end') {
+    if (!confirm(`Run "${name}"? This may shut down or end your session.`)) return;
+  }
+  btn.classList.add('loading'); btn.querySelector('.script-arrow').textContent = '…';
+  clearConsole(); log(`> Running: ${name}…`, 'muted');
+  try {
+    const r = await api('/api/script/run','POST',{id});
+    if (r.error) { log(`! Error: ${r.error}`,'err'); toast(`${name} ${t('failed')}`, 'err'); }
+    else { (r.output || 'Done.').split('\n').forEach(l => log(`  ${l}`)); toast(`${name} OK`,'ok'); }
+  } catch(e) { log(`! Network error: ${e.message}`,'err'); toast('Request failed','err'); }
+  btn.classList.remove('loading'); btn.querySelector('.script-arrow').textContent = '›';
+}
+
+// ══════════════════════════════════════════
+//  Processes
+// ══════════════════════════════════════════
+
+let procsData = [], sortKey = 'cpu', sortDir = -1;
+let _procSearchTimer = null;
+function debouncedRenderProcs() { clearTimeout(_procSearchTimer); _procSearchTimer = setTimeout(renderProcs, 120); }
+
+function sortProcs(key) {
+  if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = -1; }
+  document.querySelectorAll('table.proctable thead th').forEach(th => th.classList.remove('sort-active'));
+  const idx = ['name','pid','cpu','mem'].indexOf(key);
+  document.querySelectorAll('table.proctable thead th')[idx]?.classList.add('sort-active');
+  renderProcs();
+}
+
+function renderProcs() {
+  const filter = (document.getElementById('proc-search').value || '').toLowerCase();
+  let list = procsData.filter(p => !filter || p.name.toLowerCase().includes(filter));
+  list = [...list].sort((a,b) => {
+    const av = sortKey === 'name' ? a.name : a[sortKey];
+    const bv = sortKey === 'name' ? b.name : b[sortKey];
+    return sortDir * (av > bv ? 1 : av < bv ? -1 : 0);
+  });
+  document.getElementById('proc-count').textContent = `${list.length} ${t('procs_count')}`;
+  const tbody = document.getElementById('proc-tbody');
+  tbody.innerHTML = '';
+  list.forEach(p => {
+    const cpuPct = Math.min(p.cpu, 100);
+    const cpuColor = cpuPct > 50 ? '#ef4444' : cpuPct > 20 ? '#f59e0b' : '#818cf8';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="proc-name" title="${p.name}">${p.name}</td>
+      <td class="proc-pid">${p.pid}</td>
+      <td class="proc-cpu">
+        <span class="cpu-bar"><span class="cpu-bar-fill" style="width:${cpuPct}%;background:${cpuColor}"></span></span>
+        <span style="color:${cpuColor}">${p.cpu}%</span>
+      </td>
+      <td class="proc-mem">${p.mem}%</td>
+      <td><button class="btn-kill" onclick="killProc(${p.pid},this)">${t('proc_kill')}</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function updateProcs() {
+  try { procsData = await api('/api/processes'); renderProcs(); renderRamList(); } catch {}
+}
+
+async function killProc(pid, btn) {
+  if (!confirm(`Kill PID ${pid}?`)) return;
+  btn.textContent = '…'; btn.disabled = true;
+  const r = await api('/api/process/kill','POST',{pid});
+  if (r.ok) { btn.closest('tr').style.opacity='0.3'; toast(`PID ${pid} ${t('killed')}`,'ok'); setTimeout(updateProcs,1000); }
+  else { toast(r.error || t('kill_failed'),'err'); btn.textContent = t('proc_kill'); btn.disabled = false; }
+}
+
+setInterval(updateProcs, 6000);
+
+// ══════════════════════════════════════════
+//  RAM Killers
+// ══════════════════════════════════════════
+
+let procSortKey = 'cpu';
+
+function setProcSort(key, btn) {
+  procSortKey = key;
+  document.getElementById('sort-cpu-btn').classList.toggle('active', key === 'cpu');
+  document.getElementById('sort-mem-btn').classList.toggle('active', key === 'mem');
+  renderRamList(); sortKey = key; sortDir = -1; renderProcs();
+}
+
+function renderRamList() {
+  const list = [...procsData].sort((a,b) => b[procSortKey]-a[procSortKey]).slice(0,8);
+  const container = document.getElementById('ram-list');
+  if (!list.length) { container.innerHTML = `<div style="padding:12px 20px;color:var(--muted);font-size:12px;">${t('mem_no_data')}</div>`; return; }
+  const topVal = list[0][procSortKey] || 1;
+  container.innerHTML = '';
+  list.forEach((p, i) => {
+    const pct = p[procSortKey];
+    const barW = Math.round((pct / Math.max(topVal,1)) * 100);
+    const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const row = document.createElement('div');
+    row.className = 'ram-row';
+    row.innerHTML = `
+      <span class="ram-rank ${rankClass}">#${i+1}</span>
+      <span class="ram-row-name" title="${p.name}">${p.name}</span>
+      <div class="ram-bar"><div class="ram-bar-fill" style="width:${barW}%;background:${procSortKey==='mem'?'#22d3ee':'#818cf8'}"></div></div>
+      <span class="ram-pct" style="color:${procSortKey==='mem'?'#22d3ee':'#818cf8'}">${pct}%</span>
+      <button class="btn-kill" onclick="killProc(${p.pid},this)" style="margin-left:6px;">${t('proc_kill')}</button>`;
+    container.appendChild(row);
+  });
+}
+
+async function purgeTop3() {
+  const top3 = [...procsData].sort((a,b)=>b[procSortKey]-a[procSortKey]).slice(0,3);
+  if (!top3.length) return toast(t('mem_no_data'),'inf');
+  if (!confirm(`Kill top 3 ${procSortKey.toUpperCase()} consumers?\n\n${top3.map(p=>p.name).join(', ')}`)) return;
+  for (const p of top3) await api('/api/process/kill','POST',{pid:p.pid});
+  toast(`Purged: ${top3.map(p=>p.name).join(', ')}`,'ok');
+  setTimeout(updateProcs, 800);
+}
+
+// ══════════════════════════════════════════
+//  Tab Navigation
+// ══════════════════════════════════════════
+
+let monitorLoaded = false, toolsLoaded = false, settingsLoaded = false;
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['dashboard','monitor','tools','settings'].forEach(n => {
+    const p = document.getElementById(`page-${n}`);
+    if (p) p.style.display = n === name ? 'block' : 'none';
+  });
+  if (name === 'monitor' && !monitorLoaded) {
+    monitorLoaded = true;
+    chartsVisible = true;
+    loadNetwork(); loadDocker(); drawCharts();
+  }
+  if (name === 'tools' && !toolsLoaded) {
+    toolsLoaded = true;
+    loadNotes(); loadEnvVars();
+  }
+  if (name === 'settings' && !settingsLoaded) {
+    settingsLoaded = true;
+    loadSettings();
+  }
+  if (name === 'monitor') { chartsVisible = true; drawCharts(); }
+  else { chartsVisible = false; }
+}
+
+// ══════════════════════════════════════════
+//  Network
+// ══════════════════════════════════════════
+
+async function loadNetwork() {
+  try {
+    const ifaces = await api('/api/network');
+    const list = document.getElementById('net-list');
+    if (!ifaces.length) { list.innerHTML = `<div class="monitor-empty">${t('monitor_no_network')}</div>`; return; }
+    list.innerHTML = '';
+    ifaces.forEach(iface => {
+      const row = document.createElement('div');
+      row.className = 'net-row';
+      const icon = iface.family === 'IPv6' ? '🔗' : '🌐';
+      row.innerHTML = `
+        <span class="net-icon">${icon}</span>
+        <div class="net-info">
+          <div class="net-name">${iface.name}</div>
+          <div class="net-addr">${iface.address}</div>
+        </div>
+        <span class="net-family">${iface.family}</span>`;
+      list.appendChild(row);
+    });
+  } catch(e) { document.getElementById('net-list').innerHTML = `<div class="monitor-empty">${t('failed')}</div>`; }
+}
+
+// ══════════════════════════════════════════
+//  Docker
+// ══════════════════════════════════════════
+
+async function loadDocker() {
+  try {
+    const d = await api('/api/docker');
+    const list = document.getElementById('docker-list');
+    if (!d.available || !d.containers.length) {
+      list.innerHTML = `<div class="monitor-empty">${t('monitor_no_docker')}</div>`;
+      return;
+    }
+    list.innerHTML = '';
+    d.containers.forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'docker-row';
+      row.innerHTML = `
+        <div class="docker-head">
+          <span class="docker-dot"></span>
+          <span class="docker-name">${c.names || '—'}</span>
+        </div>
+        <div class="docker-image">${c.image || '—'}</div>
+        <div class="docker-status">${c.status || '—'}</div>
+        ${c.ports ? `<div class="docker-ports">${c.ports}</div>` : ''}`;
+      list.appendChild(row);
+    });
+  } catch(e) { document.getElementById('docker-list').innerHTML = `<div class="monitor-empty">${t('monitor_no_docker')}</div>`; }
+}
+
+// ══════════════════════════════════════════
+//  Notes
+// ══════════════════════════════════════════
+
+async function loadNotes() {
+  try {
+    const notes = await api('/api/notes');
+    renderNotes(notes);
+  } catch(e) { document.getElementById('notes-list').innerHTML = `<div class="notes-empty">${t('failed')}</div>`; }
+}
+
+function renderNotes(notes) {
+  const list = document.getElementById('notes-list');
+  if (!notes.length) { list.innerHTML = `<div class="notes-empty">${t('notes_empty')}</div>`; return; }
+  list.innerHTML = '';
+  [...notes].reverse().forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'note-item';
+    item.innerHTML = `
+      <div class="note-text">${n.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div class="note-footer">
+        <span class="note-time">${fmtDate(n.created)}</span>
+        <button class="btn-note-del" onclick="deleteNote(${n.id},this)">${t('btn_note_delete')}</button>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+async function addNote() {
+  const input = document.getElementById('note-input');
+  const text = input.value.trim();
+  if (!text) return;
+  try {
+    await api('/api/notes','POST',{text});
+    input.value = '';
+    await loadNotes();
+    toast('Note saved','ok');
+  } catch(e) { toast(t('failed'),'err'); }
+}
+
+async function deleteNote(id, btn) {
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    await api(`/api/notes/${id}`,'DELETE');
+    await loadNotes();
+  } catch(e) { toast(t('failed'),'err'); }
+}
+
+document.getElementById('note-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey) addNote();
+});
+
+// ══════════════════════════════════════════
+//  Environment Variables
+// ══════════════════════════════════════════
+
+async function loadEnvVars() {
+  try {
+    const env = await api('/api/env');
+    const wrap = document.getElementById('env-table-wrap');
+    const entries = Object.entries(env);
+    if (!entries.length) { wrap.innerHTML = `<div style="color:var(--muted);font-size:12px;margin-top:10px;">${t('no_results')}</div>`; return; }
+    const table = document.createElement('table');
+    table.className = 'env-table';
+    entries.forEach(([k, v]) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="env-key">${k}</td>
+        <td class="env-val" title="${v}">${v.length > 60 ? v.slice(0,60)+'…' : v}</td>
+        <td><button class="env-copy" onclick="copyEnv('${k}',\`${v.replace(/`/g,'\\`')}\`)">${t('btn_env_copy')}</button></td>`;
+      table.appendChild(tr);
+    });
+    wrap.innerHTML = '';
+    wrap.appendChild(table);
+  } catch(e) { document.getElementById('env-table-wrap').innerHTML = `<div style="color:var(--muted);font-size:12px;margin-top:10px;">${t('failed')}</div>`; }
+}
+
+function copyEnv(key, val) {
+  navigator.clipboard.writeText(val).then(() => toast(`${key} copied`,'ok')).catch(() => toast('Copy failed','err'));
+}
+
+// ══════════════════════════════════════════
+//  Port Scanner
+// ══════════════════════════════════════════
+
+async function scanPorts() {
+  const input = document.getElementById('port-input').value;
+  const ports = input.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p) && p > 0 && p < 65536);
+  if (!ports.length) { toast('Enter at least one valid port','inf'); return; }
+
+  const btn = document.getElementById('port-scan-btn');
+  btn.disabled = true; btn.textContent = t('loading');
+
+  try {
+    const results = await api('/api/ports/check','POST',{ports});
+    const container = document.getElementById('port-results');
+    container.innerHTML = '';
+    results.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'port-result-row';
+      const statusLbl = r.open ? t('ports_result_open') : t('ports_result_closed');
+      row.innerHTML = `
+        <span class="port-result-num">:${r.port}</span>
+        <span class="port-status ${r.open?'open':'closed'}">${statusLbl}</span>`;
+      container.appendChild(row);
+    });
+    const open = results.filter(r=>r.open).length;
+    toast(`${open} open / ${results.length-open} closed`,'inf');
+  } catch(e) { toast(t('failed'),'err'); }
+  btn.disabled = false; btn.textContent = t('ports_scan');
+}
+
+document.getElementById('port-input').addEventListener('keydown', e => { if (e.key === 'Enter') scanPorts(); });
+
+// ══════════════════════════════════════════
+//  Translator
+// ══════════════════════════════════════════
+
+let transLangPair = { src: 'en', dst: 'fr' };
+
+function swapTranslation() {
+  const src = document.getElementById('trans-input').value;
+  const dst = document.getElementById('trans-output').value;
+  document.getElementById('trans-input').value = dst;
+  document.getElementById('trans-output').value = src;
+  transLangPair = { src: transLangPair.dst, dst: transLangPair.src };
+  const sl = document.getElementById('trans-src-label');
+  const dl = document.getElementById('trans-dst-label');
+  const tmp = sl.textContent; sl.textContent = dl.textContent; dl.textContent = tmp;
+}
+
+async function doTranslate() {
+  const text = document.getElementById('trans-input').value.trim();
+  if (!text) return;
+  const btn = document.getElementById('btn-translate');
+  btn.disabled = true; btn.textContent = t('loading');
+  document.getElementById('trans-output').value = '';
+  try {
+    const pair = `${transLangPair.src}|${transLangPair.dst}`;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.responseStatus === 200) {
+      document.getElementById('trans-output').value = data.responseData.translatedText;
+      toast('Translation complete','ok');
+    } else {
+      toast('Translation failed: ' + (data.responseDetails || 'unknown error'),'err');
+    }
+  } catch(e) { toast('Translation error: ' + e.message,'err'); }
+  btn.disabled = false; btn.textContent = t('trans_btn');
+}
+
+// ══════════════════════════════════════════
+//  Windows Settings
+// ══════════════════════════════════════════
+
+let allSettings = [];
+
+async function loadSettings() {
+  allSettings = await api('/api/settings');
+  renderSettings(allSettings);
+}
+
+function filterSettings() {
+  const q = document.getElementById('settings-search').value.toLowerCase();
+  const filtered = q ? allSettings.filter(s => s.name.toLowerCase().includes(q) || s.cat.toLowerCase().includes(q)) : allSettings;
+  renderSettings(filtered);
+}
+
+function renderSettings(list) {
+  const container = document.getElementById('settings-categories');
+  container.innerHTML = '';
+  const cats = [...new Set(list.map(s => s.cat))];
+  if (!cats.length) { container.innerHTML = `<div style="color:var(--muted);font-size:13px;">${t('no_results')}</div>`; return; }
+  cats.forEach(cat => {
+    const items = list.filter(s => s.cat === cat);
+    const sec = document.createElement('div');
+    sec.className = 'settings-cat';
+    sec.innerHTML = `<div class="settings-cat-title">${cat}</div><div class="settings-grid" id="cat-${cat.replace(/\s/g,'-')}"></div>`;
+    container.appendChild(sec);
+    const grid = sec.querySelector('.settings-grid');
+    items.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'setting-btn';
+      btn.innerHTML = `<span class="setting-icon">${s.icon}</span><span class="setting-name">${s.name}</span>`;
+      btn.title = s.name;
+      btn.addEventListener('click', () => openSetting(s.id, s.name, btn));
+      grid.appendChild(btn);
+    });
+  });
+}
+
+async function openSetting(id, name, btn) {
+  btn.style.opacity = '0.5';
+  const r = await api('/api/open-setting','POST',{id});
+  setTimeout(() => btn.style.opacity = '', 400);
+  if (r.ok) toast(`${t('opened')}: ${name}`,'inf');
+  else toast(r.error || t('failed'),'err');
+}
+
+// ══════════════════════════════════════════
+//  Running Servers
+// ══════════════════════════════════════════
+
+async function loadServers() {
+  try {
+    const servers = await api('/api/servers');
+    const list = document.getElementById('servers-list');
+    document.getElementById('srv-count').textContent = servers.length ? `(${servers.length})` : '';
+    if (!servers.length) { list.innerHTML = `<div class="servers-empty">${t('servers_empty')}</div>`; return; }
+    list.innerHTML = '';
+    servers.forEach(s => {
+      const row = document.createElement('div');
+      row.className = 'server-row'; row.id = `srv-row-${s.port}`;
+      row.innerHTML = `
+        <span class="server-dot"></span>
+        <span class="server-port">:${s.port}</span>
+        <span class="server-name">${s.name}</span>
+        <span class="server-pid">PID ${s.pid}</span>
+        <button class="btn-server-kill" onclick="killServer(${s.port},${s.pid},this)">${t('proc_kill')}</button>`;
+      list.appendChild(row);
+    });
+  } catch {}
+}
+
+async function killServer(port, pid, btn) {
+  if (!confirm(`Kill server on :${port} (PID ${pid})?`)) return;
+  btn.textContent = '…'; btn.disabled = true;
+  const r = await api('/api/process/kill','POST',{pid});
+  if (r.ok) { document.getElementById(`srv-row-${port}`)?.remove(); toast(`:${port} ${t('killed')}`,'ok'); setTimeout(loadServers,800); }
+  else { toast(r.error || t('kill_failed'),'err'); btn.textContent = t('proc_kill'); btn.disabled = false; }
+}
+
+async function killAllServers() {
+  const btn = document.getElementById('killall-btn');
+  const count = document.getElementById('servers-list').querySelectorAll('.server-row').length;
+  if (!count) return toast(t('servers_empty'),'inf');
+  if (!confirm(`Kill ALL ${count} running server(s)?`)) return;
+  btn.disabled = true; btn.textContent = t('servers_killing');
+  const r = await api('/api/killall','POST');
+  if (r.ok) {
+    const n = r.killed?.length || 0;
+    toast(`${t('killed')}: ${n} server${n!==1?'s':''}`,'ok');
+    log(`> KILL ALL: terminated ${n} servers`,'');
+    await loadProjects(); await loadServers();
+  } else { toast(t('kill_failed'),'err'); }
+  btn.disabled = false; btn.textContent = t('servers_kill_all');
+}
+
+setInterval(loadServers, 5000);
+
+// ══════════════════════════════════════════
+//  Boot
+// ══════════════════════════════════════════
+
+applyLang();
+
+(async () => {
+  await Promise.all([loadProjects(), loadScripts(), updateProcs(), loadServers()]);
+  log('> GODMODE initialized. All systems online.', 'muted');
+})();
+</script>
+</body>
+</html>
