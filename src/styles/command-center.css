@@ -1,0 +1,97 @@
+.command-center-shell {
+  --cc-sidebar-expanded: 272px;
+  --cc-sidebar-collapsed: 84px;
+  --cc-right-rail: 336px;
+  --cc-gap: 20px;
+}
+
+.command-center-shell[data-demo-mode="on"] {
+  --cc-demo-glow: rgba(200, 169, 110, 0.16);
+}
+
+.command-center-shell[data-demo-phase="steady"] {
+  --cc-demo-border: rgba(200, 169, 110, 0.26);
+}
+
+.command-center-shell[data-demo-phase="surge"] {
+  --cc-demo-border: rgba(214, 144, 74, 0.34);
+}
+
+.command-center-shell[data-demo-phase="critical"] {
+  --cc-demo-border: rgba(212, 96, 72, 0.42);
+}
+
+.command-center-shell[data-theme="obsidian"] {
+  --cc-surface: rgba(14, 14, 18, 0.86);
+  --cc-panel: rgba(22, 22, 28, 0.68);
+}
+
+.command-center-shell[data-theme="carbon"] {
+  --cc-surface: rgba(16, 16, 20, 0.92);
+  --cc-panel: rgba(28, 28, 36, 0.72);
+}
+
+.command-center-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--cc-gap);
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.demo-mode-atmosphere {
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+.demo-mode-scanline {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(200, 169, 110, 0.08) 48%,
+    transparent 100%
+  );
+  background-size: 100% 180px;
+  animation: demo-scan-shift 11s linear infinite;
+}
+
+[data-demo-mode="on"] .command-center-grid > section {
+  border-color: var(--cc-demo-border, rgba(200, 169, 110, 0.2));
+  box-shadow: 0 0 0 1px rgba(200, 169, 110, 0.06), 0 24px 80px -42px var(--cc-demo-glow, transparent);
+}
+
+.command-typography-kicker {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.command-typography-title {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+}
+
+@media (max-width: 1279px) {
+  .command-center-grid {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-mode-scanline {
+    animation: none;
+  }
+}
+
+@keyframes demo-scan-shift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 180px;
+  }
+}
