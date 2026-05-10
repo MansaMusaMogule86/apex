@@ -12,11 +12,11 @@ const FEED = [
 
 export default function LuxuryDashboardDemo() {
   return (
-    <section id="dashboard-demo" className="relative border-y border-white/10 bg-obsidian/80 py-24 md:py-32">
+    <section id="dashboard-demo" className="relative border-y border-white/10 bg-obsidian/85 py-24 md:py-32">
       <div className="mx-auto max-w-[1340px] px-4 md:px-8">
         <motion.div {...fadeUp} className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.4em] text-gold">Luxury Dashboard Demo</p>
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.4em] text-signal-blue">Luxury Dashboard Demo</p>
             <h2 className="font-display text-4xl text-warm-white md:text-6xl">Strategic clarity. In real time.</h2>
           </div>
           <p className="max-w-xl text-sm leading-7 text-titanium md:text-base">
@@ -26,7 +26,7 @@ export default function LuxuryDashboardDemo() {
 
         <motion.div
           {...fadeUp}
-          className="grid gap-5 rounded-[2px] border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.01] p-4 shadow-[0_28px_72px_rgba(0,0,0,0.45)] md:grid-cols-[1.4fr_1fr] md:p-6"
+          className="grid gap-5 rounded-[2px] border border-white/10 bg-gradient-to-br from-carbon/90 to-obsidian/90 p-4 shadow-[0_28px_72px_rgba(0,0,0,0.45)] md:grid-cols-[1.4fr_1fr] md:p-6"
         >
           <div className="rounded-[2px] border border-white/10 bg-void/70 p-4 md:p-6">
             <div className="mb-5 grid gap-3 sm:grid-cols-2 md:grid-cols-4">
@@ -36,9 +36,9 @@ export default function LuxuryDashboardDemo() {
                 ["Luxury Fit", "96.4"],
                 ["Conversion Delta", "+14.7%"],
               ].map(([label, value]) => (
-                <div key={label} className="rounded-[2px] border border-gold/20 bg-gold/[0.04] p-3">
+                <div key={label} className="rounded-[2px] border border-white/12 bg-white/[0.02] p-3">
                   <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-titanium">{label}</p>
-                  <p className="mt-2 font-display text-2xl text-gold-light">{value}</p>
+                  <p className="mt-2 font-display text-2xl text-platinum">{value}</p>
                 </div>
               ))}
             </div>
@@ -53,7 +53,7 @@ export default function LuxuryDashboardDemo() {
                       whileInView={{ width: `${value}%` }}
                       viewport={{ once: true }}
                       transition={{ duration: 1.2, ease: SILK_EASE, delay: idx * 0.06 }}
-                      className="h-1.5 rounded-full bg-gradient-to-r from-gold/60 to-gold-light"
+                      className="h-1.5 rounded-full bg-gradient-to-r from-signal-blue to-gold-light"
                     />
                   </div>
                 </div>
@@ -62,11 +62,11 @@ export default function LuxuryDashboardDemo() {
           </div>
 
           <div className="rounded-[2px] border border-white/10 bg-[#0b0b10] p-4 md:p-5">
-            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-gold">AI Recommendation Feed</p>
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-signal-blue">AI Recommendation Feed</p>
             <div className="max-h-[330px] space-y-3 overflow-auto pr-1">
               {FEED.map((entry) => (
                 <div key={entry} className="rounded-[2px] border border-white/10 bg-white/[0.02] p-3">
-                  <p className="text-sm leading-6 text-beige">{entry}</p>
+                  <p className="text-sm leading-6 text-platinum/90">{entry}</p>
                 </div>
               ))}
             </div>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Outfit, DM_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -27,6 +27,14 @@ export const metadata: Metadata = {
     "A private AI intelligence platform where luxury brands, HNWI, and elite creators gain unfair advantage over their market.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#060608",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -37,7 +45,7 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${outfit.variable} ${dmMono.variable}`}
     >
-      <body>{children}</body>
+      <body className="min-h-[100dvh] antialiased overflow-x-hidden">{children}</body>
     </html>
   );
 }

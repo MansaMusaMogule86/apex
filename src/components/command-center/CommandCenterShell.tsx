@@ -28,14 +28,15 @@ function ShellFrame({ children }: { children: React.ReactNode }) {
     >
       <DemoModeAtmosphere />
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-36 -top-24 h-[460px] w-[460px] rounded-full bg-gold/[0.06] blur-[120px]" />
-        <div className="absolute right-0 top-1/3 h-[420px] w-[420px] rounded-full bg-gold/[0.03] blur-[150px]" />
+        <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(232,228,218,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(232,228,218,0.05)_1px,transparent_1px)] [background-size:42px_42px]" />
+        <div className="absolute -left-36 -top-24 h-[460px] w-[460px] rounded-full bg-signal-blue/[0.08] blur-[120px]" />
+        <div className="absolute right-0 top-1/3 h-[420px] w-[420px] rounded-full bg-white/[0.05] blur-[150px]" />
       </div>
 
       <div className="command-center-grid relative z-10">
         <CommandCenterSidebar />
 
-        <section className="min-w-0 overflow-hidden rounded-[2px] border border-gold/10 bg-[var(--cc-panel)]">
+        <section className="min-w-0 overflow-hidden rounded-[2px] border border-white/12 bg-[var(--cc-panel)]">
           <CommandCenterTopBar />
           <AnimatePresence mode="wait" initial={false}>
             <motion.main

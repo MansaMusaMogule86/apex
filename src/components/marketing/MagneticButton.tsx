@@ -34,8 +34,8 @@ export default function MagneticButton({
         className={cn(
           "group h-12 rounded-[2px] px-7 text-[11px] font-medium tracking-[0.22em] uppercase transition-all duration-300",
           variant === "gold"
-            ? "border border-gold/60 bg-gradient-to-b from-[#dbc289] to-gold text-void shadow-[0_10px_30px_rgba(200,169,110,0.32)] hover:scale-[1.02] hover:shadow-[0_16px_42px_rgba(200,169,110,0.42)]"
-            : "border border-white/20 bg-white/[0.02] text-warm-white hover:border-gold/60 hover:bg-gold/[0.08]",
+            ? "border border-gold/55 bg-gradient-to-b from-[#e4c66a] to-[#c9b27c] text-void shadow-[0_10px_30px_rgba(201,178,124,0.28)] hover:scale-[1.02] hover:shadow-[0_16px_44px_rgba(201,178,124,0.38)]"
+            : "border border-white/20 bg-white/[0.02] text-warm-white hover:border-signal-blue/45 hover:bg-signal-blue/10 hover:text-platinum",
           className,
         )}
       >

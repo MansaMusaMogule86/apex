@@ -15,18 +15,32 @@
 
 .apex-radial-orb {
   position: absolute;
-  width: 44rem;
-  height: 44rem;
+  width: 42rem;
+  height: 42rem;
   border-radius: 9999px;
   pointer-events: none;
-  filter: blur(80px);
-  background: radial-gradient(circle at 45% 45%, rgba(200, 169, 110, 0.2), rgba(200, 169, 110, 0.03) 42%, transparent 72%);
+  filter: blur(90px);
+  background: radial-gradient(circle at 45% 45%, rgba(110, 140, 255, 0.22), rgba(110, 140, 255, 0.06) 38%, transparent 72%);
+}
+
+.apex-intel-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 22% 18%, rgba(232, 228, 218, 0.08), transparent 42%),
+    radial-gradient(circle at 76% 70%, rgba(110, 140, 255, 0.1), transparent 46%),
+    linear-gradient(rgba(232, 228, 218, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 228, 218, 0.05) 1px, transparent 1px);
+  background-size: auto, auto, 48px 48px, 48px 48px;
+  mask-image: radial-gradient(circle at 50% 45%, black 18%, rgba(0, 0, 0, 0.8) 52%, transparent 90%);
+  opacity: 0.35;
 }
 
 .apex-shimmer {
   position: relative;
   display: inline-block;
-  background-image: linear-gradient(110deg, #c8a96e 15%, #f3ddaf 42%, #c8a96e 68%);
+  background-image: linear-gradient(112deg, #c9b27c 15%, #e4c66a 44%, #c9b27c 70%);
   background-size: 220% 100%;
   background-clip: text;
   -webkit-background-clip: text;
@@ -58,8 +72,8 @@
 }
 
 .apex-glass {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(145deg, rgba(25, 26, 32, 0.86), rgba(17, 17, 22, 0.76));
+  border: 1px solid rgba(232, 228, 218, 0.14);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -77,21 +91,21 @@
 .cursor-dot {
   width: 6px;
   height: 6px;
-  background: rgba(226, 201, 154, 0.95);
+  background: rgba(110, 140, 255, 0.95);
 }
 
 .cursor-ring {
   width: 38px;
   height: 38px;
-  border: 1px solid rgba(200, 169, 110, 0.35);
-  box-shadow: 0 0 28px rgba(200, 169, 110, 0.2);
+  border: 1px solid rgba(110, 140, 255, 0.32);
+  box-shadow: 0 0 28px rgba(110, 140, 255, 0.18);
   transition: width 180ms ease, height 180ms ease, border-color 180ms ease;
 }
 
 body.cursor-hover .cursor-ring {
   width: 52px;
   height: 52px;
-  border-color: rgba(200, 169, 110, 0.72);
+  border-color: rgba(228, 198, 106, 0.72);
 }
 
 @media (max-width: 1024px), (pointer: coarse) {

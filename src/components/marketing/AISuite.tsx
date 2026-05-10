@@ -35,7 +35,7 @@ export default function AISuite() {
     <section id="ai-suite" className="relative py-28 md:py-36">
       <div className="mx-auto grid max-w-[1340px] gap-14 px-4 md:px-8 lg:grid-cols-[1fr_1.2fr] lg:items-center">
         <motion.div {...fadeUp} className="space-y-7">
-          <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-gold">AI Intelligence Suite</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-signal-blue">AI Intelligence Suite</p>
           <h2 className="font-display text-5xl leading-[0.95] text-warm-white md:text-7xl">
             The private
             <br />
@@ -70,11 +70,11 @@ export default function AISuite() {
 
         <motion.div
           {...fadeUp}
-          className="apex-glass rounded-[2px] border-gold/20 p-5 shadow-[0_32px_72px_rgba(0,0,0,0.45)] md:p-7"
+          className="apex-glass rounded-[2px] border-white/15 p-5 shadow-[0_32px_72px_rgba(0,0,0,0.45)] md:p-7"
         >
           <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
             <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-titanium">APEX Intelligence Console</p>
-            <span className="rounded-[2px] border border-gold/40 bg-gold/[0.1] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-gold-light">
+            <span className="rounded-[2px] border border-signal-blue/40 bg-signal-blue/12 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-signal-blue">
               Live
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function AISuite() {
             ].map((cell) => (
               <div key={cell.label} className="rounded-[2px] border border-white/10 bg-void/70 p-4">
                 <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.28em] text-titanium">{cell.label}</p>
-                <p className="font-display text-3xl text-gold-light">{cell.value}</p>
+                <p className="font-display text-3xl text-platinum">{cell.value}</p>
               </div>
             ))}
           </div>
@@ -97,8 +97,8 @@ export default function AISuite() {
               <AreaChart data={TREND} margin={{ left: -16, right: 8, top: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="goldArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#c8a96e" stopOpacity={0.45} />
-                    <stop offset="95%" stopColor="#c8a96e" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#6e8cff" stopOpacity={0.45} />
+                    <stop offset="95%" stopColor="#6e8cff" stopOpacity={0.03} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
@@ -107,13 +107,13 @@ export default function AISuite() {
                 <Tooltip
                   contentStyle={{
                     borderRadius: 2,
-                    border: "1px solid rgba(200,169,110,0.3)",
+                    border: "1px solid rgba(110,140,255,0.3)",
                     backgroundColor: "#0e0e12",
-                    color: "#f5f0e8",
+                    color: "#e8e4da",
                     fontSize: 12,
                   }}
                 />
-                <Area type="monotone" dataKey="value" stroke="#c8a96e" strokeWidth={2} fill="url(#goldArea)" />
+                <Area type="monotone" dataKey="value" stroke="#6e8cff" strokeWidth={2} fill="url(#goldArea)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>

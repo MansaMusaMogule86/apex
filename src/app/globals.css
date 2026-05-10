@@ -1,16 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-void: #060608;
-  --color-obsidian: #0e0e12;
-  --color-carbon: #16161c;
-  --color-surface: #1c1c24;
-  --color-gold: #c8a96e;
-  --color-gold-light: #e2c99a;
-  --color-titanium: #9a9a9a;
-  --color-mist: #5a5a6a;
-  --color-warm-white: #f5f0e8;
-  --color-beige: #e2d9c8;
+  --color-void: #030305;
+  --color-obsidian: #08080b;
+  --color-carbon: #111116;
+  --color-graphite: #191a20;
+  --color-platinum: #e8e4da;
+  --color-titanium: #9b9ca3;
+  --color-ash: #5e6068;
+  --color-champagne: #c9b27c;
+  --color-electric-gold: #e4c66a;
+  --color-signal-blue: #6e8cff;
+  --color-risk-amber: #ffb84d;
+  --color-critical-crimson: #d64a4a;
+
+  /* Backward-compatible aliases used by existing components */
+  --color-surface: #191a20;
+  --color-gold: #c9b27c;
+  --color-gold-light: #e4c66a;
+  --color-mist: #5e6068;
+  --color-warm-white: #e8e4da;
+  --color-beige: #d5d1c7;
 
   --font-display: var(--font-cormorant);
   --font-sans: var(--font-outfit);
@@ -22,18 +32,28 @@
 }
 
 :root {
-  --void:        #060608;
-  --obsidian:    #0e0e12;
-  --carbon:      #16161c;
-  --surface:     #1c1c24;
-  --gold:        #c8a96e;
-  --gold-light:  #e2c99a;
-  --gold-dim:    rgba(200,169,110,0.15);
-  --gold-glow:   rgba(200,169,110,0.06);
-  --titanium:    #9a9a9a;
-  --mist:        #5a5a6a;
-  --warm-white:  #f5f0e8;
-  --beige:       #e2d9c8;
+  --void: #030305;
+  --obsidian: #08080b;
+  --carbon: #111116;
+  --graphite: #191a20;
+  --surface: #191a20;
+  --platinum: #e8e4da;
+  --titanium: #9b9ca3;
+  --ash: #5e6068;
+  --champagne: #c9b27c;
+  --electric-gold: #e4c66a;
+  --signal-blue: #6e8cff;
+  --risk-amber: #ffb84d;
+  --critical-crimson: #d64a4a;
+
+  /* Backward-compatible aliases */
+  --gold: #c9b27c;
+  --gold-light: #e4c66a;
+  --gold-dim: rgba(201, 178, 124, 0.14);
+  --gold-glow: rgba(201, 178, 124, 0.06);
+  --mist: #5e6068;
+  --warm-white: #e8e4da;
+  --beige: #d5d1c7;
   --ease-silk:       cubic-bezier(0.16, 1, 0.3, 1);
   --ease-cinematic:  cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -64,11 +84,34 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  background: #060608;
-  color: var(--beige);
+  background: var(--void);
+  color: var(--platinum);
   font-family: var(--font-body), 'Outfit', sans-serif;
   overflow-x: hidden;
-  cursor: none;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100dvh;
+}
+
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+/* Hide custom cursor visuals on touch/coarse pointers */
+@media (pointer: coarse), (hover: none) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+}
+
+/* Ensure all interactive controls have comfortable touch targets on mobile */
+@media (pointer: coarse) {
+  a, button, [role="button"] {
+    touch-action: manipulation;
+  }
 }
 
 body::before {

@@ -51,7 +51,7 @@ export default function Services() {
       <div className="mx-auto max-w-335 px-4 md:px-8">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-5 md:mb-14">
           <div>
-            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.4em] text-gold">Services</p>
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.4em] text-signal-blue">Services</p>
             <h2 className="font-display text-4xl leading-[0.95] text-warm-white md:text-6xl">
               Intelligence products
               <br />
@@ -83,14 +83,14 @@ export default function Services() {
                     transition: { duration: 0.8, ease: SILK_EASE },
                   },
                 }}
-                className="group relative overflow-hidden rounded-[2px] border border-white/12 bg-gradient-to-br from-white/[0.05] to-white/[0.01] p-6 transition-all duration-500 hover:-translate-y-1 hover:border-gold/50 hover:shadow-[0_18px_42px_rgba(200,169,110,0.16)]"
+                className="group relative overflow-hidden rounded-[2px] border border-white/12 bg-gradient-to-br from-carbon/85 to-obsidian/80 p-6 transition-all duration-500 hover:-translate-y-1 hover:border-signal-blue/40 hover:shadow-[0_18px_42px_rgba(110,140,255,0.14)]"
                 data-cursor="interactive"
               >
-                <span className="absolute left-0 top-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-transparent via-gold to-transparent transition-transform duration-500 group-hover:scale-x-100" />
-                <Icon className="mb-6 size-6 text-gold/80" strokeWidth={1.2} />
+                <span className="absolute left-0 top-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-transparent via-signal-blue to-transparent transition-transform duration-500 group-hover:scale-x-100" />
+                <Icon className="mb-6 size-6 text-signal-blue" strokeWidth={1.2} />
                 <h3 className="font-display text-3xl text-warm-white">{service.title}</h3>
                 <p className="mt-4 text-sm leading-7 text-titanium">{service.summary}</p>
-                <ArrowUpRight className="mt-7 size-4 text-gold/70 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight className="mt-7 size-4 text-gold transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </motion.article>
             );
           })}

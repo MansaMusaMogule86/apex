@@ -21,7 +21,7 @@ import Footer from "@/components/marketing/Footer";
 
 export default function Page() {
   return (
-    <main className="apex-shell bg-void text-beige">
+    <main suppressHydrationWarning className="apex-shell bg-void text-beige">
       <SmoothScroll />
       <AmbientIntelligenceScene />
       <CustomCursor />
