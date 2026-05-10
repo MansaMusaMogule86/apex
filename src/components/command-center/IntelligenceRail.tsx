@@ -19,6 +19,16 @@ function SeverityDot({ severity }: { severity: "opportunity" | "risk" | "signal"
   return <span className={cn("h-1.5 w-1.5 rounded-full", dotClass)} />;
 }
 
+type RailSeverity = "opportunity" | "risk" | "signal";
+
+type RailItem = {
+  id: string;
+  title: string;
+  body: string;
+  severity: RailSeverity;
+  timestamp: string;
+};
+
 function RailContent({ onItemClick }: { onItemClick?: () => void }) {
   const {
     enabled: demoModeEnabled,
@@ -30,7 +40,7 @@ function RailContent({ onItemClick }: { onItemClick?: () => void }) {
   const liveAlerts = useLiveIntelligenceStore((state) => state.alerts.slice(0, 5));
   const connection = useLiveIntelligenceStore((state) => state.connection);
 
-  const scenarioFeed = demoModeEnabled
+  const scenarioFeed: RailItem[] = demoModeEnabled
     ? scenarios.slice(0, 4).map((scenario) => ({
         id: `scenario-${scenario.id}`,
         title: scenario.label,
@@ -43,9 +53,9 @@ function RailContent({ onItemClick }: { onItemClick?: () => void }) {
       }))
     : [];
 
-  const mergedItems = [
+  const mergedItems: RailItem[] = [
     ...scenarioFeed,
-    ...liveAlerts.map((item) => ({
+    ...liveAlerts.map((item): RailItem => ({
       id: item.id,
       title: item.title,
       body: item.body,

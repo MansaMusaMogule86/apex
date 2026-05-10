@@ -322,15 +322,16 @@ export function useLiveIntelligence(domain: LiveDomain, enabled = true) {
         event: "INSERT",
         filter: `organization_id=eq.${organizationId}`,
         onChange: (payload) => {
+          const next = (payload.new ?? {}) as Record<string, unknown>;
           pushAlert(
             mapAlert(
               {
-                id: String(payload.new.id ?? `notif-${Date.now()}`),
-                source: payload.new.severity ?? "risk",
-                title: payload.new.title,
-                body: payload.new.body,
-                severity: payload.new.severity === "critical" ? "P1" : "P2",
-                ts: payload.new.created_at ?? "now",
+                id: String(next.id ?? `notif-${Date.now()}`),
+                source: next.severity ?? "risk",
+                title: next.title,
+                body: next.body,
+                severity: next.severity === "critical" ? "P1" : "P2",
+                ts: next.created_at ?? "now",
               },
               domain,
             ),
