@@ -1,7 +1,12 @@
 import type {
+  AudienceSegment,
+  AuthorityRadarPoint,
+  CompetitorEntry,
   ContentIntel,
   ExecutiveRailItem,
+  ExtendedTrend,
   FounderKpi,
+  LiveSignal,
   NarrativeSignal,
   StrategyRecommendation,
   TrustPoint,
@@ -245,4 +250,54 @@ export const EXEC_RAIL: ExecutiveRailItem[] = [
     body: "Competitor A launching executive interview series next week.",
     timestamp: "42m ago",
   },
+];
+
+export const AUTHORITY_RADAR: AuthorityRadarPoint[] = [
+  { axis: "Narrative Control", score: 88, benchmark: 62 },
+  { axis: "Investor Confidence", score: 91, benchmark: 58 },
+  { axis: "HNWI Resonance", score: 85, benchmark: 61 },
+  { axis: "Prestige Velocity", score: 79, benchmark: 54 },
+  { axis: "Market Authority", score: 93, benchmark: 67 },
+  { axis: "Trust Stability", score: 83, benchmark: 55 },
+];
+
+export const AUDIENCE_SEGMENTS: AudienceSegment[] = [
+  { segment: "HNWI Investors", reach: 84, quality: 93, conversion: 31, trust: 91 },
+  { segment: "Institutional Capital", reach: 71, quality: 88, conversion: 24, trust: 86 },
+  { segment: "Premium Media", reach: 78, quality: 76, conversion: 19, trust: 79 },
+  { segment: "Industry Thought Leaders", reach: 63, quality: 82, conversion: 22, trust: 84 },
+  { segment: "Strategic Partners", reach: 57, quality: 91, conversion: 38, trust: 89 },
+];
+
+export const COMPETITOR_MATRIX: CompetitorEntry[] = [
+  { competitor: "APEX Founder", authorityScore: 93, trustIndex: 89, narrativeReach: 78, investorGrade: 91, prestige: 87 },
+  { competitor: "Competitor A", authorityScore: 71, trustIndex: 68, narrativeReach: 62, investorGrade: 73, prestige: 65 },
+  { competitor: "Competitor B", authorityScore: 64, trustIndex: 61, narrativeReach: 58, investorGrade: 66, prestige: 71 },
+  { competitor: "Competitor C", authorityScore: 58, trustIndex: 54, narrativeReach: 51, investorGrade: 59, prestige: 61 },
+];
+
+export const LIVE_SIGNALS: LiveSignal[] = [
+  { id: "ls1", type: "authority", message: "Founder gravity score surpassed 93 threshold", delta: "+4.8%", ts: "just now" },
+  { id: "ls2", type: "investor", message: "High-conviction investor cohort engagement up 14%", delta: "+14%", ts: "2m ago" },
+  { id: "ls3", type: "narrative", message: "Market architect narrative velocity accelerating", delta: "+9%", ts: "5m ago" },
+  { id: "ls4", type: "trust", message: "HNWI trust sentiment spiked post governance brief", delta: "+6%", ts: "8m ago" },
+  { id: "ls5", type: "competitor", message: "Competitor A narrative overlap reduced 4 points", delta: "−4pts", ts: "11m ago" },
+  { id: "ls6", type: "authority", message: "Voice share expanded in premium institutional channels", delta: "+2.1%", ts: "14m ago" },
+  { id: "ls7", type: "narrative", message: "Scarcity framing content reached peak distribution", delta: "+18%", ts: "19m ago" },
+  { id: "ls8", type: "investor", message: "Series B investor cohort added to authority watch list", delta: "new", ts: "23m ago" },
+];
+
+export const EXTENDED_TREND: ExtendedTrend[] = [
+  { week: "W1", authority: 61, trust: 58, prestige: 55, voiceShare: 29 },
+  { week: "W2", authority: 64, trust: 62, prestige: 58, voiceShare: 31 },
+  { week: "W3", authority: 68, trust: 65, prestige: 61, voiceShare: 33 },
+  { week: "W4", authority: 71, trust: 68, prestige: 65, voiceShare: 34 },
+  { week: "W5", authority: 74, trust: 70, prestige: 68, voiceShare: 35 },
+  { week: "W6", authority: 77, trust: 73, prestige: 71, voiceShare: 37 },
+  { week: "W7", authority: 80, trust: 76, prestige: 74, voiceShare: 38 },
+  { week: "W8", authority: 83, trust: 78, prestige: 77, voiceShare: 39 },
+  { week: "W9", authority: 86, trust: 81, prestige: 80, voiceShare: 40 },
+  { week: "W10", authority: 88, trust: 83, prestige: 82, voiceShare: 41 },
+  { week: "W11", authority: 91, trust: 86, prestige: 85, voiceShare: 41 },
+  { week: "W12", authority: 93, trust: 89, prestige: 87, voiceShare: 42 },
 ];

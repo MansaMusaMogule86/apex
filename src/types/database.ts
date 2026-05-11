@@ -214,7 +214,7 @@ export interface Database {
         };
         Update: Partial<Database["public"]["Tables"]["leads"]["Insert"]>;
       };
-      access_requests: {
+      apex_applications: {
         Row: {
           id: string;
           created_at: string;
@@ -267,7 +267,7 @@ export interface Database {
           reviewed_at?: string | null;
           reviewed_by?: string | null;
         };
-        Update: Partial<Database["public"]["Tables"]["access_requests"]["Insert"]>;
+        Update: Partial<Database["public"]["Tables"]["apex_applications"]["Insert"]>;
       };
       ai_reports: {
         Row: {
@@ -364,7 +364,7 @@ export type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 export type CampaignInfluencer =
   Database["public"]["Tables"]["campaign_influencers"]["Row"];
 export type Lead = Database["public"]["Tables"]["leads"]["Row"];
-export type AccessRequest = Database["public"]["Tables"]["access_requests"]["Row"];
+export type ApexApplication = Database["public"]["Tables"]["apex_applications"]["Row"];
 export type AIReport = Database["public"]["Tables"]["ai_reports"]["Row"];
 export type Notification =
   Database["public"]["Tables"]["notifications"]["Row"];

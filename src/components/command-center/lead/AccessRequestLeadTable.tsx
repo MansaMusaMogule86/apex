@@ -3,7 +3,7 @@
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { ArrowDownUp } from "lucide-react";
-import type { AccessRequest } from "@/types/database";
+import type { ApexApplication } from "@/types/database";
 
 export type AccessRequestSortField =
   | "created_at"
@@ -13,7 +13,7 @@ export type AccessRequestSortField =
   | "priority_level";
 
 type AccessRequestLeadTableProps = {
-  requests: AccessRequest[];
+  requests: ApexApplication[];
   selectedRequestId: string | null;
   onSelectRequest: (id: string) => void;
   sortField: AccessRequestSortField;
@@ -22,14 +22,14 @@ type AccessRequestLeadTableProps = {
   highlightedRequestId?: string | null;
 };
 
-const PRIORITY_CLASS: Record<AccessRequest["priority_level"], string> = {
+const PRIORITY_CLASS: Record<ApexApplication["priority_level"], string> = {
   critical: "border-critical-crimson/35 bg-critical-crimson/10 text-red-100",
   high: "border-risk-amber/35 bg-risk-amber/10 text-amber-100",
   medium: "border-signal-blue/30 bg-signal-blue/10 text-signal-blue",
   watch: "border-white/15 bg-white/6 text-titanium",
 };
 
-const STATUS_CLASS: Record<AccessRequest["status"], string> = {
+const STATUS_CLASS: Record<ApexApplication["status"], string> = {
   submitted: "border-white/15 bg-white/6 text-titanium",
   processing: "border-signal-blue/30 bg-signal-blue/10 text-signal-blue",
   executive_review: "border-gold/35 bg-gold/10 text-gold-light",
@@ -39,14 +39,14 @@ const STATUS_CLASS: Record<AccessRequest["status"], string> = {
   declined: "border-critical-crimson/35 bg-critical-crimson/10 text-red-100",
 };
 
-function formatPriority(priority: AccessRequest["priority_level"]) {
+function formatPriority(priority: ApexApplication["priority_level"]) {
   if (priority === "critical") return "Critical";
   if (priority === "high") return "High";
   if (priority === "medium") return "Medium";
   return "Watch";
 }
 
-function formatStatus(status: AccessRequest["status"]) {
+function formatStatus(status: ApexApplication["status"]) {
   return status.replaceAll("_", " ");
 }
 

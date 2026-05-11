@@ -8,21 +8,21 @@ import AccessRequestLeadTable, {
   type AccessRequestSortField,
 } from "@/components/command-center/lead/AccessRequestLeadTable";
 import { useAccessRequests } from "@/hooks/useAccessRequests";
-import type { AccessRequest } from "@/types/database";
+import type { ApexApplication } from "@/types/database";
 
 type LeadIntelligenceScreenProps = {
-  initialRequests: AccessRequest[];
+  initialRequests: ApexApplication[];
   loadError?: string | null;
 };
 
-const PRIORITY_ORDER: Record<AccessRequest["priority_level"], number> = {
+const PRIORITY_ORDER: Record<ApexApplication["priority_level"], number> = {
   critical: 4,
   high: 3,
   medium: 2,
   watch: 1,
 };
 
-const STATUS_FILTERS: Array<"all" | AccessRequest["status"]> = [
+const STATUS_FILTERS: Array<"all" | ApexApplication["status"]> = [
   "all",
   "processing",
   "executive_review",
@@ -32,7 +32,7 @@ const STATUS_FILTERS: Array<"all" | AccessRequest["status"]> = [
   "declined",
 ];
 
-const PRIORITY_FILTERS: Array<"all" | AccessRequest["priority_level"]> = [
+const PRIORITY_FILTERS: Array<"all" | ApexApplication["priority_level"]> = [
   "all",
   "critical",
   "high",
@@ -41,7 +41,7 @@ const PRIORITY_FILTERS: Array<"all" | AccessRequest["priority_level"]> = [
 ];
 
 function sortRequests(
-  requests: AccessRequest[],
+  requests: ApexApplication[],
   field: AccessRequestSortField,
   direction: "asc" | "desc",
 ) {
@@ -87,7 +87,7 @@ export default function LeadIntelligenceScreen({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [searchValue, setSearchValue] = useState("");
   const [draftNotes, setDraftNotes] = useState("");
-  const [draftStatus, setDraftStatus] = useState<AccessRequest["status"] | null>(null);
+  const [draftStatus, setDraftStatus] = useState<ApexApplication["status"] | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const deferredSearch = useDeferredValue(searchValue);
 

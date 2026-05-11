@@ -21,7 +21,7 @@ export default async function LeadsPage() {
 
   const admin = createAdminClient();
   const { data, error } = await admin
-    .from("access_requests")
+    .from("apex_applications")
     .select("*")
     .order("created_at", { ascending: false });
 

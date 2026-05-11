@@ -10,7 +10,7 @@ import type { Database } from "@/types/database";
 
 export const runtime = "nodejs";
 
-type AccessRequestRow = Database["public"]["Tables"]["access_requests"]["Row"];
+type ApexApplicationRow = Database["public"]["Tables"]["apex_applications"]["Row"];
 
 const REQUEST_SELECT = "*";
 
@@ -65,7 +65,7 @@ function toSubmissionInsert(payload: ReturnType<typeof RequestAccessInputSchema.
   };
 }
 
-async function notifyStaff(admin: ReturnType<typeof createAdminClient>, request: AccessRequestRow) {
+async function notifyStaff(admin: ReturnType<typeof createAdminClient>, request: ApexApplicationRow) {
   const { data: staff, error } = await admin
     .from("profiles")
     .select("id")
@@ -119,7 +119,7 @@ export async function GET() {
     const admin = createAdminClient();
 
     const { data, error } = await admin
-      .from("access_requests")
+      .from("apex_applications")
       .select(REQUEST_SELECT)
       .order("created_at", { ascending: false });
 
@@ -128,13 +128,14 @@ export async function GET() {
     }
 
     const requests = data ?? [];
-
     return NextResponse.json({ requests });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
+
     return jsonError(message, statusCodeForMessage(message));
   }
 }
+
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
   const admin = createAdminClient();
 
   const { data: created, error: createError } = await admin
-    .from("access_requests")
+    .from("apex_applications")
     .insert(toSubmissionInsert(parsed.data))
     .select(REQUEST_SELECT)
     .single();
@@ -167,7 +168,7 @@ export async function POST(request: NextRequest) {
     const analysis = await analyzeAccessRequest(parsed.data);
 
     const { data: updated, error: updateError } = await admin
-      .from("access_requests")
+      .from("apex_applications")
       .update({
         prestige_score: analysis.prestigeScore,
         authority_score: analysis.authorityScore,
@@ -189,8 +190,8 @@ export async function POST(request: NextRequest) {
     await notifyStaff(admin, updated);
 
     await writeAuditLog(admin, {
-      action: "access_request.submitted",
-      entity: "access_requests",
+      action: "apex_application.submitted",
+      entity: "apex_applications",
       entity_id: updated.id,
       metadata: {
         email: updated.email,
@@ -211,7 +212,7 @@ export async function POST(request: NextRequest) {
     const message = analysisError instanceof Error ? analysisError.message : "AI analysis failed";
 
     await admin
-      .from("access_requests")
+      .from("apex_applications")
       .update({
         status: "submitted",
         ai_summary: "Submission stored. AI qualification analysis queued for manual executive review.",
@@ -255,7 +256,7 @@ export async function PATCH(request: NextRequest) {
     const admin = createAdminClient();
 
     const nextStatus = parsed.data.status;
-    const reviewStateFields: Database["public"]["Tables"]["access_requests"]["Update"] =
+    const reviewStateFields: Database["public"]["Tables"]["apex_applications"]["Update"] =
       nextStatus === undefined
         ? {}
         : nextStatus === "submitted" || nextStatus === "processing"
@@ -268,7 +269,7 @@ export async function PATCH(request: NextRequest) {
               reviewed_by: userId,
             };
 
-    const updatePayload: Database["public"]["Tables"]["access_requests"]["Update"] = {
+    const updatePayload: Database["public"]["Tables"]["apex_applications"]["Update"] = {
       ...(nextStatus ? { status: nextStatus } : {}),
       ...(parsed.data.executiveNotes !== undefined
         ? { executive_notes: parsed.data.executiveNotes || null }
@@ -277,7 +278,7 @@ export async function PATCH(request: NextRequest) {
     };
 
     const { data, error } = await admin
-      .from("access_requests")
+      .from("apex_applications")
       .update(updatePayload)
       .eq("id", parsed.data.id)
       .select(REQUEST_SELECT)
@@ -289,8 +290,8 @@ export async function PATCH(request: NextRequest) {
 
     await writeAuditLog(admin, {
       actor_id: userId,
-      action: "access_request.updated",
-      entity: "access_requests",
+      action: "apex_application.updated",
+      entity: "apex_applications",
       entity_id: data.id,
       metadata: {
         status: data.status,

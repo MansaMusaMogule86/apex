@@ -3,20 +3,20 @@
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, Mail, Save } from "lucide-react";
 import { motion } from "framer-motion";
-import type { AccessRequest } from "@/types/database";
+import type { ApexApplication } from "@/types/database";
 
 type AccessRequestInsightDrawerProps = {
-  request: AccessRequest | null;
+  request: ApexApplication | null;
   draftNotes: string;
-  draftStatus: AccessRequest["status"] | null;
+  draftStatus: ApexApplication["status"] | null;
   saveError: string | null;
   saving: boolean;
   onNotesChange: (value: string) => void;
-  onStatusChange: (value: AccessRequest["status"]) => void;
+  onStatusChange: (value: ApexApplication["status"]) => void;
   onSave: () => void;
 };
 
-const STATUS_OPTIONS: AccessRequest["status"][] = [
+const STATUS_OPTIONS: ApexApplication["status"][] = [
   "processing",
   "executive_review",
   "executive_call",
@@ -25,13 +25,12 @@ const STATUS_OPTIONS: AccessRequest["status"][] = [
   "declined",
 ];
 
-function prettyStatus(status: AccessRequest["status"]) {
+function prettyStatus(status: ApexApplication["status"]) {
   return status.replaceAll("_", " ");
 }
 
-function buildRecommendationBadges(request: AccessRequest) {
+function buildRecommendationBadges(request: ApexApplication) {
   const badges: Array<{ label: string; className: string }> = [];
-
   if (request.priority_level === "critical") {
     badges.push({ label: "Priority onboarding", className: "border-critical-crimson/35 bg-critical-crimson/10 text-red-100" });
   }
@@ -44,7 +43,6 @@ function buildRecommendationBadges(request: AccessRequest) {
   if ((request.market_potential_score ?? 0) >= 75) {
     badges.push({ label: "Strategic upside", className: "border-emerald-400/30 bg-emerald-400/12 text-emerald-100" });
   }
-
   return badges;
 }
 

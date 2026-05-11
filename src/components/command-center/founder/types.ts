@@ -61,3 +61,42 @@ export type ExecutiveRailItem = {
   body: string;
   timestamp: string;
 };
+
+export type AuthorityRadarPoint = {
+  axis: string;
+  score: number;
+  benchmark: number;
+};
+
+export type AudienceSegment = {
+  segment: string;
+  reach: number;
+  quality: number;
+  conversion: number;
+  trust: number;
+};
+
+export type CompetitorEntry = {
+  competitor: string;
+  authorityScore: number;
+  trustIndex: number;
+  narrativeReach: number;
+  investorGrade: number;
+  prestige: number;
+};
+
+export type LiveSignal = {
+  id: string;
+  type: "authority" | "trust" | "narrative" | "competitor" | "investor";
+  message: string;
+  delta: string;
+  ts: string;
+};
+
+export type ExtendedTrend = {
+  week: string;
+  authority: number;
+  trust: number;
+  prestige: number;
+  voiceShare: number;
+};

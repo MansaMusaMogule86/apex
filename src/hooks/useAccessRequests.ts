@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRealtime } from "@/hooks/useRealtime";
-import type { AccessRequest } from "@/types/database";
+import type { ApexApplication } from "@/types/database";
 
 type LiveSignal = {
   type: "insert" | "update" | "delete";
@@ -11,43 +11,42 @@ type LiveSignal = {
 
 type UpdateInput = {
   id: string;
-  status?: AccessRequest["status"];
+  status?: ApexApplication["status"];
   executiveNotes?: string;
 };
 
-function upsertRequest(list: AccessRequest[], next: AccessRequest) {
+function upsertRequest(list: ApexApplication[], next: ApexApplication) {
   const existingIndex = list.findIndex((item) => item.id === next.id);
   if (existingIndex === -1) {
     return [next, ...list];
   }
-
   return list.map((item) => (item.id === next.id ? next : item));
 }
 
-export function useAccessRequests(initialRequests: AccessRequest[]) {
-  const [requests, setRequests] = useState<AccessRequest[]>(initialRequests);
+export function useAccessRequests(initialRequests: ApexApplication[]) {
+  const [requests, setRequests] = useState<ApexApplication[]>(initialRequests);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [liveSignal, setLiveSignal] = useState<LiveSignal | null>(null);
 
   useRealtime(
     [
       {
-        table: "access_requests",
+        table: "apex_applications",
         onChange: (payload) => {
           if (payload.eventType === "INSERT" && payload.new) {
-            const inserted = payload.new as AccessRequest;
+            const inserted = payload.new as ApexApplication;
             setRequests((current) => upsertRequest(current, inserted));
             setLiveSignal({ type: "insert", requestId: inserted.id });
           }
 
           if (payload.eventType === "UPDATE" && payload.new) {
-            const updated = payload.new as AccessRequest;
+            const updated = payload.new as ApexApplication;
             setRequests((current) => upsertRequest(current, updated));
             setLiveSignal({ type: "update", requestId: updated.id });
           }
 
           if (payload.eventType === "DELETE" && payload.old) {
-            const deleted = payload.old as AccessRequest;
+            const deleted = payload.old as ApexApplication;
             setRequests((current) => current.filter((item) => item.id !== deleted.id));
             setLiveSignal({ type: "delete", requestId: deleted.id });
           }
@@ -74,7 +73,7 @@ export function useAccessRequests(initialRequests: AccessRequest[]) {
         throw new Error("Access request not found");
       }
 
-      const optimisticRequest: AccessRequest = {
+      const optimisticRequest: ApexApplication = {
         ...previousRequest,
         ...(input.status ? { status: input.status } : {}),
         ...(input.executiveNotes !== undefined
@@ -97,14 +96,14 @@ export function useAccessRequests(initialRequests: AccessRequest[]) {
         });
 
         const payload = (await response.json().catch(() => null)) as
-          | { request?: AccessRequest; error?: string }
+          | { request?: ApexApplication; error?: string }
           | null;
 
         if (!response.ok || !payload?.request) {
           throw new Error(payload?.error ?? "Failed to update access request");
         }
 
-        const request = payload.request as AccessRequest;
+        const request = payload.request as ApexApplication;
         setRequests((current) => upsertRequest(current, request));
         return request;
       } catch (error) {

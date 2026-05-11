@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-Content *)",
+      "PowerShell(Get-Content \"C:\\\\Users\\\\mehdi\\\\Desktop\\\\02_PROJECTS\\\\APEX\\\\apex-platform\\\\src\\\\app\\\\page.tsx\" -Raw; if \\(-not \\(Test-Path \"C:\\\\Users\\\\mehdi\\\\Desktop\\\\02_PROJECTS\\\\APEX\\\\apex-platform\\\\.next\"\\)\\) { Write-Host \"NO .next DIRECTORY\" } else { Write-Host \".next EXISTS\" })",
+      "PowerShell(npm run *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\mehdi\\\\Desktop\\\\02_PROJECTS\\\\APEX\\\\apex-platform\\\\src\\\\app\" -Recurse -ErrorAction SilentlyContinue | Select-Object FullName | Where-Object { $_.FullName -match \"auth\" } | Format-List)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\mehdi\\\\Desktop\\\\02_PROJECTS\\\\APEX\\\\apex-platform\\\\src\" -Recurse -ErrorAction SilentlyContinue | Where-Object { -not $_.PSIsContainer } | Select-Object FullName | Format-List)",
+      "PowerShell(Get-NetTCPConnection *)"
+    ]
+  }
+}
