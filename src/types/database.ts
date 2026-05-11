@@ -28,6 +28,15 @@ export type LeadStage =
   | "negotiation"
   | "client"
   | "retained";
+export type AccessRequestPriority = "critical" | "high" | "medium" | "watch";
+export type AccessRequestStatus =
+  | "submitted"
+  | "processing"
+  | "executive_review"
+  | "executive_call"
+  | "approved"
+  | "waitlisted"
+  | "declined";
 export type ReportType = "monthly" | "weekly" | "campaign" | "adhoc";
 export type NotificationType = "success" | "info" | "error" | "ai_insight";
 
@@ -205,6 +214,61 @@ export interface Database {
         };
         Update: Partial<Database["public"]["Tables"]["leads"]["Insert"]>;
       };
+      access_requests: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          full_name: string;
+          email: string;
+          company: string;
+          industry: string;
+          website: string | null;
+          linkedin: string | null;
+          revenue_range: string;
+          market_focus: string;
+          strategic_objective: string;
+          why_apex: string;
+          prestige_score: number | null;
+          authority_score: number | null;
+          market_potential_score: number | null;
+          luxury_fit_score: number | null;
+          priority_level: AccessRequestPriority;
+          ai_summary: string | null;
+          ai_recommendation: string | null;
+          status: AccessRequestStatus;
+          executive_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          full_name: string;
+          email: string;
+          company: string;
+          industry: string;
+          website?: string | null;
+          linkedin?: string | null;
+          revenue_range: string;
+          market_focus: string;
+          strategic_objective: string;
+          why_apex: string;
+          prestige_score?: number | null;
+          authority_score?: number | null;
+          market_potential_score?: number | null;
+          luxury_fit_score?: number | null;
+          priority_level?: AccessRequestPriority;
+          ai_summary?: string | null;
+          ai_recommendation?: string | null;
+          status?: AccessRequestStatus;
+          executive_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["access_requests"]["Insert"]>;
+      };
       ai_reports: {
         Row: {
           id: string;
@@ -284,6 +348,8 @@ export interface Database {
       campaign_inf_status: CampaignInfStatus;
       user_role: UserRole;
       lead_stage: LeadStage;
+      access_request_priority: AccessRequestPriority;
+      access_request_status: AccessRequestStatus;
       report_type: ReportType;
       notification_type: NotificationType;
     };
@@ -298,6 +364,7 @@ export type Campaign = Database["public"]["Tables"]["campaigns"]["Row"];
 export type CampaignInfluencer =
   Database["public"]["Tables"]["campaign_influencers"]["Row"];
 export type Lead = Database["public"]["Tables"]["leads"]["Row"];
+export type AccessRequest = Database["public"]["Tables"]["access_requests"]["Row"];
 export type AIReport = Database["public"]["Tables"]["ai_reports"]["Row"];
 export type Notification =
   Database["public"]["Tables"]["notifications"]["Row"];

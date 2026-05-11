@@ -14,7 +14,7 @@ import type { CommandNavItem, RightRailItem } from "@/components/command-center/
 export const COMMAND_NAV_ITEMS: CommandNavItem[] = [
   { label: "Command Center", href: "/dashboard", icon: Command },
   { label: "Market Intelligence", href: "/dashboard/analytics", icon: Building2 },
-  { label: "Lead Intelligence", href: "/dashboard/crm", icon: UserSquare2 },
+  { label: "Lead Intelligence", href: "/dashboard/leads", icon: UserSquare2 },
   { label: "Founder Authority", href: "/dashboard/founder-authority", icon: Activity },
   { label: "Influence Network", href: "/dashboard/influencers", icon: Network },
   { label: "Executive Reports", href: "/dashboard/reports", icon: BarChart3 },
