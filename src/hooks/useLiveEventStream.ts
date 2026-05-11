@@ -45,6 +45,8 @@ export function useLiveEventStream({
   const eventSourceRef = useRef<EventSource | null>(null);
   const retryRef = useRef(0);
   const closeRequestedRef = useRef(false);
+  const handlersRef = useRef<StreamHandlers | undefined>(handlers);
+  handlersRef.current = handlers;
 
   const streamUrl = useMemo(() => {
     if (!organizationId) return null;
@@ -62,6 +64,8 @@ export function useLiveEventStream({
     }
 
     closeRequestedRef.current = false;
+    let didOpen = false;
+    let retryTimer: number | null = null;
 
     const connect = () => {
       if (closeRequestedRef.current) return;
@@ -71,52 +75,56 @@ export function useLiveEventStream({
 
       source.addEventListener("open", () => {
         retryRef.current = 0;
-        handlers?.onOpen?.();
+        didOpen = true;
+        handlersRef.current?.onOpen?.();
       });
 
       source.addEventListener("heartbeat", (event) => {
         const payload = safeParse((event as MessageEvent<string>).data);
         if (!payload) return;
-        handlers?.onHeartbeat?.(payload);
+        handlersRef.current?.onHeartbeat?.(payload);
       });
 
       source.addEventListener("recommendations.snapshot", (event) => {
         const payload = safeParse((event as MessageEvent<string>).data);
         if (!payload) return;
-        handlers?.onRecommendationSnapshot?.(payload);
+        handlersRef.current?.onRecommendationSnapshot?.(payload);
       });
 
       source.addEventListener("recommendation.created", (event) => {
         const payload = safeParse((event as MessageEvent<string>).data);
         if (!payload) return;
-        handlers?.onRecommendationCreated?.(payload);
+        handlersRef.current?.onRecommendationCreated?.(payload);
       });
 
       source.addEventListener("alert", (event) => {
         const payload = safeParse((event as MessageEvent<string>).data);
         if (!payload) return;
-        handlers?.onAlert?.(payload);
+        handlersRef.current?.onAlert?.(payload);
       });
 
       source.addEventListener("domain.signal", (event) => {
         const payload = safeParse((event as MessageEvent<string>).data);
         if (!payload) return;
-        handlers?.onDomainSignal?.(payload);
+        handlersRef.current?.onDomainSignal?.(payload);
       });
 
       source.addEventListener("executive.action", (event) => {
         const payload = safeParse((event as MessageEvent<string>).data);
         if (!payload) return;
-        handlers?.onExecutiveAction?.(payload);
+        handlersRef.current?.onExecutiveAction?.(payload);
       });
 
       source.addEventListener("error", (event) => {
         const payload = safeParse((event as MessageEvent<string>).data);
-        handlers?.onError?.((payload?.message as string) ?? "stream error");
+        handlersRef.current?.onError?.((payload?.message as string) ?? "stream error");
       });
 
       source.onerror = () => {
-        handlers?.onClose?.();
+        if (didOpen) {
+          handlersRef.current?.onClose?.();
+          didOpen = false;
+        }
         source.close();
         eventSourceRef.current = null;
 
@@ -125,10 +133,11 @@ export function useLiveEventStream({
         }
 
         retryRef.current += 1;
-        handlers?.onRetry?.(retryRef.current);
+        handlersRef.current?.onRetry?.(retryRef.current);
 
         const retryMs = Math.min(MAX_RETRY_MS, BASE_RETRY_MS * 2 ** retryRef.current);
-        window.setTimeout(() => {
+        retryTimer = window.setTimeout(() => {
+          retryTimer = null;
           connect();
         }, retryMs);
       };
@@ -138,11 +147,18 @@ export function useLiveEventStream({
 
     return () => {
       closeRequestedRef.current = true;
-      handlers?.onClose?.();
+      if (retryTimer !== null) {
+        window.clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      if (didOpen) {
+        handlersRef.current?.onClose?.();
+        didOpen = false;
+      }
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
       eventSourceRef.current = null;
     };
-  }, [enabled, streamUrl, handlers]);
+  }, [enabled, streamUrl]);
 }
