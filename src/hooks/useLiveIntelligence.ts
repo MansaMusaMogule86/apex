@@ -150,6 +150,44 @@ export function useLiveIntelligence(domain: LiveDomain, enabled = true) {
     gcTime: 120000,
   });
 
+  const kpiQuery = useQuery({
+    queryKey: ["live", "kpi-snapshots", organizationId],
+    queryFn: async () => {
+      const res = await fetch(`/api/live/kpi-snapshots?organization_id=${organizationId}`);
+      if (!res.ok) throw new Error("Failed to fetch KPIs");
+      return res.json() as Promise<{
+        snapshots: Record<string, { signal_value: number; confidence: number; anomaly_score: number }>;
+      }>;
+    },
+    enabled: enabled && domain === "home", // Only fetch global KPIs for home domain or overview
+    refetchInterval: enabled ? 30000 : false,
+  });
+
+  useEffect(() => {
+    if (kpiQuery.data?.snapshots) {
+      const s = kpiQuery.data.snapshots;
+      const mapping: Record<string, LiveDomain> = {
+        prestige_index: "home",
+        market_velocity: "market",
+        lead_purity: "lead",
+        founder_gravity: "founder",
+        influence_yield: "influence",
+        revenue_projection: "reports",
+      };
+
+      Object.entries(mapping).forEach(([key, targetDomain]) => {
+        const snap = s[key];
+        if (snap) {
+          setDomainKpi(targetDomain, {
+            rollingAvg: Number(snap.signal_value),
+            confidenceBias: Number(snap.confidence) - 50,
+            amplifiedSignal: Number(snap.anomaly_score),
+          });
+        }
+      });
+    }
+  }, [kpiQuery.data, setDomainKpi]);
+
   useEffect(() => {
     const rows = recommendationQuery.data?.recommendations ?? [];
     if (!rows.length) {

@@ -18,29 +18,32 @@ import Testimonials from "@/components/marketing/Testimonials";
 import PrivateAccessOnboarding from "@/components/marketing/PrivateAccessOnboarding";
 import CTASection from "@/components/marketing/CTASection";
 import Footer from "@/components/marketing/Footer";
+import LiveIntelligenceProvider from "@/providers/LiveIntelligenceProvider";
 
 export default function Page() {
   return (
-    <main suppressHydrationWarning className="apex-shell bg-void text-beige">
-      <SmoothScroll />
-      <AmbientIntelligenceScene />
-      <CustomCursor />
-      <ParticleBackground />
-      <Navbar />
-      <Hero />
-      <PrestigeMetrics />
-      <IntelligenceSystems />
-      <Services />
-      <AISuite />
-      <LuxuryDashboardDemo />
-      <ExecutiveDashboards />
-      <CaseStudies />
-      <InfluencerNetwork />
-      <FounderSection />
-      <Testimonials />
-      <PrivateAccessOnboarding />
-      <CTASection />
-      <Footer />
-    </main>
+    <LiveIntelligenceProvider>
+      <main suppressHydrationWarning className="apex-shell bg-void text-beige">
+        <SmoothScroll />
+        <AmbientIntelligenceScene />
+        <CustomCursor />
+        <ParticleBackground />
+        <Navbar />
+        <Hero />
+        <PrestigeMetrics />
+        <IntelligenceSystems />
+        <Services />
+        <AISuite />
+        <LuxuryDashboardDemo />
+        <ExecutiveDashboards />
+        <CaseStudies />
+        <InfluencerNetwork />
+        <FounderSection />
+        <Testimonials />
+        <PrivateAccessOnboarding />
+        <CTASection />
+        <Footer />
+      </main>
+    </LiveIntelligenceProvider>
   );
 }

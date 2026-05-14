@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import MagneticButton from "@/components/marketing/MagneticButton";
+import { useLiveIntelligenceStore, type LiveDomain } from "@/stores/live-intelligence-store";
+import { useLiveIntelligence } from "@/hooks/useLiveIntelligence";
 
 type IntelMetric = {
   label: string;
@@ -12,58 +14,8 @@ type IntelMetric = {
   commentary: string;
   status: "Live" | "Stable" | "Watch";
   spark: number[];
+  domain: LiveDomain;
 };
-
-const INTEL_METRICS: IntelMetric[] = [
-  {
-    label: "Prestige Index",
-    value: "96.4",
-    delta: "+4.2%",
-    commentary: "Brand authority strengthening in GCC urban clusters.",
-    status: "Live",
-    spark: [36, 42, 40, 52, 58, 61, 68],
-  },
-  {
-    label: "Market Velocity",
-    value: "2.8x",
-    delta: "+0.3x",
-    commentary: "Transaction cadence accelerating in private channels.",
-    status: "Stable",
-    spark: [22, 27, 31, 38, 43, 44, 49],
-  },
-  {
-    label: "Revenue Projection",
-    value: "AED 184M",
-    delta: "+11.8%",
-    commentary: "Quarter outcome favored by launch sequencing shift.",
-    status: "Live",
-    spark: [48, 46, 51, 54, 60, 66, 73],
-  },
-  {
-    label: "Influence Yield",
-    value: "3.6x",
-    delta: "+0.5x",
-    commentary: "Creator cohort B outperforming expected trust transfer.",
-    status: "Live",
-    spark: [24, 26, 30, 35, 41, 47, 54],
-  },
-  {
-    label: "Lead Purity",
-    value: "89.7",
-    delta: "+7.1%",
-    commentary: "Inbound quality improving from intent-based segmentation.",
-    status: "Stable",
-    spark: [31, 34, 39, 38, 44, 50, 57],
-  },
-  {
-    label: "Founder Gravity",
-    value: "93.2",
-    delta: "+2.9%",
-    commentary: "Founder narrative now driving direct board-level inquiries.",
-    status: "Watch",
-    spark: [44, 49, 47, 53, 57, 58, 62],
-  },
-];
 
 function Sparkline({ values }: { values: number[] }) {
   const max = Math.max(...values);
@@ -93,6 +45,36 @@ function Sparkline({ values }: { values: number[] }) {
 
 export default function Hero() {
   const rootRef = useRef<HTMLElement | null>(null);
+  
+  // Connect to the home domain for real-time overview updates
+  const { connection } = useLiveIntelligence("home");
+  const domainKpi = useLiveIntelligenceStore((state) => state.domainKpi);
+
+  const metrics: IntelMetric[] = useMemo(() => {
+    const config = [
+      { label: "Prestige Index", domain: "home" as LiveDomain, format: (v: number) => v.toFixed(1), unit: "", commentary: "Brand authority strengthening in GCC urban clusters." },
+      { label: "Market Velocity", domain: "market" as LiveDomain, format: (v: number) => v.toFixed(1), unit: "x", commentary: "Transaction cadence accelerating in private channels." },
+      { label: "Revenue Projection", domain: "reports" as LiveDomain, format: (v: number) => `AED ${Math.round(v)}M`, unit: "", commentary: "Quarter outcome favored by launch sequencing shift." },
+      { label: "Influence Yield", domain: "influence" as LiveDomain, format: (v: number) => v.toFixed(1), unit: "x", commentary: "Creator cohort B outperforming expected trust transfer." },
+      { label: "Lead Purity", domain: "lead" as LiveDomain, format: (v: number) => v.toFixed(1), unit: "", commentary: "Inbound quality improving from intent-based segmentation." },
+      { label: "Founder Gravity", domain: "founder" as LiveDomain, format: (v: number) => v.toFixed(1), unit: "", commentary: "Founder narrative now driving direct board-level inquiries." },
+    ];
+
+    return config.map((c) => {
+      const kpi = domainKpi[c.domain];
+      const val = kpi.rollingAvg || (c.label === "Prestige Index" ? 96.4 : c.label === "Market Velocity" ? 2.8 : 85); // Fallback to realistic values if store is zero
+      
+      return {
+        label: c.label,
+        value: `${c.format(val)}${c.unit}`,
+        delta: `${kpi.driftPct >= 0 ? "+" : ""}${kpi.driftPct}%`,
+        commentary: c.commentary,
+        status: kpi.driftPct > 5 ? "Live" : kpi.driftPct < -2 ? "Watch" : "Stable",
+        spark: [30, 35, 32, 45, 50, 48, 60].map(v => v + (kpi.driftPct * 2)), // Simulated spark shift
+        domain: c.domain,
+      };
+    });
+  }, [domainKpi]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -154,7 +136,7 @@ export default function Hero() {
               transition={{ delay: 0.7 + index * 0.1, duration: 0.55 }}
               className="inline-flex items-center gap-2 rounded-[2px] border border-white/12 bg-white/[0.02] px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.24em] text-titanium"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-signal-blue" />
+              <span className={`h-1.5 w-1.5 rounded-full ${connection.state === 'connected' ? 'bg-signal-blue' : 'bg-risk-amber animate-pulse'}`} />
               {chip}
             </motion.span>
           ))}
@@ -163,14 +145,14 @@ export default function Hero() {
         <div data-hero="strip" className="mt-10 w-full rounded-[2px] border border-white/12 bg-gradient-to-b from-carbon/90 to-obsidian/90 p-3 shadow-[0_28px_70px_rgba(0,0,0,0.42)] md:p-4">
           <div className="mb-3 flex items-center justify-between gap-3 border-b border-white/10 pb-3">
             <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-titanium md:text-[10px]">Live Intelligence Overview</p>
-            <span className="inline-flex items-center gap-2 rounded-[2px] border border-signal-blue/35 bg-signal-blue/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-signal-blue">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal-blue" />
-              Stream Active
+            <span className={`inline-flex items-center gap-2 rounded-[2px] border border-signal-blue/35 bg-signal-blue/10 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-signal-blue ${connection.state !== 'connected' ? 'opacity-50' : ''}`}>
+              <span className={`h-1.5 w-1.5 rounded-full bg-signal-blue ${connection.state === 'connected' ? 'animate-pulse' : ''}`} />
+              {connection.state === 'connected' ? 'Stream Active' : 'Connecting...'}
             </span>
           </div>
 
           <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-            {INTEL_METRICS.map((metric, index) => (
+            {metrics.map((metric, index) => (
               <motion.article
                 key={metric.label}
                 initial={{ opacity: 0, y: 10 }}
@@ -194,7 +176,7 @@ export default function Hero() {
                 </div>
                 <div className="mt-2 flex items-end justify-between gap-3">
                   <p className="font-display text-2xl leading-none text-warm-white md:text-[1.75rem]">{metric.value}</p>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-gold-light">{metric.delta}</p>
+                  <p className={`font-mono text-[10px] uppercase tracking-[0.18em] ${metric.delta.startsWith('-') ? 'text-risk-amber' : 'text-gold-light'}`}>{metric.delta}</p>
                 </div>
                 <div className="mt-2">
                   <Sparkline values={metric.spark} />
