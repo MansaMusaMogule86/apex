@@ -1,5 +1,4 @@
 import "@/styles/apex.css";
-import CustomCursor from "@/components/shared/CustomCursor";
 import ParticleBackground from "@/components/shared/ParticleBackground";
 import SmoothScroll from "@/components/marketing/SmoothScroll";
 import AmbientIntelligenceScene from "@/components/marketing/AmbientIntelligenceScene";
@@ -26,7 +25,6 @@ export default function Page() {
       <main suppressHydrationWarning className="apex-shell bg-void text-beige">
         <SmoothScroll />
         <AmbientIntelligenceScene />
-        <CustomCursor />
         <ParticleBackground />
         <Navbar />
         <Hero />

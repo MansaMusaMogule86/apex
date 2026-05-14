@@ -421,18 +421,6 @@ nav.apex-nav.scrolled {
 .footer-legal { font-family: var(--font-mono), monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--mist); opacity: 0.4; }
 .footer-location { font-family: var(--font-mono), monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--gold); opacity: 0.4; text-transform: uppercase; }
 
-/* ─── CURSOR ───────────────────────────────────────────────── */
-.cursor-dot, .cursor-ring {
-  position: fixed; top: 0; left: 0; border-radius: 50%;
-  pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: opacity 0.3s;
-}
-.cursor-dot { width: 5px; height: 5px; background: var(--gold); }
-.cursor-ring {
-  width: 32px; height: 32px; border: 1px solid rgba(200,169,110,0.5);
-  transition: width 0.3s var(--ease-silk), height 0.3s var(--ease-silk), border-color 0.3s;
-}
-body.cursor-hover .cursor-ring { width: 56px; height: 56px; border-color: var(--gold); }
-
 /* ─── RESPONSIVE ───────────────────────────────────────────── */
 @media (max-width: 900px) {
   nav.apex-nav { padding: 0 24px; }

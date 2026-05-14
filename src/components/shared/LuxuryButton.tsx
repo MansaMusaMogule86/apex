@@ -97,12 +97,13 @@ const LuxuryButton = forwardRef<
     loading = false,
     className = "",
     children,
+    ...restProps
   } = props;
 
   const classes = `${base} ${sizes[size]} ${variants[variant]} ${className}`;
 
-  if ("href" in props && props.href) {
-    const { href, external } = props;
+  if ("href" in restProps && restProps.href) {
+    const { href, external, ...anchorRest } = restProps as Omit<LinkProps, keyof CommonProps> & { href: string; external?: boolean };
     if (external) {
       return (
         <a
@@ -111,6 +112,7 @@ const LuxuryButton = forwardRef<
           target="_blank"
           rel="noopener noreferrer"
           className={classes}
+          {...anchorRest}
         >
           <Inner withArrow={withArrow} loading={loading}>
             {children}
@@ -123,6 +125,7 @@ const LuxuryButton = forwardRef<
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={href}
         className={classes}
+        {...anchorRest}
       >
         <Inner withArrow={withArrow} loading={loading}>
           {children}
@@ -131,15 +134,14 @@ const LuxuryButton = forwardRef<
     );
   }
 
-  const { href: _href, ...rest } = props as ButtonProps & { href?: undefined };
-  void _href;
+  const { href: _href, ...buttonRest } = restProps as any;
 
   return (
     <button
       ref={ref as React.Ref<HTMLButtonElement>}
       className={classes}
-      disabled={loading || rest.disabled}
-      {...rest}
+      disabled={loading || buttonRest.disabled}
+      {...buttonRest}
     >
       <Inner withArrow={withArrow} loading={loading}>
         {children}

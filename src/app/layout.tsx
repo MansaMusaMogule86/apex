@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Outfit, DM_Mono } from "next/font/google";
+import CustomCursor from "@/components/shared/CustomCursor";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -46,7 +47,10 @@ export default function RootLayout({
       className={`${cormorant.variable} ${outfit.variable} ${dmMono.variable}`}
       style={{ backgroundColor: "#030305" }}
     >
-      <body className="min-h-[100dvh] antialiased overflow-x-hidden">{children}</body>
+      <body className="min-h-[100dvh] antialiased overflow-x-hidden">
+        <CustomCursor />
+        {children}
+      </body>
     </html>
   );
 }

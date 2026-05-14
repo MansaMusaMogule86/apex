@@ -49,7 +49,7 @@ export function useLiveEventStream({
   handlersRef.current = handlers;
 
   const streamUrl = useMemo(() => {
-    if (!organizationId) return null;
+    if (!organizationId || typeof window === "undefined") return null;
     const url = new URL("/api/live/stream", window.location.origin);
     url.searchParams.set("organization_id", organizationId);
     if (workspaceId) {
