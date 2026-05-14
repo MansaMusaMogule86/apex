@@ -1,13 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOrgAccess } from "@/lib/live/authz";
 import { heartbeatPayload, sseEncode } from "@/lib/live/realtime";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
+const DEV_BYPASS = process.env.APEX_DEV_BYPASS === "true" &&
+  process.env.VERCEL_ENV !== "production" &&
+  process.env.NODE_ENV !== "production";
+
 export async function GET(req: NextRequest) {
   const organizationId = req.nextUrl.searchParams.get("organization_id");
-  const workspaceId = req.nextUrl.searchParams.get("workspace_id");
 
   if (!organizationId) {
     return NextResponse.json({ error: "organization_id is required" }, { status: 400 });
@@ -21,58 +24,78 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: message }, { status });
   }
 
-  const admin = createAdminClient();
   const encoder = new TextEncoder();
   let closed = false;
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
-      const push = async () => {
-        if (closed) return;
-
-        let query = admin
-          .from("recommendations_live")
-          .select("id,title,priority_index,confidence_score,escalation_state,created_at")
-          .eq("organization_id", organizationId)
-          .is("invalidated_at", null)
-          .order("created_at", { ascending: false })
-          .limit(10);
-
-        if (workspaceId) {
-          query = query.eq("workspace_id", workspaceId);
-        }
-
-        const { data, error } = await query;
-        if (error) {
-          controller.enqueue(encoder.encode(sseEncode("error", { message: error.message })));
-          return;
-        }
-
+      // In dev bypass, send an empty snapshot immediately
+      if (DEV_BYPASS) {
         controller.enqueue(
           encoder.encode(
             sseEncode("recommendations.snapshot", {
               ts: new Date().toISOString(),
-              recommendations: data ?? [],
+              recommendations: [],
             }),
           ),
         );
-      };
+      } else {
+        // Production: query Supabase
+        const admin = createAdminClient();
 
-      void push();
+        const push = async () => {
+          if (closed) return;
 
-      const snapshotInterval = setInterval(() => {
+          let query = admin
+            .from("recommendations_live")
+            .select("id,title,priority_index,confidence_score,escalation_state,created_at")
+            .eq("organization_id", organizationId)
+            .is("invalidated_at", null)
+            .order("created_at", { ascending: false })
+            .limit(10);
+
+          const workspaceId = req.nextUrl.searchParams.get("workspace_id");
+          if (workspaceId) {
+            query = query.eq("workspace_id", workspaceId);
+          }
+
+          const { data, error } = await query;
+          if (error) {
+            controller.enqueue(encoder.encode(sseEncode("error", { message: error.message })));
+            return;
+          }
+
+          controller.enqueue(
+            encoder.encode(
+              sseEncode("recommendations.snapshot", {
+                ts: new Date().toISOString(),
+                recommendations: data ?? [],
+              }),
+            ),
+          );
+        };
+
         void push();
-      }, 7000);
+
+        const snapshotInterval = setInterval(() => {
+          void push();
+        }, 7000);
+
+        req.signal.addEventListener("abort", () => {
+          clearInterval(snapshotInterval);
+        });
+      }
 
       const heartbeatInterval = setInterval(() => {
-        controller.enqueue(encoder.encode(sseEncode("heartbeat", heartbeatPayload())));
+        if (!closed) {
+          controller.enqueue(encoder.encode(sseEncode("heartbeat", heartbeatPayload())));
+        }
       }, 15000);
 
       req.signal.addEventListener("abort", () => {
         closed = true;
-        clearInterval(snapshotInterval);
         clearInterval(heartbeatInterval);
-        controller.close();
+        try { controller.close(); } catch { /* already closed */ }
       });
     },
   });

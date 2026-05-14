@@ -15,8 +15,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "organization_id is required" }, { status: 400 });
   }
 
+  const isDevBypass =
+    process.env.APEX_DEV_BYPASS === "true" &&
+    process.env.VERCEL_ENV !== "production" &&
+    process.env.NODE_ENV !== "production";
+
   try {
     await requireOrgAccess(organizationId);
+
+    // In dev bypass without a real Supabase connection, return empty
+    if (isDevBypass && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json({ recommendations: [] });
+    }
 
     const admin = createAdminClient();
     let query = admin

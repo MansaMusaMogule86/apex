@@ -44,6 +44,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${cormorant.variable} ${outfit.variable} ${dmMono.variable}`}
+      style={{ backgroundColor: "#030305" }}
     >
       <body className="min-h-[100dvh] antialiased overflow-x-hidden">{children}</body>
     </html>

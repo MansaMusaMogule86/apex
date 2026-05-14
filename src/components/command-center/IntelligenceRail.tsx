@@ -37,7 +37,7 @@ function RailContent({ onItemClick }: { onItemClick?: () => void }) {
     scenarios,
     jumpToScenario,
   } = useExecutiveDemoMode();
-  const liveAlerts = useLiveIntelligenceStore((state) => state.alerts.slice(0, 5));
+  const liveAlerts = useLiveIntelligenceStore((state) => state.alerts).slice(0, 5);
   const connection = useLiveIntelligenceStore((state) => state.connection);
 
   const scenarioFeed: RailItem[] = demoModeEnabled

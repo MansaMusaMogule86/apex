@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     const result = await completeJSON<BrandSafetyResult>({
       prompt,
       system: SYSTEM,
-      model: "best",
+      model: "smart",
       maxTokens: 1800,
     });
     return NextResponse.json(result);

@@ -23,16 +23,21 @@ if (process.env.OPENROUTER_API_KEY) {
 export { openrouterInstance as openrouter };
 
 // ─── Models ──────────────────────────────────────────────────────
+// Assignments by task type:
+//   fast     → quick classification, signal tagging           ~$0.08/$0.30 per 1M
+//   balanced → structured JSON (most routes)                  ~$0.10/$0.40 per 1M
+//   smart    → prose writing, concierge, nuanced judgment     ~$0.80/$4 per 1M
+//   best     → complex strategic reasoning, brand safety      ~$3/$15 per 1M
 export const MODELS = {
-  fast:     "mistralai/mistral-7b-instruct",
-  balanced: "mistralai/mistral-small",
-  smart:    "mistralai/mistral-medium",
-  best:     "anthropic/claude-sonnet-4.5",
+  fast:     "google/gemini-2.0-flash-lite",
+  balanced: "google/gemini-2.0-flash-001",
+  smart:    "anthropic/claude-3.5-haiku",
+  best:     "anthropic/claude-sonnet-4-5",
 } as const;
 
 export type ModelKey = keyof typeof MODELS;
 
-export const DEFAULT_MODEL = MODELS.best;
+export const DEFAULT_MODEL = MODELS.balanced;
 
 // ─── Helper: simple text completion ──────────────────────────────
 export async function complete({

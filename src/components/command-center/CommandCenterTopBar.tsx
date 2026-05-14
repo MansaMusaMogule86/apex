@@ -16,10 +16,12 @@ import {
 import { useCommandCenterShell } from "@/components/command-center/ShellContext";
 import { useExecutiveDemoMode } from "@/components/command-center/demo/ExecutiveDemoModeProvider";
 import { useLiveIntelligenceStore } from "@/stores/live-intelligence-store";
+import ApexConciergePanel from "@/components/command-center/ApexConciergePanel";
 
 const ORGANIZATIONS = ["Maison Atelier", "Apex Developments", "Noor Holdings"];
 
 export default function CommandCenterTopBar() {
+  const [conciergeOpen, setConciergeOpen] = useState(false);
   const { setMobileSidebarOpen, setMobileRailOpen, theme, setTheme } = useCommandCenterShell();
   const {
     enabled: demoModeEnabled,
@@ -45,6 +47,7 @@ export default function CommandCenterTopBar() {
           : "bg-titanium";
 
   return (
+    <>
     <header className="sticky top-0 z-30 flex h-16 items-center gap-2 border-b border-white/12 bg-[var(--cc-surface)] px-3 backdrop-blur-xl md:gap-3 md:px-6">
       <button
         type="button"
@@ -150,12 +153,18 @@ export default function CommandCenterTopBar() {
         </button>
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-[2px] border border-white/15 text-titanium"
+          onClick={() => setConciergeOpen((v) => !v)}
+          className="inline-flex h-11 w-11 items-center justify-center rounded-[2px] border border-gold/25 bg-gold/[0.06] text-gold transition-colors hover:bg-gold/[0.14]"
           data-cursor="interactive"
+          aria-label="Open APEX Concierge"
+          title="APEX Concierge"
         >
           <Bot className="h-4 w-4" />
         </button>
       </div>
     </header>
+
+    <ApexConciergePanel open={conciergeOpen} onClose={() => setConciergeOpen(false)} />
+    </>
   );
 }

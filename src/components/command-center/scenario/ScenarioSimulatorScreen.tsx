@@ -267,7 +267,7 @@ export default function ScenarioSimulatorScreen() {
             {mobileExecutiveMode ? (
               <div className="space-y-4">
                 <MobileQuickSnapshot outcomes={outcomes} />
-                <AiRecommendationEngine />
+                <AiRecommendationEngine controls={controls} outcomes={outcomes} />
                 <RightExecutiveRail />
               </div>
             ) : (
@@ -280,7 +280,7 @@ export default function ScenarioSimulatorScreen() {
                 <ForecastVisualizationEngine data={forecast} />
                 <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
                   <CompetitorResponseEngine />
-                  <AiRecommendationEngine />
+                  <AiRecommendationEngine controls={controls} outcomes={outcomes} />
                 </div>
                 <TimelineEngine timeline={controls.timeline} />
               </>

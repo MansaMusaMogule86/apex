@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     const result = await completeJSON<AudienceResult>({
       prompt,
       system: SYSTEM,
-      model: "smart",
+      model: "balanced",
       maxTokens: 1400,
     });
     return NextResponse.json(result);

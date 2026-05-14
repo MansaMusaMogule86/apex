@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { complete } from "@/lib/openrouter";
+import { complete, streamCompletion } from "@/lib/openrouter";
 
 export const runtime = "nodejs";
 
@@ -11,6 +11,7 @@ const MessageSchema = z.object({
 
 const Schema = z.object({
   messages: z.array(MessageSchema).min(1).max(40),
+  stream: z.boolean().default(false),
   client: z
     .object({
       org_name: z.string().max(120).optional(),
@@ -20,10 +21,13 @@ const Schema = z.object({
     .optional(),
 });
 
-const SYSTEM = `You are the APEX Concierge — the in-platform advisor for luxury houses.
-Tone: quiet, precise, never breathless. No emoji, no exclamation marks. No markdown headers, no bullet floods. Prefer prose over lists.
-You can answer questions about campaigns, audiences, creators, brand safety, growth, and the platform itself.
-If asked to do something destructive (delete data, send messages externally), politely decline and recommend the proper screen.`;
+const SYSTEM = `You are the APEX Concierge — the embedded strategic advisor for luxury real estate and brand operators.
+You have deep expertise in luxury market dynamics, founder authority positioning, influencer strategy, HNWI lead intelligence, and prestige brand management.
+Tone: quiet authority. Precise, never breathless. Speak like a senior strategic advisor, not a chatbot.
+No emoji. No exclamation marks. No markdown headers. No bullet-point floods. Prefer concise, high-signal prose.
+You help with: campaign strategy, audience segmentation, market signals, competitor intelligence, brand safety, growth forecasting, and platform navigation.
+If asked to take destructive actions (delete data, send external messages), decline gracefully and redirect to the appropriate screen.
+Keep responses concise — under 200 words unless the question demands depth. Lead with the insight, not the preamble.`;
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -32,6 +36,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
+
   const parsed = Schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -39,11 +44,12 @@ export async function POST(req: NextRequest) {
       { status: 422 },
     );
   }
-  const { messages, client } = parsed.data;
+
+  const { messages, client, stream: wantStream } = parsed.data;
 
   const context = client
-    ? `Client: ${client.org_name ?? "—"}${client.tier ? ` · tier ${client.tier}` : ""}${
-        client.apex_score !== undefined ? ` · APEX ${client.apex_score}` : ""
+    ? `Client context: ${client.org_name ?? "—"}${client.tier ? ` · tier ${client.tier}` : ""}${
+        client.apex_score !== undefined ? ` · APEX score ${client.apex_score}` : ""
       }`
     : null;
 
@@ -55,13 +61,37 @@ export async function POST(req: NextRequest) {
     .filter(Boolean)
     .join("\n");
 
+  // ─── Streaming response ───────────────────────────────────────────
+  if (wantStream) {
+    try {
+      const readable = await streamCompletion({ prompt, system: SYSTEM, model: "smart" });
+      const encoder = new TextEncoder();
+
+      const transformed = new TransformStream<string, Uint8Array>({
+        transform(chunk, controller) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: chunk })}\n\n`));
+        },
+        flush(controller) {
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        },
+      });
+
+      return new Response(readable.pipeThrough(transformed), {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache, no-transform",
+          Connection: "keep-alive",
+        },
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Streaming failed";
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
+  }
+
+  // ─── Standard response ────────────────────────────────────────────
   try {
-    const reply = await complete({
-      prompt,
-      system: SYSTEM,
-      model: "best",
-      maxTokens: 800,
-    });
+    const reply = await complete({ prompt, system: SYSTEM, model: "smart", maxTokens: 800 });
     return NextResponse.json({ reply: reply.trim() });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Generation failed";

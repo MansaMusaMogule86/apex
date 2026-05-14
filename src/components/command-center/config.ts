@@ -13,14 +13,14 @@ import type { CommandNavItem, RightRailItem } from "@/components/command-center/
 
 export const COMMAND_NAV_ITEMS: CommandNavItem[] = [
   { label: "Command Center", href: "/dashboard", icon: Command },
-  { label: "Market Intelligence", href: "/dashboard/analytics", icon: Building2 },
-  { label: "Lead Intelligence", href: "/dashboard/leads", icon: UserSquare2 },
-  { label: "Founder Authority", href: "/dashboard/founder-authority", icon: Activity },
-  { label: "Influence Network", href: "/dashboard/influencers", icon: Network },
-  { label: "Executive Reports", href: "/dashboard/reports", icon: BarChart3 },
-  { label: "Scenario Simulator", href: "/dashboard/scenario-simulator", icon: FlaskConical, badge: "AI" },
-  { label: "AI Recommendation Engine", href: "/dashboard/ai", icon: BrainCircuit, badge: "CORE" },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Market Intelligence", href: "/analytics", icon: Building2 },
+  { label: "Lead Intelligence", href: "/leads", icon: UserSquare2 },
+  { label: "Founder Authority", href: "/founder-authority", icon: Activity },
+  { label: "Influence Network", href: "/influencers", icon: Network },
+  { label: "Executive Reports", href: "/reports", icon: BarChart3 },
+  { label: "Scenario Simulator", href: "/scenario-simulator", icon: FlaskConical, badge: "AI" },
+  { label: "AI Recommendation Engine", href: "/ai", icon: BrainCircuit, badge: "CORE" },
+  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 export const RIGHT_RAIL_ITEMS: RightRailItem[] = [

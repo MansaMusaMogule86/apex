@@ -21,7 +21,6 @@ export default function AiStrategyFeed() {
   }
 
   const critical = STRATEGY_FEED.filter((s) => s.priority === "critical");
-  const rest = STRATEGY_FEED.filter((s) => s.priority !== "critical");
 
   return (
     <AuthorityPanel

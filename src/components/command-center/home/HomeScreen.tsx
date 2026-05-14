@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import AlertCenter from "@/components/command-center/home/AlertCenter";
 import KpiRibbon from "@/components/command-center/home/KpiRibbon";
 import LowerAnalytics from "@/components/command-center/home/LowerAnalytics";
@@ -9,10 +10,54 @@ import { ALERTS, KPI_DATA, RECOMMENDATIONS } from "@/components/command-center/h
 import { applyDomainKpiDrift, useLiveIntelligence } from "@/hooks/useLiveIntelligence";
 import type { AlertItem, Recommendation } from "@/components/command-center/home/types";
 
+type AiRec = {
+  id: string;
+  title: string;
+  summary: string;
+  riskLevel: "low" | "medium" | "high";
+  expectedUplift: string;
+  confidence: number;
+  timeline: string;
+  actionOwner: string;
+  suggestedAction: string;
+};
+
 export default function HomeScreen() {
   const { runtime, recommendations, alerts, recommendationQuery, connection } = useLiveIntelligence("home");
+  const [aiRecs, setAiRecs] = useState<AiRec[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
 
-  const loading = recommendationQuery.isLoading && !recommendations.length;
+  const hasSuabaseRecs = recommendations.length > 0;
+
+  // Fetch AI recommendations only when Supabase has no data
+  useEffect(() => {
+    if (hasSuabaseRecs) return;
+
+    let cancelled = false;
+    setAiLoading(true);
+
+    fetch("/api/ai/recommendations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ domain: "home" }),
+    })
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("AI fetch failed"))))
+      .then((data: { recommendations: AiRec[] }) => {
+        if (!cancelled) setAiRecs(data.recommendations ?? []);
+      })
+      .catch(() => {
+        // silently fall through to static data
+      })
+      .finally(() => {
+        if (!cancelled) setAiLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasSuabaseRecs]);
+
+  const loading = (recommendationQuery.isLoading && !recommendations.length) || aiLoading;
 
   const kpiData = applyDomainKpiDrift(KPI_DATA, runtime.driftPct, runtime.confidenceBias);
 
@@ -28,7 +73,9 @@ export default function HomeScreen() {
         timeline: item.escalationState === "urgent" ? "Immediate" : "Next 24h",
         suggestedAction: `Execute priority lane ${index + 1} for ${item.title.toLowerCase()}.`,
       }))
-    : RECOMMENDATIONS;
+    : aiRecs.length
+      ? aiRecs
+      : RECOMMENDATIONS;
 
   const alertData: AlertItem[] = alerts.length
     ? alerts.slice(0, 5).map((item) => ({
@@ -60,6 +107,9 @@ export default function HomeScreen() {
           <span>Stream {connection.state}</span>
           <span>Queue {runtime.queueDepth}</span>
           <span>Rate {runtime.eventRate}/m</span>
+          {aiRecs.length > 0 && !hasSuabaseRecs && (
+            <span className="text-gold/70">· AI-generated recommendations</span>
+          )}
         </div>
       </motion.header>
 

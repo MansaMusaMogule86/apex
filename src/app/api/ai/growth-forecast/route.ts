@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     const result = await completeJSON<GrowthForecastResult>({
       prompt,
       system: SYSTEM,
-      model: "smart",
+      model: "balanced",
       maxTokens: 1600,
     });
     return NextResponse.json(result);

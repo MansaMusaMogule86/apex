@@ -60,7 +60,7 @@ const LuxuryFormInput = forwardRef<
   const labelClass = [
     "pointer-events-none absolute left-4 font-mono uppercase tracking-[0.32em] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
     isFilled
-      ? "top-2 text-[9px] text-gold/80"
+      ? "top-2.5 text-[9px] text-gold/80"
       : "top-1/2 -translate-y-1/2 text-[11px] text-mist",
   ].join(" ");
 
@@ -126,14 +126,14 @@ const LuxuryFormInput = forwardRef<
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
-      <div className={`${wrapBase} ${borderClass} h-[52px]`}>
+      <div className={`${wrapBase} ${borderClass} h-[58px]`}>
         <label htmlFor={id} className={labelClass}>
           {label}
         </label>
         <input
           ref={ref as React.Ref<HTMLInputElement>}
           id={id}
-          className={`${base} h-full pt-3 text-sm`}
+          className={`${base} h-full pt-5 text-sm`}
           onFocus={(e) => {
             setFocused(true);
             onFocus?.(e);
