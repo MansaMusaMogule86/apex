@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Network, Users, Share2, TrendingUp, Award, Link2 } from "lucide-react";
+import { Network, Users, Share2, TrendingUp, Link2 } from "lucide-react";
 import PageShell from "@/components/command-center/PageShell";
 import MetricCard from "@/components/command-center/ui/MetricCard";
 import IntelligenceRail from "@/components/command-center/ui/IntelligenceRail";

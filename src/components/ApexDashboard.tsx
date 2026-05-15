@@ -1,21 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, 
   TrendingDown, 
-  Activity, 
-  Zap, 
-  Shield, 
-  Users, 
-  ArrowRight,
-  Clock,
-  BarChart3,
-  Target,
   AlertTriangle,
-  CheckCircle2,
   X,
-  Maximize2
-} from 'lucide-react';
+  Radar
+} from "lucide-react";
 
 // === TYPES ===
 interface ContentItem {
@@ -31,445 +22,600 @@ interface ContentItem {
 
 interface Signal {
   id: string;
-  tag: 'AUTH' | 'INV' | 'NARR' | 'TRUST' | 'COMP';
+  tag: 'AUTH' | 'TRUST' | 'NARR' | 'INV' | 'COMP';
   headline: string;
   value: string;
   timestamp: string;
   status: 'positive' | 'negative' | 'neutral';
+  source: 'internal' | 'external' | 'ai_generated';
 }
 
-interface TimelineEvent {
+interface Alert {
   id: string;
-  time: string;
+  level: 'P1' | 'P2' | 'P3' | 'P4';
   title: string;
   description: string;
-  impact: 'critical' | 'high' | 'medium' | 'low';
-  category: string;
+  timestamp: string;
+  autoResolve: boolean;
+  resolved?: boolean;
 }
 
-// === MOCK DATA GENERATOR ===
-const generateContentData = (): ContentItem[] => [
+// === MOCK DATA ===
+const INITIAL_CONTENT: ContentItem[] = [
   {
     id: '1',
-    title: 'Founder market memo: scarcity and discipline',
+    title: 'Q4 Market Outlook: Scarcity & Discipline',
     trust: 92,
-    authConv: 38,
-    engagement: 88,
-    appts: 14,
+    authConv: 85,
+    engagement: 78,
+    appts: 12,
     investorSignal: 'STRONG',
     type: 'memo'
   },
   {
     id: '2',
-    title: 'Institutional brief: delivery certainty framework',
-    trust: 87,
-    authConv: 33,
-    engagement: 84,
-    appts: 11,
-    investorSignal: 'STRONG',
+    title: 'Delivery Certainty Framework',
+    trust: 88,
+    authConv: 72,
+    engagement: 81,
+    appts: 8,
+    investorSignal: 'MODERATE',
     type: 'brief'
   },
   {
     id: '3',
-    title: 'Founder interview: strategic capital lens',
-    trust: 84,
-    authConv: 29,
-    engagement: 81,
-    appts: 9,
-    investorSignal: 'MODERATE',
+    title: 'Strategic Capital Lens Interview',
+    trust: 85,
+    authConv: 91,
+    engagement: 86,
+    appts: 15,
+    investorSignal: 'STRONG',
     type: 'interview'
   }
 ];
 
-const generateSignals = (): Signal[] => [
-  { id: '1', tag: 'AUTH', headline: 'Founder gravity score surpassed 93 threshold', value: '+4.8%', timestamp: 'just now', status: 'positive' },
-  { id: '2', tag: 'INV', headline: 'High-conviction investor cohort engagement up 14%', value: '+14%', timestamp: '2m ago', status: 'positive' },
-  { id: '3', tag: 'NARR', headline: 'Market architect narrative velocity accelerating', value: '+9%', timestamp: '5m ago', status: 'positive' },
-  { id: '4', tag: 'TRUST', headline: 'HNWI trust sentiment spiked post governance brief', value: '+6%', timestamp: '8m ago', status: 'positive' },
-  { id: '5', tag: 'COMP', headline: 'Competitor A narrative overlap reduced 4 points', value: '-4pts', timestamp: '11m ago', status: 'negative' },
-  { id: '6', tag: 'AUTH', headline: 'Voice share expanded in premium institutional channels', value: '+2.1%', timestamp: '14m ago', status: 'positive' },
-  { id: '7', tag: 'NARR', headline: 'Scarcity framing content reached peak distribution', value: '+18%', timestamp: '19m ago', status: 'positive' },
-  { id: '8', tag: 'INV', headline: 'Series B investor cohort added to authority watch list', value: 'new', timestamp: '23m ago', status: 'neutral' }
+const INITIAL_SIGNALS: Signal[] = [
+  { id: 's1', tag: 'AUTH', headline: 'Authority conversion +23% on founder memo', value: '+23%', timestamp: '2m ago', status: 'positive', source: 'ai_generated' },
+  { id: 's2', tag: 'TRUST', headline: 'Trust score exceeded 90 on market outlook', value: '92/100', timestamp: '5m ago', status: 'positive', source: 'ai_generated' },
+  { id: 's3', tag: 'NARR', headline: 'Narrative engagement up 18% week-over-week', value: '+18%', timestamp: '12m ago', status: 'positive', source: 'ai_generated' },
+  { id: 's4', tag: 'INV', headline: 'Strong investor signal on delivery framework', value: 'STRONG', timestamp: '18m ago', status: 'positive', source: 'ai_generated' },
+  { id: 's5', tag: 'COMP', headline: 'Competitor voice share declining', value: '-8%', timestamp: '25m ago', status: 'positive', source: 'external' },
 ];
 
-const generateTimeline = (): TimelineEvent[] => [
-  { id: '1', time: '09:42', title: 'Critical threshold crossed', description: 'Founder gravity score exceeded 93 — automatic authority escalation triggered', impact: 'critical', category: 'Authority' },
-  { id: '2', time: '09:38', title: 'Investor engagement spike', description: 'High-conviction cohort showed 14% engagement increase following scarcity memo', impact: 'high', category: 'Investor' },
-  { id: '3', time: '09:35', title: 'Narrative velocity alert', description: 'Market architect narrative accelerating beyond baseline — content distribution peak', impact: 'high', category: 'Narrative' },
-  { id: '4', time: '09:31', title: 'Trust sentiment recovery', description: 'HNWI trust rebounded +6% post-governance brief delivery', impact: 'medium', category: 'Trust' },
-  { id: '5', time: '09:28', title: 'Competitor gap widened', description: 'Competitor A narrative overlap reduced to historic low — defensive advantage', impact: 'high', category: 'Competitive' },
-  { id: '6', time: '09:24', title: 'Voice share expansion', description: 'Premium institutional channel voice share increased 2.1% — authority reinforcement', impact: 'medium', category: 'Authority' },
-  { id: '7', time: '09:19', title: 'Distribution peak reached', description: 'Scarcity framing content achieved maximum network distribution', impact: 'high', category: 'Distribution' },
-  { id: '8', time: '09:15', title: 'New cohort identified', description: 'Series B investor segment added to authority watch list for targeted engagement', impact: 'medium', category: 'Investor' }
+const INITIAL_ALERTS: Alert[] = [
+  { id: 'a1', level: 'P3', title: 'Lead purity drop detected', description: 'External channel quality declined 11% in 48h', timestamp: '9m ago', autoResolve: true },
+  { id: 'a2', level: 'P2', title: 'Founder authority velocity decline', description: 'Content engagement down 8% week-over-week', timestamp: '1h ago', autoResolve: false },
+];
+
+const RECOMMENDATIONS = [
+  {
+    id: 'r1',
+    priority: 'HIGH',
+    headline: 'Double down on founder-led narratives',
+    action: 'Increase founder content budget by 30%',
+    reason: 'Authority content showing 3.2x conversion vs promotional'
+  },
+  {
+    id: 'r2',
+    priority: 'MEDIUM',
+    headline: 'Pause underperforming external channels',
+    action: 'Reallocate 20% of paid spend to organic',
+    reason: 'CAC increasing 45% while quality declines'
+  },
+  {
+    id: 'r3',
+    priority: 'FAST',
+    headline: 'Deploy trust signals for DIFC prospects',
+    action: 'Generate micro-content for high-intent segment',
+    reason: '40% longer decision cycles detected'
+  }
 ];
 
 // === COMPONENT ===
 export default function ApexDashboard() {
-  const [contentData, setContentData] = useState<ContentItem[]>(generateContentData());
-  const [signals, setSignals] = useState<Signal[]>(generateSignals());
-  const [timeline, setTimeline] = useState<TimelineEvent[]>(generateTimeline());
-  const [showTimeline, setShowTimeline] = useState(false);
-  const [selectedContent, setSelectedContent] = useState<string | null>(null);
-  const [isLive, setIsLive] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'signals' | 'alerts'>('overview');
+  const [content] = useState<ContentItem[]>(INITIAL_CONTENT);
+  const [signals] = useState<Signal[]>(INITIAL_SIGNALS);
+  const [alerts, setAlerts] = useState<Alert[]>(INITIAL_ALERTS);
+  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  const [showSimulateModal, setShowSimulateModal] = useState(false);
+  const [simulateScenario, setSimulateScenario] = useState<'content' | 'budget' | 'market'>('content');
+  const [simulationResult, setSimulationResult] = useState<string | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
 
-  // Simulate real-time updates
   useEffect(() => {
-    if (!isLive) return;
+    setMounted(true);
+  }, []);
 
-    const interval = setInterval(() => {
-      // Update random signal
-      setSignals(prev => {
-        const newSignals = [...prev];
-        const randomIdx = Math.floor(Math.random() * newSignals.length);
-        const signal = newSignals[randomIdx];
-
-        // Update value slightly
-        const currentVal = parseFloat(signal.value);
-        if (!isNaN(currentVal)) {
-          const change = (Math.random() - 0.5) * 2;
-          signal.value = `${currentVal >= 0 ? '+' : ''}${(currentVal + change).toFixed(1)}%`;
-        }
-        signal.timestamp = 'just now';
-
-        return newSignals;
-      });
-
-      setLastUpdate(new Date());
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isLive]);
-
-  const getSignalColor = (tag: Signal['tag']) => {
-    const colors = {
-      AUTH: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-      INV: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-      NARR: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      TRUST: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-      COMP: 'bg-red-500/20 text-red-400 border-red-500/30'
-    };
-    return colors[tag];
+  const runSimulation = () => {
+    setIsSimulating(true);
+    setSimulationResult(null);
+    
+    setTimeout(() => {
+      const results = {
+        content: 'Simulating 30% increase in founder content...\n\nProjected outcomes (90 days):\n• Authority score: +18% (72 → 85)\n• Trust index: +12% (88 → 98)\n• Lead quality: +22%\n• Conversion rate: +15%\n\nRisk level: LOW\nConfidence: 87%',
+        budget: 'Simulating budget reallocation...\n\nShifting 20% from paid to organic:\n• CAC reduction: -35%\n• Lead quality improvement: +28%\n• Short-term volume impact: -12%\n• 90-day net revenue impact: +8%\n\nRisk level: MEDIUM\nConfidence: 82%',
+        market: 'Simulating market entry timing...\n\nDelaying launch by 2 weeks:\n• Pricing power improvement: +8%\n• Competitive positioning: STRONGER\n• Market readiness: +15%\n• Opportunity cost: $2.1M\n\nRisk level: LOW\nConfidence: 79%'
+      };
+      
+      setSimulationResult(results[simulateScenario]);
+      setIsSimulating(false);
+    }, 2000);
   };
 
-  const getStatusIcon = (status: Signal['status']) => {
-    if (status === 'positive') return <TrendingUp className="w-3 h-3 text-emerald-400" />;
-    if (status === 'negative') return <TrendingDown className="w-3 h-3 text-red-400" />;
-    return <Activity className="w-3 h-3 text-amber-400" />;
+  const resolveAlert = (id: string) => {
+    setAlerts(prev => prev.map(a => a.id === id ? { ...a, resolved: true } : a));
   };
 
-  const getImpactColor = (impact: TimelineEvent['impact']) => {
-    const colors = {
-      critical: 'text-red-400 bg-red-500/10 border-red-500/20',
-      high: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-      medium: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-      low: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-    };
-    return colors[impact];
+  const getInvestorSignalColor = (signal: string) => {
+    switch (signal) {
+      case 'STRONG': return 'text-emerald-400 bg-emerald-400/10';
+      case 'MODERATE': return 'text-amber-400 bg-amber-400/10';
+      case 'WEAK': return 'text-rose-400 bg-rose-400/10';
+      default: return 'text-slate-400 bg-slate-400/10';
+    }
   };
+
+  const getAlertColor = (level: string) => {
+    switch (level) {
+      case 'P1': return 'text-rose-400 border-rose-400/30 bg-rose-400/5';
+      case 'P2': return 'text-orange-400 border-orange-400/30 bg-orange-400/5';
+      case 'P3': return 'text-amber-400 border-amber-400/30 bg-amber-400/5';
+      case 'P4': return 'text-blue-400 border-blue-400/30 bg-blue-400/5';
+      default: return 'text-slate-400 border-slate-400/30 bg-slate-400/5';
+    }
+  };
+
+  const compositeScore = (item: ContentItem) => 
+    Math.round((item.trust * 0.3 + item.authConv * 0.25 + item.engagement * 0.25 + Math.min(item.appts * 5, 100) * 0.2));
+
+  if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-gray-300 p-6">
+    <div className="min-h-screen bg-[#030305] text-[#e8e4da] font-sans selection:bg-[#c9b27c]/30">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-light text-white tracking-wide">APEX COMMAND CENTER</h1>
-          <p className="text-xs text-gray-500 mt-1">Executive intelligence operating surface</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-xs">
-            <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-gray-600'}`} />
-            <span className={isLive ? 'text-emerald-400' : 'text-gray-500'}>
-              {isLive ? 'STREAM CONNECTED' : 'OFFLINE'}
-            </span>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#030305]/90 backdrop-blur-xl border-b border-[#c9b27c]/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#c9b27c] to-[#8b7355] flex items-center justify-center">
+              <span className="text-[#030305] font-bold text-xl">A</span>
+            </div>
+            <div>
+              <h1 className="font-display text-xl tracking-wider text-[#c9b27c]">APEX</h1>
+              <p className="text-[10px] text-[#9b9ca3] uppercase tracking-[0.3em]">Command Center</p>
+            </div>
           </div>
-          <button 
-            onClick={() => setIsLive(!isLive)}
-            className="px-3 py-1 text-xs border border-white/10 rounded hover:bg-white/5 transition-colors"
-          >
-            {isLive ? 'PAUSE' : 'RESUME'}
-          </button>
-        </div>
-      </div>
-
-      {/* Critical Alerts */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-white/[0.02] border border-red-500/20 rounded-lg"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-red-400 font-medium">CRITICAL</span>
-            <span className="text-xs text-emerald-400">DEPLOYED</span>
-          </div>
-          <p className="text-sm text-gray-300">Reduce narrative dilution</p>
-          <p className="text-xs text-gray-500 mt-1">Impact: +10 influence conversion</p>
-          <div className="mt-2 h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div className="h-full bg-red-500/50 w-[88%]" />
-          </div>
-          <span className="text-xs text-gray-500">88%</span>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="p-4 bg-white/[0.02] border border-red-500/20 rounded-lg"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-red-400 font-medium">CRITICAL</span>
-            <span className="text-xs text-emerald-400">DEPLOYED</span>
-          </div>
-          <p className="text-sm text-gray-300">Increase trust reinforcement touchpoints</p>
-          <p className="text-xs text-gray-500 mt-1">Impact: +12 sentiment stability</p>
-          <div className="mt-2 h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div className="h-full bg-red-500/50 w-[91%]" />
-          </div>
-          <span className="text-xs text-gray-500">91%</span>
-        </motion.div>
-      </div>
-
-      {/* Content Intelligence Panel */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="mb-6"
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xs text-gray-500 tracking-widest">CONTENT PERFORMANCE</h2>
-            <h3 className="text-xl font-light text-white">Content Intelligence Panel</h3>
-            <p className="text-xs text-gray-500 mt-1">
-              Decision: Double down on content that compounds trust and appointment conversion.
-            </p>
-          </div>
-          <div className="text-xs text-gray-500">
-            Last update: {lastUpdate.toLocaleTimeString()}
-          </div>
-        </div>
-
-        <div className="bg-white/[0.02] border border-white/10 rounded-lg overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-3 text-xs text-gray-500 border-b border-white/10">
-            <span>CONTENT</span>
-            <span className="text-center">TRUST</span>
-            <span className="text-center">AUTH CONV</span>
-            <span className="text-center">ENGAGEMENT</span>
-            <span className="text-center">APPTS</span>
-            <span className="text-center">INVESTOR SIGNAL</span>
-          </div>
-
-          {/* Table Rows */}
-          <AnimatePresence>
-            {contentData.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                onClick={() => setSelectedContent(selectedContent === item.id ? null : item.id)}
-                className={`grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-3 border-b border-white/5 cursor-pointer transition-colors hover:bg-white/[0.03] ${
-                  selectedContent === item.id ? 'bg-white/[0.05]' : ''
+          
+          <nav className="flex items-center gap-1 bg-[#0a0a0d] rounded-lg p-1 border border-[#c9b27c]/10">
+            {[
+              { key: 'overview', label: 'Overview' },
+              { key: 'content', label: 'Content' },
+              { key: 'signals', label: 'Signals' },
+              { key: 'alerts', label: 'Alerts' },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key as typeof activeTab)}
+                className={`px-4 py-2 rounded-md text-xs font-mono uppercase tracking-wider transition-all duration-300 ${
+                  activeTab === tab.key
+                    ? 'bg-[#c9b27c]/20 text-[#c9b27c]'
+                    : 'text-[#9b9ca3] hover:text-[#e8e4da]'
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <Activity className="w-3 h-3 text-amber-500/50" />
-                  <span className="text-sm text-gray-300">{item.title}</span>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-sm text-amber-400">{item.trust}</span>
-                  <div className="w-16 h-1 bg-gray-800 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${item.trust}%` }}
-                      className="h-full bg-amber-500/50" 
-                    />
-                  </div>
-                </div>
-                <div className="text-center text-sm text-gray-400">{item.authConv}%</div>
-                <div className="text-center text-sm text-gray-400">{item.engagement}</div>
-                <div className="text-center text-sm text-gray-400">{item.appts}</div>
-                <div className="flex justify-center">
-                  <span className={`px-2 py-0.5 text-xs rounded border ${
-                    item.investorSignal === 'STRONG' 
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
-                      : item.investorSignal === 'MODERATE'
-                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                      : 'bg-red-500/10 text-red-400 border-red-500/20'
-                  }`}>
-                    {item.investorSignal}
-                  </span>
-                </div>
-              </motion.div>
+                {tab.label}
+              </button>
             ))}
-          </AnimatePresence>
+          </nav>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between p-3 text-xs text-gray-500">
-            <span>Total appointments generated: <span className="text-amber-400">34</span></span>
-            <span>Avg trust score: <span className="text-amber-400">88</span></span>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowSimulateModal(true)}
+              className="px-4 py-2 bg-[#c9b27c]/10 border border-[#c9b27c]/30 rounded-lg text-xs font-mono uppercase tracking-wider text-[#c9b27c] hover:bg-[#c9b27c]/20 transition-all duration-300 flex items-center gap-2"
+            >
+              <Radar className="w-4 h-4" />
+              Simulate
+            </button>
           </div>
         </div>
-      </motion.div>
+      </header>
 
-      {/* Live Signal Stream */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xs text-gray-500 tracking-widest">REAL-TIME AUTHORITY INTELLIGENCE</h2>
-            <h3 className="text-xl font-light text-white">Live Signal Stream</h3>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs text-emerald-400">LIVE</span>
-          </div>
-        </div>
+      {/* Main Content */}
+      <main className="pt-24 pb-12 px-6 max-w-7xl mx-auto">
+        <AnimatePresence mode="wait">
+          {/* OVERVIEW TAB */}
+          {activeTab === 'overview' && (
+            <motion.div
+              key="overview"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-8"
+            >
+              {/* KPI Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { label: "Market Velocity", value: "+12.4%", trend: "up", icon: TrendingUp },
+                  { label: "Lead Quality", value: "87.3", trend: "up", icon: TrendingUp },
+                  { label: "Conversion Rate", value: "4.8%", trend: "up", icon: TrendingUp },
+                  { label: "Active Alerts", value: "4", trend: "down", icon: TrendingDown },
+                ].map((kpi) => (
+                  <div
+                    key={kpi.label}
+                    className="bg-[#0a0a0d] border border-[#c9b27c]/10 rounded-xl p-5 hover:border-[#c9b27c]/30 transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#9b9ca3]">{kpi.label}</span>
+                      <kpi.icon className={`w-4 h-4 ${kpi.trend === 'up' ? 'text-emerald-400' : 'text-rose-400'}`} />
+                    </div>
+                    <div className="text-2xl font-display text-[#e8e4da]">{kpi.value}</div>
+                  </div>
+                ))}
+              </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <AnimatePresence>
-            {signals.map((signal, idx) => (
-              <motion.div
-                key={signal.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
-                className="p-3 bg-white/[0.02] border border-white/10 rounded-lg hover:bg-white/[0.04] transition-colors group"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-2 h-2 rounded-full mt-1.5 ${
-                      signal.status === 'positive' ? 'bg-emerald-500' : 
-                      signal.status === 'negative' ? 'bg-red-500' : 'bg-amber-500'
-                    }`} />
-                    <div>
-                      <p className="text-sm text-gray-300 group-hover:text-white transition-colors">
-                        {signal.headline}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className={`px-1.5 py-0.5 text-[10px] font-mono rounded border ${getSignalColor(signal.tag)}`}>
-                          {signal.tag}
-                        </span>
-                        <span className={`text-xs font-mono ${
-                          signal.value.startsWith('+') ? 'text-emerald-400' : 
-                          signal.value.startsWith('-') ? 'text-red-400' : 'text-amber-400'
+              {/* Two Column Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Recommendations */}
+                <div className="lg:col-span-2 space-y-4">
+                  <h2 className="text-sm font-mono uppercase tracking-[0.2em] text-[#c9b27c] mb-4">Priority Recommendations</h2>
+                  {RECOMMENDATIONS.map((rec) => (
+                    <div
+                      key={rec.id}
+                      className="bg-[#0a0a0d] border border-[#c9b27c]/10 rounded-xl p-5 hover:border-[#c9b27c]/30 transition-all duration-300 group"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded ${
+                          rec.priority === 'HIGH' ? 'bg-rose-400/10 text-rose-400' :
+                          rec.priority === 'MEDIUM' ? 'bg-amber-400/10 text-amber-400' :
+                          'bg-emerald-400/10 text-emerald-400'
                         }`}>
+                          {rec.priority} PRIORITY
+                        </span>
+                      </div>
+                      <h3 className="font-display text-lg text-[#e8e4da] mb-2 group-hover:text-[#c9b27c] transition-colors">{rec.headline}</h3>
+                      <p className="text-sm text-[#9b9ca3] mb-3">{rec.reason}</p>
+                      <div className="flex items-center gap-2 text-xs text-[#c9b27c]">
+                        <span className="font-mono uppercase tracking-wider">Suggested Action:</span>
+                        <span>{rec.action}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Live Signals */}
+                <div className="space-y-4">
+                  <h2 className="text-sm font-mono uppercase tracking-[0.2em] text-[#c9b27c] mb-4">Live Signals</h2>
+                  <div className="bg-[#0a0a0d] border border-[#c9b27c]/10 rounded-xl p-4 space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
+                    {signals.map((signal) => (
+                      <div
+                        key={signal.id}
+                        className="p-3 rounded-lg bg-[#030305] border border-[#c9b27c]/5 hover:border-[#c9b27c]/20 transition-all"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] font-mono text-[#c9b27c]">{signal.tag}</span>
+                          <span className="text-[10px] text-[#9b9ca3]">{signal.timestamp}</span>
+                        </div>
+                        <p className="text-xs text-[#e8e4da] mb-1">{signal.headline}</p>
+                        <span className={`text-xs font-mono ${signal.status === 'positive' ? 'text-emerald-400' : 'text-rose-400'}`}>
                           {signal.value}
                         </span>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-gray-600">
-                    <Clock className="w-3 h-3" />
-                    {signal.timestamp}
+                    ))}
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </motion.div>
+              </div>
+            </motion.div>
+          )}
 
-      {/* Open Full Intelligence Timeline Button */}
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => setShowTimeline(true)}
-        className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 hover:bg-amber-500/20 transition-colors"
-      >
-        <Target className="w-4 h-4" />
-        <span className="text-sm">OPEN FULL INTELLIGENCE TIMELINE</span>
-        <ArrowRight className="w-4 h-4" />
-      </motion.button>
+          {/* CONTENT TAB */}
+          {activeTab === 'content' && (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-mono uppercase tracking-[0.2em] text-[#c9b27c]">Content Intelligence</h2>
+                <button className="text-xs text-[#9b9ca3] hover:text-[#c9b27c] transition-colors">View All</button>
+              </div>
 
-      {/* Full Timeline Modal */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {content.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => setSelectedContent(item)}
+                    className="bg-[#0a0a0d] border border-[#c9b27c]/10 rounded-xl p-5 hover:border-[#c9b27c]/30 transition-all duration-300 cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#9b9ca3]">{item.type}</span>
+                      <span className={`text-[10px] font-mono uppercase px-2 py-1 rounded ${getInvestorSignalColor(item.investorSignal)}`}>
+                        {item.investorSignal}
+                      </span>
+                    </div>
+                    <h3 className="font-display text-base text-[#e8e4da] mb-4 group-hover:text-[#c9b27c] transition-colors line-clamp-2">{item.title}</h3>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#9b9ca3]">Trust</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 h-1 bg-[#c9b27c]/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#c9b27c] rounded-full" style={{ width: `${item.trust}%` }} />
+                          </div>
+                          <span className="text-[#e8e4da] font-mono">{item.trust}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#9b9ca3]">Authority</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 h-1 bg-[#c9b27c]/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#c9b27c] rounded-full" style={{ width: `${item.authConv}%` }} />
+                          </div>
+                          <span className="text-[#e8e4da] font-mono">{item.authConv}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-[#9b9ca3]">Engagement</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 h-1 bg-[#c9b27c]/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#c9b27c] rounded-full" style={{ width: `${item.engagement}%` }} />
+                          </div>
+                          <span className="text-[#e8e4da] font-mono">{item.engagement}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-[#c9b27c]/10 flex items-center justify-between">
+                      <span className="text-[10px] text-[#9b9ca3]">{item.appts} appointments</span>
+                      <span className="text-[10px] font-mono text-[#c9b27c]">Score: {compositeScore(item)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* SIGNALS TAB */}
+          {activeTab === 'signals' && (
+            <motion.div
+              key="signals"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <h2 className="text-sm font-mono uppercase tracking-[0.2em] text-[#c9b27c]">Signal Stream</h2>
+              
+              <div className="space-y-3">
+                {signals.map((signal) => (
+                  <div
+                    key={signal.id}
+                    className="bg-[#0a0a0d] border border-[#c9b27c]/10 rounded-xl p-5 hover:border-[#c9b27c]/30 transition-all duration-300"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          signal.status === 'positive' ? 'bg-emerald-400/10 text-emerald-400' : 'bg-rose-400/10 text-rose-400'
+                        }`}>
+                          <span className="text-xs font-mono font-bold">{signal.tag}</span>
+                        </div>
+                        <div>
+                          <p className="text-[#e8e4da] mb-1">{signal.headline}</p>
+                          <div className="flex items-center gap-3 text-[10px] text-[#9b9ca3]">
+                            <span>{signal.timestamp}</span>
+                            <span>•</span>
+                            <span className="capitalize">{signal.source.replace('_', ' ')}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <span className={`text-lg font-mono font-bold ${
+                        signal.status === 'positive' ? 'text-emerald-400' : 'text-rose-400'
+                      }`}>
+                        {signal.value}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* ALERTS TAB */}
+          {activeTab === 'alerts' && (
+            <motion.div
+              key="alerts"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <h2 className="text-sm font-mono uppercase tracking-[0.2em] text-[#c9b27c]">Active Alerts</h2>
+              
+              <div className="space-y-3">
+                {alerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className={`border rounded-xl p-5 transition-all duration-300 ${
+                      alert.resolved ? 'opacity-50 bg-[#0a0a0d]/50 border-[#c9b27c]/5' : getAlertColor(alert.level)
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <AlertTriangle className={`w-5 h-5 mt-0.5 ${
+                          alert.level === 'P1' ? 'text-rose-400' :
+                          alert.level === 'P2' ? 'text-orange-400' :
+                          alert.level === 'P3' ? 'text-amber-400' : 'text-blue-400'
+                        }`} />
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="text-xs font-mono font-bold">{alert.level}</span>
+                            <h3 className="text-[#e8e4da] font-medium">{alert.title}</h3>
+                          </div>
+                          <p className="text-sm text-[#9b9ca3] mb-2">{alert.description}</p>
+                          <span className="text-[10px] text-[#9b9ca3]">{alert.timestamp}</span>
+                        </div>
+                      </div>
+                      {!alert.resolved && (
+                        <button
+                          onClick={() => resolveAlert(alert.id)}
+                          className="px-3 py-1.5 bg-[#c9b27c]/10 border border-[#c9b27c]/30 rounded text-xs font-mono uppercase tracking-wider text-[#c9b27c] hover:bg-[#c9b27c]/20 transition-all"
+                        >
+                          Resolve
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      {/* Simulation Modal */}
       <AnimatePresence>
-        {showTimeline && (
+        {showSimulateModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#030305]/90 backdrop-blur-xl p-6"
+            onClick={() => !isSimulating && setShowSimulateModal(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-4xl max-h-[80vh] bg-[#0f0f13] border border-white/10 rounded-xl overflow-hidden"
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#0a0a0d] border border-[#c9b27c]/20 rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/10">
-                <div>
-                  <h2 className="text-lg font-light text-white">Intelligence Timeline</h2>
-                  <p className="text-xs text-gray-500">Complete chronological record of all signals and decisions</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <BarChart3 className="w-4 h-4 text-gray-400" />
-                  </button>
-                  <button 
-                    onClick={() => setShowTimeline(false)}
-                    className="p-2 hover:bg-white/5 rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4 text-gray-400" />
-                  </button>
-                </div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-display text-2xl text-[#c9b27c]">Scenario Simulator</h2>
+                <button
+                  onClick={() => setShowSimulateModal(false)}
+                  className="p-2 hover:bg-[#c9b27c]/10 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-[#9b9ca3]" />
+                </button>
               </div>
 
-              {/* Timeline Content */}
-              <div className="p-4 overflow-y-auto max-h-[60vh] space-y-3">
-                {timeline.map((event, idx) => (
+              <div className="space-y-6">
+                <div className="flex gap-3">
+                  {[
+                    { key: 'content', label: 'Content Strategy' },
+                    { key: 'budget', label: 'Budget Shift' },
+                    { key: 'market', label: 'Market Timing' },
+                  ].map((scenario) => (
+                    <button
+                      key={scenario.key}
+                      onClick={() => setSimulateScenario(scenario.key as typeof simulateScenario)}
+                      disabled={isSimulating}
+                      className={`flex-1 py-3 px-4 rounded-lg border text-xs font-mono uppercase tracking-wider transition-all ${
+                        simulateScenario === scenario.key
+                          ? 'bg-[#c9b27c]/20 border-[#c9b27c] text-[#c9b27c]'
+                          : 'border-[#c9b27c]/20 text-[#9b9ca3] hover:border-[#c9b27c]/50'
+                      }`}
+                    >
+                      {scenario.label}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={runSimulation}
+                  disabled={isSimulating}
+                  className="w-full py-4 bg-[#c9b27c] text-[#030305] rounded-lg font-mono uppercase tracking-wider text-sm font-bold hover:bg-[#d4bd8b] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSimulating ? 'Running Simulation...' : 'Run Simulation'}
+                </button>
+
+                {simulationResult && (
                   <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="flex gap-4 p-3 bg-white/[0.02] border border-white/5 rounded-lg hover:bg-white/[0.04] transition-colors"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-[#030305] border border-[#c9b27c]/20 rounded-lg p-6 font-mono text-sm whitespace-pre-line text-[#e8e4da]"
                   >
-                    <div className="flex flex-col items-center">
-                      <span className="text-xs font-mono text-gray-500">{event.time}</span>
-                      <div className="w-px h-full bg-white/10 mt-1" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`px-2 py-0.5 text-[10px] rounded border ${getImpactColor(event.impact)}`}>
-                          {event.impact.toUpperCase()}
-                        </span>
-                        <span className="text-xs text-gray-500">{event.category}</span>
-                      </div>
-                      <h4 className="text-sm text-white font-medium">{event.title}</h4>
-                      <p className="text-xs text-gray-400 mt-1">{event.description}</p>
-                    </div>
-                    <div className="flex items-center">
-                      {event.impact === 'critical' && <AlertTriangle className="w-4 h-4 text-red-400" />}
-                      {event.impact === 'high' && <Zap className="w-4 h-4 text-amber-400" />}
-                      {event.impact === 'medium' && <CheckCircle2 className="w-4 h-4 text-blue-400" />}
-                      {event.impact === 'low' && <Shield className="w-4 h-4 text-emerald-400" />}
-                    </div>
+                    {simulationResult}
                   </motion.div>
-                ))}
-              </div>
-
-              {/* Modal Footer */}
-              <div className="flex items-center justify-between p-4 border-t border-white/10">
-                <span className="text-xs text-gray-500">{timeline.length} events recorded</span>
-                <div className="flex gap-2">
-                  <button className="px-3 py-1.5 text-xs border border-white/10 rounded hover:bg-white/5 transition-colors">
-                    Export JSON
-                  </button>
-                  <button className="px-3 py-1.5 text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded hover:bg-amber-500/20 transition-colors">
-                    Generate Report
-                  </button>
-                </div>
+                )}
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Content Detail Modal */}
+      <AnimatePresence>
+        {selectedContent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#030305]/90 backdrop-blur-xl p-6"
+            onClick={() => setSelectedContent(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#0a0a0d] border border-[#c9b27c]/20 rounded-2xl p-8 max-w-lg w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#9b9ca3]">{selectedContent.type}</span>
+                <button
+                  onClick={() => setSelectedContent(null)}
+                  className="p-2 hover:bg-[#c9b27c]/10 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-[#9b9ca3]" />
+                </button>
+              </div>
+
+              <h2 className="font-display text-2xl text-[#e8e4da] mb-6">{selectedContent.title}</h2>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-[#030305] border border-[#c9b27c]/10 rounded-lg p-4">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#9b9ca3]">Trust Score</span>
+                  <div className="text-2xl font-display text-[#c9b27c] mt-1">{selectedContent.trust}</div>
+                </div>
+                <div className="bg-[#030305] border border-[#c9b27c]/10 rounded-lg p-4">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#9b9ca3]">Authority Conv.</span>
+                  <div className="text-2xl font-display text-[#c9b27c] mt-1">{selectedContent.authConv}</div>
+                </div>
+                <div className="bg-[#030305] border border-[#c9b27c]/10 rounded-lg p-4">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#9b9ca3]">Engagement</span>
+                  <div className="text-2xl font-display text-[#c9b27c] mt-1">{selectedContent.engagement}</div>
+                </div>
+                <div className="bg-[#030305] border border-[#c9b27c]/10 rounded-lg p-4">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#9b9ca3]">Appointments</span>
+                  <div className="text-2xl font-display text-[#c9b27c] mt-1">{selectedContent.appts}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-6 border-t border-[#c9b27c]/10">
+                <span className={`text-xs font-mono uppercase px-3 py-1.5 rounded ${getInvestorSignalColor(selectedContent.investorSignal)}`}>
+                  {selectedContent.investorSignal} Signal
+                </span>
+                <span className="text-sm font-mono text-[#9b9ca3]">Composite: {compositeScore(selectedContent)}</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Global Styles */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono&display=swap');
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(200, 169, 110, 0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(200, 169, 110, 0.3); }
+      `}</style>
     </div>
   );
 }

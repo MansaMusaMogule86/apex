@@ -139,7 +139,8 @@ export default function CommandCenterTopBar() {
         </button>
         <button
           type="button"
-          className="hidden h-10 items-center gap-2 rounded-[2px] border border-gold/30 bg-gold/[0.08] px-3 text-[11px] uppercase tracking-[0.18em] text-gold md:inline-flex"
+          onClick={() => setConciergeOpen(true)}
+          className="hidden h-10 items-center gap-2 rounded-[2px] border border-gold/30 bg-gold/[0.08] px-3 text-[11px] uppercase tracking-[0.18em] text-gold md:inline-flex hover:bg-gold/20 transition-colors"
           data-cursor="interactive"
         >
           <Sparkles className="h-3.5 w-3.5" /> Run Command

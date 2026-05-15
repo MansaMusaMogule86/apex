@@ -4,6 +4,15 @@ import { requireOrgAccess } from "@/lib/live/authz";
 
 export const runtime = "nodejs";
 
+interface SignalSnapshot {
+  signal_key: string;
+  signal_value: number;
+  confidence: number;
+  anomaly_score: number;
+  trend: string;
+  captured_at: string;
+}
+
 const KPI_KEYS = [
   "prestige_index",
   "market_velocity",
@@ -38,7 +47,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Group by key and take the latest one
-    const latestSnapshots = (data ?? []).reduce((acc: any, curr) => {
+    const snapshots = (data ?? []) as SignalSnapshot[];
+    const latestSnapshots = snapshots.reduce<Record<string, SignalSnapshot>>((acc, curr) => {
       if (!acc[curr.signal_key]) {
         acc[curr.signal_key] = curr;
       }

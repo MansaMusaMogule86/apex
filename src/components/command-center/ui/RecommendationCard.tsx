@@ -12,6 +12,7 @@ interface RecommendationCardProps {
   confidence: number;
   suggestedAction: string;
   onAction?: () => void;
+  isLoading?: boolean;
 }
 
 const typeConfig = {
@@ -46,22 +47,34 @@ export default function RecommendationCard({
   confidence,
   suggestedAction,
   onAction,
+  isLoading,
 }: RecommendationCardProps) {
   const config = typeConfig[type];
   const Icon = config.icon;
 
   return (
     <motion.div
-      whileHover={{ y: -2, scale: 1.01 }}
+      whileHover={isLoading ? {} : { y: -2, scale: 1.01 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "rounded-sm border p-5 transition-all duration-300",
+        "rounded-sm border p-5 transition-all duration-300 relative overflow-hidden",
         config.bgColor,
-        config.borderColor
+        config.borderColor,
+        isLoading && "opacity-80"
       )}
     >
+      {/* Processing Overlay Layer */}
+      {isLoading && (
+        <motion.div 
+          initial={{ x: "-100%" }}
+          animate={{ x: "100%" }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"
+        />
+      )}
+
       {/* Header */}
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-3 relative z-10">
         <div className={cn("p-1.5 rounded-sm", config.bgColor)}>
           <Icon className={cn("h-4 w-4", config.color)} />
         </div>
@@ -71,7 +84,7 @@ export default function RecommendationCard({
         <div className="ml-auto flex items-center gap-1">
           <div className="h-1.5 w-16 rounded-full bg-white/10 overflow-hidden">
             <div 
-              className={cn("h-full rounded-full", config.color.replace("text-", "bg-"))}
+              className={cn("h-full rounded-full transition-all duration-1000", config.color.replace("text-", "bg-"))}
               style={{ width: `${confidence}%` }}
             />
           </div>
@@ -80,10 +93,10 @@ export default function RecommendationCard({
       </div>
 
       {/* Content */}
-      <h3 className="font-display text-lg text-warm-white mb-2">{recommendation}</h3>
-      <p className="text-sm text-titanium mb-3">{reason}</p>
+      <h3 className="font-display text-lg text-warm-white mb-2 relative z-10">{recommendation}</h3>
+      <p className="text-sm text-titanium mb-3 relative z-10">{reason}</p>
       
-      <div className="flex items-center gap-2 mb-4 text-xs">
+      <div className="flex items-center gap-2 mb-4 text-xs relative z-10">
         <span className="text-mist">Expected impact:</span>
         <span className="text-gold-light">{expectedImpact}</span>
       </div>
@@ -91,16 +104,29 @@ export default function RecommendationCard({
       {/* Action Button */}
       <button
         onClick={onAction}
+        disabled={isLoading}
         className={cn(
           "w-full py-2.5 px-4 rounded-sm font-mono text-[11px] uppercase tracking-[0.14em] transition-all duration-200",
-          "border hover:shadow-lg",
+          "border hover:shadow-lg relative z-10 flex items-center justify-center gap-2",
           config.bgColor,
           config.borderColor,
           config.color,
-          "hover:brightness-110"
+          "hover:brightness-110 disabled:opacity-50"
         )}
       >
-        {suggestedAction}
+        {isLoading ? (
+          <>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className={cn("h-3 w-3 border-2 border-t-transparent rounded-full", config.borderColor.replace("border-", "border-"))}
+              style={{ borderTopColor: 'currentColor' }}
+            />
+            Processing...
+          </>
+        ) : (
+          suggestedAction
+        )}
       </button>
     </motion.div>
   );

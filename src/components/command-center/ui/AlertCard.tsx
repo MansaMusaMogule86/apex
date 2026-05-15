@@ -11,6 +11,7 @@ interface AlertCardProps {
   timestamp?: string;
   resolved?: boolean;
   onResolve?: () => void;
+  className?: string;
 }
 
 const severityConfig = {
@@ -55,6 +56,7 @@ export default function AlertCard({
   timestamp,
   resolved = false,
   onResolve,
+  className,
 }: AlertCardProps) {
   const config = severityConfig[severity];
   const Icon = config.icon;
@@ -68,7 +70,8 @@ export default function AlertCard({
         config.bgColor,
         config.borderColor,
         config.glow,
-        resolved && "opacity-50"
+        resolved && "opacity-50",
+        className
       )}
     >
       <div className="flex items-start gap-3">

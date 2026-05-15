@@ -134,13 +134,14 @@ const LuxuryButton = forwardRef<
     );
   }
 
-  const { href: _href, ...buttonRest } = restProps as any;
+  const { href, ...buttonRest } = restProps as Record<string, unknown>;
+    void href; // Acknowledge removal of href to avoid 'any' type issues
 
   return (
     <button
       ref={ref as React.Ref<HTMLButtonElement>}
       className={classes}
-      disabled={loading || buttonRest.disabled}
+      disabled={loading || (buttonRest.disabled as boolean | undefined)}
       {...buttonRest}
     >
       <Inner withArrow={withArrow} loading={loading}>

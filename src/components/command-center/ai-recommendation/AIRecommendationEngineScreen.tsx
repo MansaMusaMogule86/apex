@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Send, Check, X, Play, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, X, Sparkles, Radar } from "lucide-react";
 import PageShell from "@/components/command-center/PageShell";
 import RecommendationCard from "@/components/command-center/ui/RecommendationCard";
 import AlertCard from "@/components/command-center/ui/AlertCard";
@@ -155,15 +155,46 @@ export default function AIRecommendationEngineScreen() {
   const [copilotInput, setCopilotInput] = useState("");
   const [copilotResponse, setCopilotResponse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeRecommendationId, setActiveRecommendationId] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: "success" | "info" } | null>(null);
+
+  const handleRecommendationAction = (id: string, actionName: string) => {
+    setActiveRecommendationId(id);
+    setIsLoading(true);
+
+    // Simulate "Back End" processing and data integrity check
+    setTimeout(() => {
+      setIsLoading(false);
+      setActiveRecommendationId(null);
+      setNotification({
+        message: `${actionName} executed successfully. Intelligence layer updated.`,
+        type: "success"
+      });
+
+      // Clear notification after 3s
+      setTimeout(() => setNotification(null), 3000);
+    }, 1200);
+  };
 
   const handleDecision = (id: string, action: "approved" | "dismissed" | "simulated") => {
+    const decision = decisions.find(d => d.id === id);
+    if (!decision) return;
+
     setDecisions(prev => prev.map(d => d.id === id ? { ...d, status: action } : d));
+    
+    setNotification({
+      message: `Strategic decision '${decision.action}' marked as ${action}.`,
+      type: "info"
+    });
+    setTimeout(() => setNotification(null), 3000);
   };
 
   const handleCopilotSubmit = () => {
     if (!copilotInput.trim()) return;
     setIsLoading(true);
-    // Simulate AI response
+    setCopilotResponse(null);
+    
+    // Simulate AI strategy generation
     setTimeout(() => {
       setCopilotResponse(`Based on current market signals, I recommend focusing on founder authority content this week. Lead intelligence shows a 22% correlation between content velocity and VIP conversions. Consider increasing founder content budget by 20-30% while pausing underperforming external channels.`);
       setIsLoading(false);
@@ -172,14 +203,34 @@ export default function AIRecommendationEngineScreen() {
 
   return (
     <PageShell>
+      {/* Notification Overlay */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: -20, x: "-50%" }}
+            className={`fixed top-20 left-1/2 z-50 flex items-center gap-3 rounded-[2px] border px-6 py-3 shadow-2xl backdrop-blur-xl ${
+              notification.type === "success" 
+                ? "border-gold/30 bg-gold/10 text-gold" 
+                : "border-white/20 bg-white/5 text-platinum"
+            }`}
+          >
+            {notification.type === "success" ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em]">{notification.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* KPI Ribbon */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
         <MetricCard
           title="Active Recommendations"
           value="12"
           subtitle="3 high priority"
           trend="up"
           trendValue="+4 this week"
+          className="bg-white/[0.01] border-white/5 hover:border-gold/20 transition-all"
         />
         <MetricCard
           title="Avg Confidence"
@@ -187,6 +238,7 @@ export default function AIRecommendationEngineScreen() {
           subtitle="Above threshold"
           trend="up"
           trendValue="+2.3%"
+          className="bg-white/[0.01] border-white/5 hover:border-gold/20 transition-all"
         />
         <MetricCard
           title="Risk Alerts"
@@ -194,180 +246,206 @@ export default function AIRecommendationEngineScreen() {
           subtitle="1 P2, 3 P3/P4"
           trend="down"
           trendValue="-2 from yesterday"
+          className="bg-white/[0.01] border-white/5 hover:border-gold/20 transition-all"
         />
         <MetricCard
           title="Actions Pending"
           value={decisions.filter(d => d.status === "pending").length.toString()}
           subtitle="Awaiting approval"
+          className="bg-white/[0.01] border-white/5 hover:border-gold/20 transition-all"
         />
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-10">
         {/* Left Column */}
-        <div className="space-y-6">
+        <div className="space-y-12">
           {/* Priority Recommendations */}
-          <section className="rounded-sm border border-white/10 bg-white/[0.02] p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl text-warm-white">Priority Recommendations</h2>
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-mist">
-                AI-Generated
+          <section>
+            <div className="flex items-end justify-between mb-6 px-1">
+              <div>
+                <span className="text-[10px] font-mono tracking-[0.4em] text-gold/60 uppercase">Strategic Priority</span>
+                <h2 className="text-3xl text-white font-light tracking-tighter mt-1 italic font-display">Priority Recommendations</h2>
+              </div>
+              <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/20">
+                AI GEN. ALPHA-4
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {PRIORITY_RECOMMENDATIONS.map((rec) => (
                 <RecommendationCard
                   key={rec.id}
                   {...rec}
-                  onAction={() => console.log("Action:", rec.suggestedAction)}
+                  onAction={() => handleRecommendationAction(rec.id, rec.suggestedAction)}
+                  isLoading={activeRecommendationId === rec.id}
                 />
               ))}
             </div>
           </section>
 
-          {/* Risk Alerts */}
-          <section className="rounded-sm border border-white/10 bg-white/[0.02] p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl text-warm-white">Risk Alerts</h2>
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-critical-crimson">
-                Live Monitoring
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {RISK_ALERTS.map((alert) => (
-                <AlertCard key={alert.id} {...alert} />
-              ))}
-            </div>
-          </section>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            {/* Risk Alerts */}
+            <section>
+              <div className="flex items-end justify-between mb-6 px-1">
+                <div>
+                  <span className="text-[10px] font-mono tracking-[0.4em] text-cinnabar/60 uppercase">Defense Layer</span>
+                  <h2 className="text-2xl text-white font-light tracking-tighter mt-1 font-display italic">Risk Alerts</h2>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {RISK_ALERTS.map((alert) => (
+                  <AlertCard 
+                    key={alert.id} 
+                    {...alert} 
+                    className="bg-white/[0.01] border-white/5 hover:border-cinnabar/20 transition-all"
+                  />
+                ))}
+              </div>
+            </section>
 
-          {/* Decision Queue */}
-          <section className="rounded-sm border border-white/10 bg-white/[0.02] p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl text-warm-white">Decision Queue</h2>
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-mist">
-                {decisions.filter(d => d.status === "pending").length} Pending
-              </span>
-            </div>
-            <div className="space-y-3">
-              {decisions.map((decision) => (
-                <motion.div
-                  key={decision.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="rounded-sm border border-white/8 p-4 bg-white/[0.02]"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-warm-white mb-1">{decision.action}</h4>
-                      <p className="text-xs text-mist mb-1">{decision.context}</p>
-                      <p className="text-xs text-gold-light">Impact: {decision.impact}</p>
-                    </div>
-                    
-                    {decision.status === "pending" ? (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleDecision(decision.id, "approved")}
-                          className="p-2 rounded-sm bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 hover:bg-emerald-400/20 transition-colors"
-                          title="Approve"
-                        >
-                          <Check className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDecision(decision.id, "dismissed")}
-                          className="p-2 rounded-sm bg-critical-crimson/10 border border-critical-crimson/30 text-critical-crimson hover:bg-critical-crimson/20 transition-colors"
-                          title="Dismiss"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDecision(decision.id, "simulated")}
-                          className="p-2 rounded-sm bg-signal-blue/10 border border-signal-blue/30 text-signal-blue hover:bg-signal-blue/20 transition-colors"
-                          title="Simulate"
-                        >
-                          <Play className="h-4 w-4" />
-                        </button>
+            {/* Decision Queue */}
+            <section>
+              <div className="flex items-end justify-between mb-6 px-1">
+                <div>
+                  <span className="text-[10px] font-mono tracking-[0.4em] text-gold/60 uppercase">Operations</span>
+                  <h2 className="text-2xl text-white font-light tracking-tighter mt-1 font-display italic">Decision Queue</h2>
+                </div>
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/20">
+                  {decisions.filter(d => d.status === "pending").length} REVIEWS REQ.
+                </span>
+              </div>
+              <div className="space-y-3">
+                {decisions.map((decision) => (
+                  <motion.div
+                    key={decision.id}
+                    layout
+                    className="rounded-[2px] border border-white/5 p-5 bg-white/[0.01] hover:bg-white/[0.03] transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-6">
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-white mb-2 tracking-tight">{decision.action}</h4>
+                        <div className="flex items-center gap-4">
+                          <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest">{decision.context}</p>
+                          <div className="w-1 h-1 rounded-full bg-gold/20" />
+                          <p className="text-[10px] font-mono text-gold-light uppercase tracking-widest">Impact: {decision.impact}</p>
+                        </div>
                       </div>
-                    ) : (
-                      <span className={`
-                        text-[10px] uppercase tracking-[0.12em] px-2 py-1 rounded-sm
-                        ${decision.status === "approved" ? "bg-emerald-400/20 text-emerald-400" : ""}
-                        ${decision.status === "dismissed" ? "bg-critical-crimson/20 text-critical-crimson" : ""}
-                        ${decision.status === "simulated" ? "bg-signal-blue/20 text-signal-blue" : ""}
-                      `}>
-                        {decision.status}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </section>
+                      
+                      {decision.status === "pending" ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleDecision(decision.id, "approved")}
+                            className="p-2.5 rounded-sm bg-gold/5 border border-gold/20 text-gold hover:bg-gold/20 transition-all"
+                            title="Approve"
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDecision(decision.id, "dismissed")}
+                            className="p-2.5 rounded-sm bg-white/5 border border-white/10 text-white/40 hover:text-white/80 transition-all"
+                            title="Dismiss"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className={`
+                          text-[9px] font-mono uppercase tracking-[0.2em] px-3 py-1.5 rounded-sm border
+                          ${decision.status === "approved" ? "border-gold/30 bg-gold/10 text-gold" : "border-white/10 text-white/20"}
+                        `}>
+                          {decision.status}
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          </div>
 
           {/* AI Strategy Copilot */}
-          <section className="rounded-sm border border-gold/20 bg-gold/5 p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-4 w-4 text-gold" />
-              <h2 className="font-display text-xl text-warm-white">AI Strategy Copilot</h2>
+          <section className="relative overflow-hidden rounded-[2px] border border-gold/20 bg-gold/5 p-10 backdrop-blur-md">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
+              <Sparkles size={120} className="text-gold" />
             </div>
             
-            {/* Suggestion Chips */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {COPILOT_SUGGESTIONS.map((suggestion) => (
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-8">
+                <Sparkles className="h-5 w-5 text-gold" />
+                <h2 className="text-2xl text-white font-light tracking-tighter font-display italic">Executive Strategy Copilot</h2>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mb-8">
+                {COPILOT_SUGGESTIONS.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => setCopilotInput(suggestion)}
+                    className="px-4 py-2 rounded-sm text-[10px] font-mono tracking-widest bg-white/5 border border-white/5 text-white/40 hover:border-gold/40 hover:text-gold transition-all"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex gap-4">
+                <input
+                  type="text"
+                  value={copilotInput}
+                  onChange={(e) => setCopilotInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleCopilotSubmit()}
+                  placeholder="Inquire for strategic synthesis..."
+                  className="flex-1 bg-black/40 border border-white/10 rounded-sm px-5 py-4 text-sm text-white placeholder:text-white/20 focus:border-gold/40 focus:outline-none transition-all font-serif italic"
+                />
                 <button
-                  key={suggestion}
-                  onClick={() => setCopilotInput(suggestion)}
-                  className="px-3 py-1.5 rounded-full text-[11px] bg-white/5 border border-white/10 text-titanium hover:border-gold/30 hover:text-gold transition-colors"
+                  onClick={handleCopilotSubmit}
+                  disabled={isLoading || !copilotInput.trim()}
+                  className="px-8 py-4 bg-gold text-black text-[11px] font-mono font-bold tracking-[0.3em] uppercase hover:bg-gold-light transition-all rounded-sm disabled:opacity-30"
                 >
-                  {suggestion}
+                  {isLoading ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="h-4 w-4 border-2 border-black/30 border-t-black rounded-full"
+                    />
+                  ) : (
+                    "Synthesize"
+                  )}
                 </button>
-              ))}
-            </div>
+              </div>
 
-            {/* Input */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={copilotInput}
-                onChange={(e) => setCopilotInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCopilotSubmit()}
-                placeholder="Ask the AI Strategy Copilot..."
-                className="flex-1 bg-void border border-white/15 rounded-sm px-4 py-2.5 text-sm text-warm-white placeholder:text-mist focus:border-gold/40 focus:outline-none transition-colors"
-              />
-              <button
-                onClick={handleCopilotSubmit}
-                disabled={isLoading || !copilotInput.trim()}
-                className="px-4 py-2.5 rounded-sm bg-gold/20 border border-gold/40 text-gold hover:bg-gold/30 transition-colors disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="h-4 w-4 border-2 border-gold/30 border-t-gold rounded-full"
-                  />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
-              </button>
+              {copilotResponse && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-8 p-6 rounded-sm bg-black/40 border border-gold/10 relative"
+                >
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gold/40" />
+                  <p className="text-sm text-white/70 leading-relaxed font-serif italic">{copilotResponse}</p>
+                </motion.div>
+              )}
             </div>
-
-            {/* Response */}
-            {copilotResponse && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 p-4 rounded-sm bg-void border border-gold/20"
-              >
-                <p className="text-sm text-titanium leading-relaxed">{copilotResponse}</p>
-              </motion.div>
-            )}
           </section>
         </div>
 
         {/* Right Column - Intelligence Rail */}
-        <aside className="rounded-sm border border-white/10 bg-white/[0.02] p-5 h-fit">
-          <IntelligenceRail signals={RAIL_SIGNALS} />
+        <aside className="space-y-6">
+          <div className="sticky top-24">
+            <div className="flex items-center gap-3 mb-6 px-1">
+              <Radar size={16} className="text-gold/60" />
+              <h2 className="text-lg text-white font-light tracking-tighter uppercase font-mono tracking-[0.2em]">Live Intel</h2>
+            </div>
+            <div className="rounded-[2px] border border-white/5 bg-white/[0.01] p-1 backdrop-blur-sm">
+              <IntelligenceRail signals={RAIL_SIGNALS} />
+            </div>
+          </div>
         </aside>
       </div>
+
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:italic,wght@400;700&family=JetBrains+Mono&display=swap');
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+      `}</style>
     </PageShell>
   );
 }

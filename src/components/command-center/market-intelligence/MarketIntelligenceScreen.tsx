@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { MapPin, TrendingUp, Building, DollarSign, AlertTriangle } from "lucide-react";
 import PageShell from "@/components/command-center/PageShell";
 import MetricCard from "@/components/command-center/ui/MetricCard";
