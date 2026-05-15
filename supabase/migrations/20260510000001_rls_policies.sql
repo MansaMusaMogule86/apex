@@ -114,3 +114,4 @@ alter publication supabase_realtime add table public.campaigns;
 alter publication supabase_realtime add table public.campaign_influencers;
 alter publication supabase_realtime add table public.ai_reports;
 alter publication supabase_realtime add table public.notifications;
+alter publication supabase_realtime add table public.leads;

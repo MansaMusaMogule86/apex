@@ -47,7 +47,7 @@ export default function LowerAnalytics() {
         decisionTie="Reallocate spend by top-contributing trust channels"
       >
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" debounce={50}>
             <BarChart data={REVENUE_ATTRIBUTION}>
               <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: "#9a9a9a", fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -106,7 +106,7 @@ export default function LowerAnalytics() {
         decisionTie="Amplify channels where APEX momentum divergence is widest"
       >
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" debounce={50}>
             <AreaChart data={MOMENTUM_DATA}>
               <defs>
                 <linearGradient id="apexMomentum" x1="0" y1="0" x2="0" y2="1">
@@ -131,7 +131,7 @@ export default function LowerAnalytics() {
         decisionTie="Increase founder publication cadence at conversion acceleration points"
       >
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" debounce={50}>
             <LineChart data={FOUNDER_TIMELINE}>
               <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
               <XAxis dataKey="week" tick={{ fill: "#9a9a9a", fontSize: 11 }} axisLine={false} tickLine={false} />

@@ -1,0 +1,158 @@
+{
+  "content": [
+    {
+      "id": "content_1",
+      "title": "Founder market memo: scarcity and discipline",
+      "trust": 92.0,
+      "auth_conv": 70,
+      "engagement": 81.5,
+      "appts": 8,
+      "investor_signal": "MODERATE",
+      "type": "memo"
+    },
+    {
+      "id": "content_2",
+      "title": "Institutional brief: delivery certainty framework",
+      "trust": 89.7,
+      "auth_conv": 50,
+      "engagement": 76.0,
+      "appts": 8,
+      "investor_signal": "WEAK",
+      "type": "brief"
+    },
+    {
+      "id": "content_3",
+      "title": "Founder interview: strategic capital lens",
+      "trust": 86.1,
+      "auth_conv": 65,
+      "engagement": 86.0,
+      "appts": 8,
+      "investor_signal": "MODERATE",
+      "type": "interview"
+    }
+  ],
+  "signals": [
+    {
+      "id": "sig_1",
+      "tag": "TRUST",
+      "headline": "Content trust score exceeded 90: Founder market memo: scarcity and discipline...",
+      "value": "+2.0%",
+      "timestamp": "09:59:44",
+      "status": "positive",
+      "source": "ai_generated"
+    },
+    {
+      "id": "sig_2",
+      "tag": "AUTH",
+      "headline": "Authority conversion peak: Founder market memo: scarcity and discipline...",
+      "value": "+70.0%",
+      "timestamp": "09:59:44",
+      "status": "positive",
+      "source": "ai_generated"
+    },
+    {
+      "id": "sig_3",
+      "tag": "AUTH",
+      "headline": "Authority conversion peak: Institutional brief: delivery certainty framework...",
+      "value": "+50.0%",
+      "timestamp": "09:59:44",
+      "status": "positive",
+      "source": "ai_generated"
+    },
+    {
+      "id": "sig_4",
+      "tag": "AUTH",
+      "headline": "Authority conversion peak: Founder interview: strategic capital lens...",
+      "value": "+65.0%",
+      "timestamp": "09:59:44",
+      "status": "positive",
+      "source": "ai_generated"
+    },
+    {
+      "id": "sig_5",
+      "tag": "NARR",
+      "headline": "High narrative engagement: Founder interview: strategic capital lens...",
+      "value": "+86.0%",
+      "timestamp": "09:59:44",
+      "status": "positive",
+      "source": "ai_generated"
+    }
+  ],
+  "timeline": [
+    {
+      "id": "evt_1",
+      "time": "09:59:44",
+      "title": "Content trust score exceeded 90: Founder market memo: scarcity and discipline...",
+      "description": "Signal generated with value +2.0%. Tag: TRUST",
+      "impact": "medium",
+      "category": "TRUST",
+      "metadata": {
+        "value": "+2.0%",
+        "status": "positive"
+      }
+    },
+    {
+      "id": "evt_2",
+      "time": "09:59:44",
+      "title": "Authority conversion peak: Founder market memo: scarcity and discipline...",
+      "description": "Signal generated with value +70.0%. Tag: AUTH",
+      "impact": "medium",
+      "category": "AUTH",
+      "metadata": {
+        "value": "+70.0%",
+        "status": "positive"
+      }
+    },
+    {
+      "id": "evt_3",
+      "time": "09:59:44",
+      "title": "Authority conversion peak: Institutional brief: delivery certainty framework...",
+      "description": "Signal generated with value +50.0%. Tag: AUTH",
+      "impact": "medium",
+      "category": "AUTH",
+      "metadata": {
+        "value": "+50.0%",
+        "status": "positive"
+      }
+    },
+    {
+      "id": "evt_4",
+      "time": "09:59:44",
+      "title": "Authority conversion peak: Founder interview: strategic capital lens...",
+      "description": "Signal generated with value +65.0%. Tag: AUTH",
+      "impact": "medium",
+      "category": "AUTH",
+      "metadata": {
+        "value": "+65.0%",
+        "status": "positive"
+      }
+    },
+    {
+      "id": "evt_5",
+      "time": "09:59:44",
+      "title": "High narrative engagement: Founder interview: strategic capital lens...",
+      "description": "Signal generated with value +86.0%. Tag: NARR",
+      "impact": "medium",
+      "category": "NARR",
+      "metadata": {
+        "value": "+86.0%",
+        "status": "positive"
+      }
+    }
+  ],
+  "alerts": [],
+  "scenarios": {
+    "market": "standby",
+    "lead": "standby",
+    "authority": "standby",
+    "influence": "standby"
+  },
+  "recommendation": {
+    "headline": "Content performance below threshold",
+    "action": "Review content strategy. A/B test new formats.",
+    "confidence": 60,
+    "priority": 70,
+    "alert_level": "P4"
+  },
+  "timestamp": "2026-05-15T09:59:44.495002"
+}

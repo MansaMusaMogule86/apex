@@ -13,28 +13,60 @@ function NavList({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: (
   const pathname = usePathname();
 
   return (
-    <ul className="space-y-1.5 px-3 py-4">
+    <ul className="space-y-1 px-3 py-4">
       {COMMAND_NAV_ITEMS.map((item) => {
         const Icon = item.icon;
-        const active = item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
+        
+        // EXACT match for active state - only true when pathname equals href exactly
+        const isActive = pathname === item.href;
+        
         return (
           <li key={item.href}>
             <Link
               href={item.href}
               onClick={onNavigate}
               className={cn(
-                "group relative flex items-center gap-3 rounded-[2px] px-3 py-3 transition-colors duration-300",
-                active ? "bg-signal-blue/[0.12] text-warm-white" : "text-titanium hover:bg-white/[0.04] hover:text-warm-white",
+                "group relative flex items-center gap-3 rounded-sm px-3 py-2.5 transition-all duration-200",
+                // Active: filled dark navy background, gold/blue icon
+                isActive 
+                  ? "bg-[#1a2a4a]/80 text-warm-white shadow-[inset_0_0_0_1px_rgba(110,140,255,0.2)]" 
+                  : "text-titanium hover:bg-white/[0.04] hover:text-warm-white"
               )}
               data-cursor="interactive"
             >
-              {active ? <span className="absolute left-0 top-2 bottom-2 w-px bg-signal-blue" /> : null}
-              <Icon className={cn("h-4 w-4 shrink-0", active ? "text-signal-blue" : "text-mist")} strokeWidth={1.5} />
+              {/* Active indicator - left border accent */}
+              {isActive && (
+                <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-signal-blue shadow-[0_0_8px_rgba(110,140,255,0.5)]" />
+              )}
+              
+              {/* Icon - gold/blue when active, muted when inactive */}
+              <Icon 
+                className={cn(
+                  "h-4 w-4 shrink-0 transition-colors duration-200",
+                  isActive 
+                    ? "text-signal-blue" 
+                    : "text-mist group-hover:text-titanium"
+                )} 
+                strokeWidth={1.5} 
+              />
+              
               {!collapsed ? (
                 <span className="flex flex-1 items-center justify-between text-sm tracking-wide">
-                  <span>{item.label}</span>
+                  <span className={cn(
+                    "transition-colors duration-200",
+                    isActive ? "text-warm-white" : "text-titanium group-hover:text-warm-white"
+                  )}>
+                    {item.label}
+                  </span>
                   {item.badge ? (
-                    <span className="font-mono text-[9px] uppercase tracking-[0.24em] text-gold-light">{item.badge}</span>
+                    <span className={cn(
+                      "font-mono text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 rounded-sm",
+                      isActive 
+                        ? "bg-gold/20 text-gold-light" 
+                        : "text-gold/60"
+                    )}>
+                      {item.badge}
+                    </span>
                   ) : null}
                 </span>
               ) : null}
@@ -59,11 +91,11 @@ export default function CommandCenterSidebar() {
       <motion.aside
         animate={{ width: sidebarCollapsed ? 84 : 272 }}
         transition={{ duration: 0.35, ease: COMMAND_EASE }}
-        className="hidden xl:flex xl:h-[calc(100dvh-24px)] xl:flex-col xl:overflow-hidden xl:rounded-[2px] xl:border xl:border-white/12 xl:bg-[var(--cc-surface)] xl:backdrop-blur-2xl"
+        className="hidden xl:flex xl:h-[calc(100dvh-24px)] xl:flex-col xl:overflow-hidden xl:rounded-sm xl:border xl:border-white/12 xl:bg-[var(--cc-surface)] xl:backdrop-blur-2xl"
       >
         <div className="flex h-16 items-center border-b border-white/10 px-4">
-          <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden" data-cursor="interactive">
-            <span className="flex h-8 w-8 items-center justify-center rounded-[2px] border border-signal-blue/35 bg-void font-display text-sm text-signal-blue">
+          <Link href="/command-center" className="flex items-center gap-3 overflow-hidden" data-cursor="interactive">
+            <span className="flex h-8 w-8 items-center justify-center rounded-sm border border-signal-blue/35 bg-void font-display text-sm text-signal-blue">
               A
             </span>
             {!sidebarCollapsed ? (
@@ -83,7 +115,7 @@ export default function CommandCenterSidebar() {
           <button
             type="button"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="flex w-full items-center gap-2 rounded-[2px] px-3 py-2 text-titanium transition-colors duration-300 hover:bg-white/[0.04] hover:text-warm-white"
+            className="flex w-full items-center gap-2 rounded-sm px-3 py-2 text-titanium transition-colors duration-300 hover:bg-white/[0.04] hover:text-warm-white"
             data-cursor="interactive"
           >
             {sidebarCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
@@ -118,7 +150,7 @@ export default function CommandCenterSidebar() {
                 <button
                   type="button"
                   onClick={() => setMobileSidebarOpen(false)}
-                  className="rounded-[2px] border border-white/15 p-2 text-titanium"
+                  className="rounded-sm border border-white/15 p-2 text-titanium"
                 >
                   <X className="h-4 w-4" />
                 </button>

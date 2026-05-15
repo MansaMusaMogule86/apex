@@ -7,25 +7,28 @@ create table if not exists public.apex_applications (
   full_name text not null,
   title text,
   company text not null,
-  market text,
-  aum_range text,
+  industry text,
+  revenue_range text,
+  market_focus text,
+  strategic_objective text,
+  why_apex text,
   email text not null unique,
-  intent_type text check (
-    intent_type in ('intelligence_os', 'deal_flow', 'influence', 'advisory')
-  ),
-  problem_statement text,
-  signal_score int,
-  linkedin_url text,
-  website_url text,
+  linkedin text,
+  website text,
   referral_source text,
-  referral_code text,
-  phantom_scan_authorized boolean not null default false,
-  osint_score int,
+  priority_level text default 'medium',
+  prestige_score int,
+  authority_score int,
+  market_potential_score int,
+  luxury_fit_score int,
+  ai_summary text,
+  ai_recommendation text,
+  executive_notes text,
   status text not null default 'pending' check (
-    status in ('pending', 'reviewing', 'approved', 'rejected')
+    status in ('pending', 'processing', 'executive_review', 'approved', 'rejected', 'submitted')
   ),
-  ref_code text not null unique,
-  notes text
+  reviewed_at timestamptz,
+  reviewed_by uuid references public.profiles(id)
 );
 
 create index if not exists apex_applications_created_at_idx

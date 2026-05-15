@@ -1,0 +1,37 @@
+# APEX Swarm Intelligence Engine - Python Dependencies
+# Created: 2026-05-15
+
+# Web Framework & API
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+websockets==13.1
+python-socketio[asyncio]==5.11.4
+
+# HTTP Client for Ollama
+httpx==0.27.2
+aiohttp==3.11.0
+
+# Data Validation & Serialization
+pydantic==2.9.0
+pydantic-settings==2.6.0
+
+# Utilities
+python-dotenv==1.0.1
+structlog==24.4.0
+python-json-logger==2.0.7
+tenacity==9.0.0
+
+# Async Support
+asyncio-mqtt==0.16.1
+aiocache==0.12.2
+
+# Type Hints
+typing-extensions==4.12.0
+
+# Development & Testing
+pytest==8.3.0
+pytest-asyncio==0.24.0
+pytest-timeout==2.3.1
+
+# Monitoring & Observability
+psutil==6.1.0
