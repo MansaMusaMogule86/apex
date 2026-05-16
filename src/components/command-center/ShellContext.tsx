@@ -33,7 +33,7 @@ export function CommandCenterShellProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === "obsidian" || stored === "carbon") {
+    if (stored === "obsidian" || stored === "carbon" || stored === "light") {
       setTheme(stored);
     }
   }, []);

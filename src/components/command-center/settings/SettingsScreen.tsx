@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { 
-  User, 
   Bell, 
   Shield, 
   Palette, 
@@ -10,12 +8,16 @@ import {
   Webhook,
   Check,
   Moon,
-  Sun
+  Sun,
+  Layers,
+  User,
 } from "lucide-react";
 import PageShell from "@/components/command-center/PageShell";
+import { useCommandCenterShell } from "@/components/command-center/ShellContext";
+import { useState } from "react";
 
 export default function SettingsScreen() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const { theme, setTheme } = useCommandCenterShell();
   const [notifications, setNotifications] = useState({
     email: true,
     push: false,
@@ -71,26 +73,40 @@ export default function SettingsScreen() {
               <p className="text-xs text-mist mb-3">Select your preferred theme</p>
               <div className="flex gap-3">
                 <button
-                  onClick={() => setTheme("dark")}
+                  onClick={() => setTheme("obsidian")}
                   className={`flex-1 p-4 rounded-sm border transition-colors ${
-                    theme === "dark" 
-                      ? "border-gold/40 bg-gold/10" 
-                      : "border-white/15 bg-white/5"
+                    theme === "obsidian"
+                      ? "border-[rgba(110,140,255,0.5)] bg-[rgba(110,140,255,0.12)]"
+                      : "border-white/15 bg-white/5 hover:border-white/25"
                   }`}
                 >
-                  <Moon className="h-5 w-5 text-warm-white mx-auto mb-2" />
-                  <span className="text-xs text-titanium">Dark</span>
+                  <Moon className="h-5 w-5 mx-auto mb-2" style={{ color: theme === "obsidian" ? "rgba(110,140,255,0.9)" : undefined }} />
+                  <span className="text-xs text-titanium block">Obsidian</span>
+                  <span className="text-[10px] text-mist/60 block mt-0.5 font-mono">Dark</span>
+                </button>
+                <button
+                  onClick={() => setTheme("carbon")}
+                  className={`flex-1 p-4 rounded-sm border transition-colors ${
+                    theme === "carbon"
+                      ? "border-gold/50 bg-gold/10"
+                      : "border-white/15 bg-white/5 hover:border-white/25"
+                  }`}
+                >
+                  <Layers className="h-5 w-5 mx-auto mb-2" style={{ color: theme === "carbon" ? "rgba(200,169,110,0.9)" : undefined }} />
+                  <span className="text-xs text-titanium block">Carbon</span>
+                  <span className="text-[10px] text-mist/60 block mt-0.5 font-mono">Warm Dark</span>
                 </button>
                 <button
                   onClick={() => setTheme("light")}
                   className={`flex-1 p-4 rounded-sm border transition-colors ${
-                    theme === "light" 
-                      ? "border-gold/40 bg-gold/10" 
-                      : "border-white/15 bg-white/5"
+                    theme === "light"
+                      ? "border-gold/50 bg-gold/10"
+                      : "border-white/15 bg-white/5 hover:border-white/25"
                   }`}
                 >
-                  <Sun className="h-5 w-5 text-warm-white mx-auto mb-2" />
-                  <span className="text-xs text-titanium">Light</span>
+                  <Sun className="h-5 w-5 mx-auto mb-2" style={{ color: theme === "light" ? "rgba(200,169,110,0.9)" : undefined }} />
+                  <span className="text-xs text-titanium block">Light</span>
+                  <span className="text-[10px] text-mist/60 block mt-0.5 font-mono">Ivory</span>
                 </button>
               </div>
             </div>

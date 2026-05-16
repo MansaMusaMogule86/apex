@@ -21,14 +21,72 @@
   --cc-demo-border: rgba(214, 74, 74, 0.45);
 }
 
+/* OBSIDIAN — pure void black, cold blue undertone */
 .command-center-shell[data-theme="obsidian"] {
-  --cc-surface: rgba(8, 8, 11, 0.9);
-  --cc-panel: rgba(17, 17, 22, 0.76);
+  --cc-surface: rgba(6, 6, 9, 0.92);
+  --cc-panel: rgba(12, 12, 18, 0.80);
+  --cc-sidebar-bg: rgba(8, 8, 13, 0.97);
+  --cc-grid-accent: rgba(110, 140, 255, 0.05);
+  --cc-border-base: rgba(255, 255, 255, 0.10);
 }
 
+/* CARBON — warm deep slate, amber-grey undertone */
 .command-center-shell[data-theme="carbon"] {
-  --cc-surface: rgba(17, 17, 22, 0.94);
-  --cc-panel: rgba(25, 26, 32, 0.78);
+  --cc-surface: rgba(22, 20, 18, 0.95);
+  --cc-panel: rgba(32, 29, 26, 0.85);
+  --cc-sidebar-bg: rgba(26, 23, 20, 0.98);
+  --cc-grid-accent: rgba(200, 169, 110, 0.06);
+  --cc-border-base: rgba(200, 169, 110, 0.12);
+}
+
+/* LIGHT — crisp architectural white, premium editorial */
+.command-center-shell[data-theme="light"] {
+  --cc-surface: rgba(248, 249, 251, 0.98);
+  --cc-panel: rgba(255, 255, 255, 0.97);
+  --cc-sidebar-bg: rgba(240, 242, 246, 0.99);
+  --cc-grid-accent: rgba(110, 140, 255, 0.04);
+  --cc-border-base: rgba(0, 0, 0, 0.08);
+  color: #0f1117;
+  background-color: #f0f2f6;
+}
+
+/* Light theme — keep backgrounds light, text dark */
+.command-center-shell[data-theme="light"] .bg-void {
+  background-color: #e8ebf0 !important;
+}
+.command-center-shell[data-theme="light"] .bg-void\/40,
+.command-center-shell[data-theme="light"] .bg-void\/50 {
+  background-color: rgba(220, 224, 232, 0.7) !important;
+}
+.command-center-shell[data-theme="light"] .text-warm-white,
+.command-center-shell[data-theme="light"] .text-platinum,
+.command-center-shell[data-theme="light"] .text-titanium {
+  color: #1c2033 !important;
+}
+.command-center-shell[data-theme="light"] .text-mist {
+  color: #5a6278 !important;
+}
+.command-center-shell[data-theme="light"] .border-white\/12,
+.command-center-shell[data-theme="light"] .border-white\/15,
+.command-center-shell[data-theme="light"] .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.10) !important;
+}
+/* Sidebar and top bar backgrounds */
+.command-center-shell[data-theme="light"] .bg-\[var\(--cc-surface\)\] {
+  background-color: var(--cc-surface) !important;
+}
+.command-center-shell[data-theme="light"] .bg-\[var\(--cc-panel\)\] {
+  background-color: var(--cc-panel) !important;
+}
+
+/* Smooth transition when theme changes */
+.command-center-shell,
+.command-center-shell * {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    color 0.35s ease;
 }
 
 .command-center-grid {

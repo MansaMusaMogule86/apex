@@ -16,7 +16,7 @@ export type RightRailItem = {
   timestamp: string;
 };
 
-export type CommandTheme = "obsidian" | "carbon";
+export type CommandTheme = "obsidian" | "carbon" | "light";
 
 // Page section types for AI Recommendation Engine
 export type RecommendationCard = {

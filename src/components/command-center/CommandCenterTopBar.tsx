@@ -81,11 +81,30 @@ export default function CommandCenterTopBar() {
         </span>
         <button
           type="button"
-          onClick={() => setTheme(theme === "obsidian" ? "carbon" : "obsidian")}
-          className="inline-flex h-8 items-center rounded-[2px] border border-white/15 px-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-titanium"
+          onClick={() => {
+            const cycle: Record<string, "obsidian" | "carbon" | "light"> = {
+              obsidian: "carbon",
+              carbon: "light",
+              light: "obsidian",
+            };
+            setTheme(cycle[theme] ?? "obsidian");
+          }}
+          className="inline-flex h-8 items-center gap-2 rounded-[2px] border border-white/15 px-2.5 font-mono text-[10px] uppercase tracking-[0.2em] text-titanium hover:border-white/30 hover:text-warm-white transition-colors"
           data-cursor="interactive"
+          title={`Switch theme`}
         >
-          Theme
+          <span
+            className="h-2 w-2 rounded-full shrink-0 transition-colors duration-300"
+            style={{
+              backgroundColor:
+                theme === "obsidian"
+                  ? "rgba(110,140,255,0.9)"
+                  : theme === "carbon"
+                  ? "rgba(200,169,110,0.9)"
+                  : "rgba(180,160,120,0.9)",
+            }}
+          />
+          {theme === "obsidian" ? "Obsidian" : theme === "carbon" ? "Carbon" : "Light"}
         </button>
         <button
           type="button"
