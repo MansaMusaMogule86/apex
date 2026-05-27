@@ -99,17 +99,22 @@ async function fetchRecommendations(organizationId: string, workspaceId?: string
     params.set("workspace_id", workspaceId);
   }
 
-  const response = await fetch(`/api/live/recommendations?${params.toString()}`, {
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
-  });
+  try {
+    const response = await fetch(`/api/live/recommendations?${params.toString()}`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch recommendations (${response.status})`);
+    // On auth/server errors return empty — don't crash the UI
+    if (!response.ok) {
+      return { recommendations: [] } as RecommendationsApiResponse;
+    }
+
+    return (await response.json()) as RecommendationsApiResponse;
+  } catch {
+    return { recommendations: [] } as RecommendationsApiResponse;
   }
-
-  return (await response.json()) as RecommendationsApiResponse;
 }
 
 export function useLiveIntelligence(domain: LiveDomain, enabled = true) {
@@ -153,14 +158,20 @@ export function useLiveIntelligence(domain: LiveDomain, enabled = true) {
   const kpiQuery = useQuery({
     queryKey: ["live", "kpi-snapshots", organizationId],
     queryFn: async () => {
-      const res = await fetch(`/api/live/kpi-snapshots?organization_id=${organizationId}`);
-      if (!res.ok) throw new Error("Failed to fetch KPIs");
-      return res.json() as Promise<{
-        snapshots: Record<string, { signal_value: number; confidence: number; anomaly_score: number }>;
-      }>;
+      try {
+        const res = await fetch(`/api/live/kpi-snapshots?organization_id=${organizationId}`);
+        // On auth/server errors return empty — don't crash the UI
+        if (!res.ok) return { snapshots: {} };
+        return res.json() as Promise<{
+          snapshots: Record<string, { signal_value: number; confidence: number; anomaly_score: number }>;
+        }>;
+      } catch {
+        return { snapshots: {} };
+      }
     },
-    enabled: enabled && domain === "home", // Only fetch global KPIs for home domain or overview
+    enabled: enabled && domain === "home",
     refetchInterval: enabled ? 30000 : false,
+    retry: false,
   });
 
   useEffect(() => {

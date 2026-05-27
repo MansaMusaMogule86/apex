@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Outfit, DM_Mono } from "next/font/google";
 import CustomCursor from "@/components/shared/CustomCursor";
+import RootErrorBoundary from "@/components/shared/RootErrorBoundary";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -49,8 +50,11 @@ export default function RootLayout({
     >
       <body className="min-h-[100dvh] antialiased overflow-x-hidden">
         <CustomCursor />
-        {children}
+        <RootErrorBoundary>
+          {children}
+        </RootErrorBoundary>
       </body>
     </html>
   );
 }
+
