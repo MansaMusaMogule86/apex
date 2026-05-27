@@ -35,10 +35,23 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isProtected =
     pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/command-center") ||
+    pathname.startsWith("/market-intelligence") ||
+    pathname.startsWith("/lead-intelligence") ||
+    pathname.startsWith("/founder-authority") ||
+    pathname.startsWith("/influence-network") ||
+    pathname.startsWith("/executive-reports") ||
+    pathname.startsWith("/scenario-simulator") ||
+    pathname.startsWith("/ai-recommendation-engine") ||
+    pathname.startsWith("/analytics") ||
     pathname.startsWith("/campaigns") ||
-    pathname.startsWith("/influencers") ||
+    pathname.startsWith("/crm") ||
+    pathname.startsWith("/leads") ||
     pathname.startsWith("/reports") ||
-    pathname.startsWith("/settings");
+    pathname.startsWith("/ai") ||
+    pathname.startsWith("/influencers") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/admin");
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();

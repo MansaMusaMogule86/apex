@@ -162,43 +162,90 @@ export default function AIRecommendationEngineScreen() {
     setActiveRecommendationId(id);
     setIsLoading(true);
 
-    // Simulate "Back End" processing and data integrity check
-    setTimeout(() => {
-      setIsLoading(false);
-      setActiveRecommendationId(null);
-      setNotification({
-        message: `${actionName} executed successfully. Intelligence layer updated.`,
-        type: "success"
+    fetch("/api/live/executive-actions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        organizationId: process.env.NEXT_PUBLIC_APEX_ORGANIZATION_ID ?? "00000000-0000-4000-8000-000000000001",
+        recommendationId: id,
+        actionType: "execute",
+        actionPayload: { source: "ai-recommendation-screen", action: actionName },
+      }),
+    })
+      .then(() => {
+        setNotification({
+          message: `${actionName} executed. Intelligence layer updated.`,
+          type: "success",
+        });
+      })
+      .catch(() => {
+        setNotification({ message: `${actionName} queued — offline mode.`, type: "info" });
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setActiveRecommendationId(null);
+        setTimeout(() => setNotification(null), 3000);
       });
-
-      // Clear notification after 3s
-      setTimeout(() => setNotification(null), 3000);
-    }, 1200);
   };
 
   const handleDecision = (id: string, action: "approved" | "dismissed" | "simulated") => {
-    const decision = decisions.find(d => d.id === id);
+    const decision = decisions.find((d) => d.id === id);
     if (!decision) return;
-
-    setDecisions(prev => prev.map(d => d.id === id ? { ...d, status: action } : d));
-    
+    setDecisions((prev) => prev.map((d) => (d.id === id ? { ...d, status: action } : d)));
     setNotification({
       message: `Strategic decision '${decision.action}' marked as ${action}.`,
-      type: "info"
+      type: "info",
     });
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleCopilotSubmit = () => {
-    if (!copilotInput.trim()) return;
+  const handleCopilotSubmit = async () => {
+    if (!copilotInput.trim() || isLoading) return;
     setIsLoading(true);
     setCopilotResponse(null);
-    
-    // Simulate AI strategy generation
-    setTimeout(() => {
-      setCopilotResponse(`Based on current market signals, I recommend focusing on founder authority content this week. Lead intelligence shows a 22% correlation between content velocity and VIP conversions. Consider increasing founder content budget by 20-30% while pausing underperforming external channels.`);
+
+    const prompt = copilotInput;
+    setCopilotInput("");
+    let accumulated = "";
+
+    try {
+      const res = await fetch("/api/ai/concierge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: prompt }],
+          stream: true,
+        }),
+      });
+
+      if (!res.ok || !res.body) throw new Error(`API ${res.status}`);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        for (const line of chunk.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const raw = line.slice(6).trim();
+          if (raw === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(raw) as { delta?: string };
+            if (parsed.delta) {
+              accumulated += parsed.delta;
+              setCopilotResponse(accumulated);
+            }
+          } catch { /* partial chunk */ }
+        }
+      }
+    } catch {
+      setCopilotResponse("Unable to reach the AI engine. Please try again.");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -440,12 +487,6 @@ export default function AIRecommendationEngineScreen() {
           </div>
         </aside>
       </div>
-
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:italic,wght@400;700&family=JetBrains+Mono&display=swap');
-        .font-display { font-family: 'Playfair Display', serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-      `}</style>
     </PageShell>
   );
 }

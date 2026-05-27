@@ -87,17 +87,6 @@ export default function CustomCursor() {
         style={{ width: '40px', height: '40px', border: '1px solid var(--signal-blue)', opacity: 0.5, borderRadius: '50%', willChange: 'transform', transition: 'width 0.3s ease, height 0.3s ease' }}
         aria-hidden="true" 
       />
-      <style jsx global>{`
-        body.cursor-hover .cursor-ring {
-          width: 60px !important;
-          height: 60px !important;
-          border-color: var(--gold) !important;
-          background: rgba(201, 178, 124, 0.1);
-        }
-        @media (pointer: coarse) {
-          .cursor-dot, .cursor-ring { display: none !important; }
-        }
-      `}</style>
     </>
   );
 }

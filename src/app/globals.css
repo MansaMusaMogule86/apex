@@ -862,3 +862,20 @@ body::before {
   text-transform: uppercase;
   color: rgba(232,228,218,0.4);
 }
+/* === Custom cursor hover state (driven by CustomCursor.tsx) === */
+body.cursor-hover .cursor-ring {
+  width: 60px !important;
+  height: 60px !important;
+  border-color: var(--gold) !important;
+  background: rgba(201, 178, 124, 0.1);
+}
+@media (pointer: coarse) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+}
+
+/* === Custom scrollbar (ApexDashboard) === */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(200, 169, 110, 0.1); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(200, 169, 110, 0.3); }
+
