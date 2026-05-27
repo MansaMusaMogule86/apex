@@ -29,7 +29,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { applyDomainKpiDrift, useLiveIntelligence } from "@/hooks/useLiveIntelligence";
 import {
