@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# APEX — Private AI Intelligence Ecosystem
+
+APEX is a private AI intelligence operating system for elite operators, founders, and capital-backed luxury ecosystems.
 
 ## Getting Started
 
-First, run the development server:
+### 1. Environment Variables Setup
+Create a `.env.local` file by copying the template:
+```bash
+cp .env.example .env.local
+```
+Fill in the credentials:
+- **Supabase**: URL, Anon Key, and Service Role Key (from Supabase dashboard API settings)
+- **OpenRouter**: API key (from https://openrouter.ai/keys)
+- **Upstash Redis**: URL and token (optional — for live event bus telemetry)
 
+### 2. Database Migrations & Seeding
+APEX uses Supabase with PostgreSQL. To set up your schema and seed default data:
+
+#### Local Development
+1. Ensure your local Supabase CLI is ready:
+   ```bash
+   npx supabase status
+   ```
+2. Reset the database to run all migrations and apply `supabase/seed.sql`:
+   ```bash
+   npx supabase db reset
+   ```
+
+#### Remote/Staging Database
+1. Link your Supabase CLI to your remote project (reference: `gbppwmmutbisimxavgfw`):
+   ```bash
+   npx supabase link --project-ref gbppwmmutbisimxavgfw
+   ```
+   *(You will be prompted for your database password).*
+2. Push all migrations:
+   ```bash
+   npx supabase db push
+   ```
+3. Run the seed data SQL commands from `supabase/seed.sql` inside the Supabase dashboard's **SQL Editor** to populate your tables with initial organizations, workspaces, and live recommendations.
+
+### 3. Run the Development Server
+Start the local server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment on Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Ensure the following environment variables are added to your project settings in the Vercel dashboard:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENROUTER_API_KEY`
+- `NEXT_PUBLIC_APEX_ORGANIZATION_ID`
+- `UPSTASH_REDIS_REST_URL` (optional)
+- `UPSTASH_REDIS_REST_TOKEN` (optional)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*Note: In production (Vercel), `APEX_DEV_BYPASS` is forced to `false` to guarantee multi-tenant security and profile isolation.*
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
