@@ -1,0 +1,1998 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Career Intelligence Platform — Prototype</title>
+    <meta name="color-scheme" content="dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --rit-orange:#c39a5f;
+        --rit-orange-soft:#dfbf8b;
+        --rit-black:#0b0c0f;
+        --bg:#070809;
+        --bg-elev:#111318;
+        --ink:#f4efe3;
+        --muted:#b5aa94;
+        --muted2:#94876f;
+        --border:#2a2f35;
+        --shadow:0 26px 48px rgba(0,0,0,.48);
+        --shadow2:0 12px 28px rgba(0,0,0,.34);
+        --radius:12px;
+        --radius2:16px;
+        --success:#16a34a;
+        --warning:#d97706;
+        --danger:#dc2626;
+        --info:#3b82f6;
+        --focus:rgba(223,191,139,.38);
+        --sidebar:#090a0d;
+        --sidebar2:#111319;
+        --sidebarInk:#f5efdf;
+        --sidebarMuted:#9e927c;
+      }
+      *{ box-sizing:border-box; }
+      html,body{ height:100%; }
+      body{
+        margin:0;
+        color:var(--ink);
+        font:14px/1.45 "Outfit", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background:
+          radial-gradient(circle at 6% -10%, rgba(223,191,139,.18) 0%, rgba(223,191,139,0) 36%),
+          radial-gradient(circle at 102% 8%, rgba(195,154,95,.14) 0%, rgba(195,154,95,0) 40%),
+          linear-gradient(160deg, #0a0b0e, var(--bg));
+      }
+      body::before{
+        content:"";
+        position:fixed;
+        inset:0;
+        pointer-events:none;
+        opacity:.2;
+        background:
+          repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 14px),
+          repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 14px);
+        mix-blend-mode:soft-light;
+      }
+      a{ color:inherit; }
+      button, input, select, textarea{ font:inherit; color:inherit; }
+      select.btn{
+        appearance:none;
+        -webkit-appearance:none;
+        background-clip:padding-box;
+        color:var(--ink);
+        color-scheme:dark;
+      }
+      /* Keep native dropdown menus readable across OS/browser theme differences. */
+      select.btn option,
+      option{
+        color:#f4efe3 !important;
+        background:#111318 !important;
+      }
+      select.btn option:checked,
+      option:checked{
+        color:#12161d !important;
+        background:#d8c39e !important;
+      }
+
+      .splash{
+        position:fixed;
+        inset:0;
+        z-index:120;
+        display:grid;
+        place-items:center;
+        background:
+          radial-gradient(circle at 50% 38%, rgba(223,191,139,.13), rgba(223,191,139,0) 42%),
+          linear-gradient(180deg, #0b0d11, #0a0c10 60%, #090b0e);
+      }
+      .splashCard{
+        display:grid;
+        gap:18px;
+        justify-items:center;
+        text-align:center;
+        padding:28px 26px;
+      }
+      .splashMark{
+        width:70px;
+        height:70px;
+        position:relative;
+        clip-path:polygon(25% 7%, 75% 7%, 93% 50%, 75% 93%, 25% 93%, 7% 50%);
+        border:2px solid rgba(223,191,139,.78);
+        display:grid;
+        place-items:center;
+        animation:splashPulse 2.2s ease-in-out infinite;
+      }
+      .splashMark::before{
+        content:"";
+        width:44px;
+        height:44px;
+        clip-path:polygon(25% 7%, 75% 7%, 93% 50%, 75% 93%, 25% 93%, 7% 50%);
+        border:1px solid rgba(223,191,139,.55);
+      }
+      .splashMark::after{
+        content:"";
+        position:absolute;
+        width:8px;
+        height:8px;
+        border-radius:999px;
+        background:#d9bb86;
+        box-shadow:
+          0 -18px 0 rgba(223,191,139,.55),
+          15px 9px 0 rgba(223,191,139,.55),
+          -15px 9px 0 rgba(223,191,139,.55);
+      }
+      .splashTitle{
+        margin:0;
+        font:600 52px/1 "Cormorant Garamond", Georgia, serif;
+        letter-spacing:.5px;
+        color:#f2ecdd;
+        animation:splashRise .7s ease-out both;
+      }
+      .splashTitle strong{ color:#d6b278; font-weight:600; }
+      .splashSub{
+        margin:0;
+        font:500 12px/1.2 "DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        letter-spacing:3px;
+        color:#b4a894;
+      }
+      .splashLoad{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-top:6px;
+        color:#9ca3af;
+      }
+      .splashDots{
+        display:flex;
+        gap:7px;
+      }
+      .splashDots span{
+        width:8px;
+        height:8px;
+        border-radius:999px;
+        background:#d6b278;
+        opacity:.28;
+        animation:splashDot 1.25s ease-in-out infinite;
+      }
+      .splashDots span:nth-child(2){ animation-delay:.16s; }
+      .splashDots span:nth-child(3){ animation-delay:.32s; }
+      .splashLoad small{
+        font:500 12px/1.1 "DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        letter-spacing:2.2px;
+        color:#7f8795;
+      }
+
+      .app{
+        opacity:0;
+        visibility:hidden;
+        transform:translateY(8px) scale(.995);
+        transition:opacity .48s ease, transform .48s ease;
+      }
+      .app.ready{
+        opacity:1;
+        visibility:visible;
+        transform:translateY(0) scale(1);
+      }
+      .splash.hide{
+        opacity:0;
+        visibility:hidden;
+        pointer-events:none;
+        transition:opacity .42s ease, visibility .42s ease;
+      }
+
+      .app{ display:grid; grid-template-columns:276px 1fr; min-height:100vh; }
+      .sidebar{
+        position:sticky;
+        top:0;
+        height:100vh;
+        padding:18px 14px;
+        background:
+          radial-gradient(circle at 10% 0%, rgba(223,191,139,.18) 0%, rgba(223,191,139,0) 44%),
+          linear-gradient(180deg, var(--sidebar), var(--sidebar2));
+        color:var(--sidebarInk);
+        border-right:1px solid rgba(223,191,139,.18);
+      }
+      .brand{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:10px;
+        border-radius:14px;
+        background:rgba(255,255,255,.01);
+        box-shadow:inset 0 0 0 1px rgba(223,191,139,.18);
+      }
+      .logo{
+        position:relative;
+        width:34px;
+        height:34px;
+        border-radius:10px;
+        border:1px solid rgba(223,191,139,.42);
+        background:linear-gradient(160deg, #12161d, #1a202a);
+        box-shadow:inset 0 0 0 1px rgba(255,255,255,.03), 0 8px 18px rgba(0,0,0,.38);
+        overflow:hidden;
+      }
+      .logo::before{
+        content:"";
+        position:absolute;
+        inset:5px;
+        border-radius:6px;
+        border:1px solid rgba(223,191,139,.52);
+        background:linear-gradient(180deg, rgba(223,191,139,.14), rgba(223,191,139,.02));
+      }
+      .logo::after{
+        content:"CI";
+        position:absolute;
+        inset:0;
+        display:grid;
+        place-items:center;
+        font:600 9px/1 "DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color:#edd7af;
+        letter-spacing:.4px;
+      }
+      .brand h1{ font:700 18px/1 "Cormorant Garamond", Georgia, serif; margin:0; letter-spacing:.4px; }
+      .brand p{ margin:0; color:var(--sidebarMuted); font-size:12px; }
+
+      .nav{ margin-top:10px; display:flex; flex-direction:column; gap:4px; }
+      .nav a, .mobileNav a{
+        text-decoration:none;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:10px;
+        border-radius:12px;
+        color:var(--sidebarInk);
+        outline:none;
+        transition:background-color .2s ease, transform .2s ease;
+      }
+      .nav a .dot, .mobileNav a .dot{
+        width:10px;
+        height:10px;
+        border-radius:999px;
+        background:rgba(255,255,255,.3);
+        box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+      }
+      .nav a small, .mobileNav a small{
+        margin-left:auto;
+        color:var(--sidebarMuted);
+        font-variant-numeric:tabular-nums;
+      }
+      .nav a:hover{ background:rgba(223,191,139,.11); }
+      .nav a:focus-visible, .mobileNav a:focus-visible{ box-shadow:0 0 0 4px var(--focus); }
+      .nav a[aria-current="page"], .mobileNav a[aria-current="page"]{
+        background:rgba(223,191,139,.16);
+        box-shadow:inset 0 0 0 1px rgba(223,191,139,.45);
+      }
+      .nav a[aria-current="page"] .dot, .mobileNav a[aria-current="page"] .dot{ background:var(--rit-orange); }
+
+      .sidebarFooter{
+        position:absolute;
+        left:14px;
+        right:14px;
+        bottom:14px;
+        padding:10px;
+        border-radius:14px;
+        background:rgba(255,255,255,.03);
+        box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+      }
+      .pill{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        padding:6px 10px;
+        border-radius:999px;
+        background:rgba(0,0,0,.35);
+        color:var(--sidebarInk);
+        border:1px solid rgba(255,255,255,.15);
+        font-size:12px;
+      }
+      .pill .status{
+        width:8px;
+        height:8px;
+        border-radius:999px;
+        background:var(--success);
+        box-shadow:0 0 0 2px rgba(22,163,74,.2);
+      }
+
+      .main{
+        padding:22px 22px 74px;
+        max-width:1360px;
+        width:100%;
+        margin:0 auto;
+      }
+      .topbar{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        justify-content:space-between;
+        margin-bottom:16px;
+      }
+      .topbarLeft{ display:flex; align-items:baseline; gap:12px; }
+      .topbar h2{ margin:0; font-family:"Cormorant Garamond", Georgia, serif; font-size:30px; letter-spacing:.45px; font-weight:600; }
+      .topbar .subtitle{ color:var(--muted); font-size:12.5px; }
+
+      .searchRow{ display:flex; align-items:center; gap:10px; }
+      .search{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        padding:10px 12px;
+        background:var(--bg-elev);
+        border:1px solid var(--border);
+        border-radius:12px;
+        min-width:340px;
+        box-shadow:0 0 0 1px rgba(223,191,139,.08), inset 0 1px 0 rgba(255,255,255,.02);
+      }
+      .search input{ border:0; outline:none; background:transparent; width:100%; }
+
+      .btn{
+        border:1px solid var(--border);
+        background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+        border-radius:12px;
+        padding:9px 11px;
+        min-height:44px;
+        cursor:pointer;
+        color:var(--ink);
+        box-shadow:0 1px 0 rgba(255,255,255,.03);
+        transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      }
+      .btn:hover{ box-shadow:var(--shadow2); transform:translateY(-1px); }
+      .btn:active{ transform:translateY(0); box-shadow:0 1px 0 rgba(17,19,24,.02); }
+      .btn.primary{
+        background:linear-gradient(180deg, #f0dcb6, var(--rit-orange));
+        color:#15120d;
+        border-color:#d4b789;
+        font-weight:700;
+      }
+      .btn.ghost{ background:transparent; border-color:#5a4d3a; }
+      .btn:focus-visible{ outline:none; box-shadow:0 0 0 4px var(--focus); }
+
+      .hero{
+        margin-bottom:14px;
+        border:1px solid rgba(223,191,139,.3);
+        border-radius:var(--radius2);
+        background:
+          linear-gradient(120deg, rgba(223,191,139,.2), rgba(223,191,139,.04) 45%, rgba(17,19,24,.65) 74%),
+          repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 12px);
+        box-shadow:var(--shadow2);
+      }
+      .heroWrap{
+        display:grid;
+        grid-template-columns:1.25fr .75fr;
+        gap:10px;
+        padding:16px;
+      }
+      .hero h3{ margin:0; font-size:15px; font-weight:800; letter-spacing:.2px; }
+      .hero h3{ font:600 24px/1.1 "Cormorant Garamond", Georgia, serif; letter-spacing:.4px; }
+      .hero p{ margin:8px 0 0; color:var(--muted); max-width:76ch; }
+      .heroStats{
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+      }
+
+      .grid{ display:grid; gap:14px; }
+      .grid.kpis{ grid-template-columns:repeat(12, 1fr); }
+      .card{
+        background:var(--bg-elev);
+        border:1px solid var(--border);
+        border-radius:var(--radius2);
+        box-shadow:0 0 0 1px rgba(223,191,139,.03), var(--shadow2);
+        content-visibility:auto;
+        contain-intrinsic-size:auto 280px;
+        animation:cardIn .45s ease-out both;
+      }
+      .cardHeader{
+        padding:14px 14px 10px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+      }
+      .cardHeader h3{ margin:0; font-size:13.5px; font-weight:700; letter-spacing:.15px; }
+      .cardHeader .meta{ color:var(--muted2); font-size:12px; }
+      .cardBody{ padding:0 14px 14px; }
+
+      .kpi{
+        padding:14px;
+        border-radius:var(--radius2);
+        background:linear-gradient(180deg, rgba(223,191,139,.1), rgba(223,191,139,.01));
+      }
+      .kpi .label{ color:var(--muted2); font-size:12px; }
+      .kpi .value{
+        font-size:24px;
+        font-weight:800;
+        letter-spacing:.2px;
+        margin-top:6px;
+        font-variant-numeric:tabular-nums;
+      }
+      .kpi .delta{ display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; color:var(--muted); }
+
+      .badge{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        border-radius:999px;
+        padding:5px 9px;
+        border:1px solid var(--border);
+        font-size:12px;
+        background:rgba(255,255,255,.03);
+      }
+      .badge .bDot{ width:7px; height:7px; border-radius:99px; background:var(--info); }
+      .badge.success .bDot{ background:var(--success); }
+      .badge.warning .bDot{ background:var(--warning); }
+      .badge.danger .bDot{ background:var(--danger); }
+
+      .hr{ height:1px; background:var(--border); margin:10px 0; }
+      .table{ width:100%; border-collapse:collapse; }
+      .table th, .table td{
+        text-align:left;
+        padding:10px;
+        border-top:1px solid rgba(223,191,139,.16);
+        vertical-align:middle;
+        font-size:13px;
+      }
+      .table th{ color:var(--muted2); font-weight:650; font-size:12px; border-top:0; }
+      .rowBtn{
+        width:100%;
+        text-align:left;
+        background:transparent;
+        border:0;
+        padding:0;
+        cursor:pointer;
+      }
+      .rowBtn:focus-visible{ outline:none; box-shadow:0 0 0 4px var(--focus); border-radius:10px; }
+      .muted{ color:var(--muted2); }
+      .mono{ font-family:"DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric:tabular-nums; }
+
+      .actions{ display:flex; gap:8px; justify-content:flex-end; }
+      .chip{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        border-radius:999px;
+        padding:6px 10px;
+        font-size:12px;
+        border:1px solid var(--border);
+        background:rgba(255,255,255,.03);
+      }
+      .chip .cDot{ width:8px; height:8px; border-radius:99px; }
+      .c-eligible{ background:rgba(22,163,74,.12); border-color:rgba(22,163,74,.25); }
+      .c-eligible .cDot{ background:var(--success); }
+      .c-risk{ background:rgba(220,38,38,.1); border-color:rgba(220,38,38,.25); }
+      .c-risk .cDot{ background:var(--danger); }
+      .c-pending{ background:rgba(217,119,6,.12); border-color:rgba(217,119,6,.25); }
+      .c-pending .cDot{ background:var(--warning); }
+      .c-active{ background:rgba(37,99,235,.1); border-color:rgba(37,99,235,.25); }
+      .c-active .cDot{ background:var(--info); }
+
+      .twoCol{ display:grid; grid-template-columns:1.25fr .75fr; gap:14px; }
+      .small{ font-size:12px; color:var(--muted2); }
+      .spark{ width:100%; height:60px; display:block; }
+      .footerNote{ margin-top:14px; color:var(--muted2); font-size:12px; }
+
+      .drawerBackdrop{
+        position:fixed;
+        inset:0;
+        background:rgba(2,2,3,.62);
+        backdrop-filter:blur(7px);
+        display:none;
+        align-items:stretch;
+        justify-content:flex-end;
+        z-index:50;
+      }
+      .drawer{
+        width:min(560px, 96vw);
+        background:var(--bg-elev);
+        border-left:1px solid var(--border);
+        box-shadow:var(--shadow);
+        display:flex;
+        flex-direction:column;
+      }
+      .drawerHeader{
+        padding:14px;
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:10px;
+        border-bottom:1px solid var(--border);
+      }
+      .drawerHeader h3{ margin:0; font-size:14px; font-weight:750; }
+      .drawerHeader p{ margin:2px 0 0; color:var(--muted2); font-size:12px; }
+      .drawerBody{ padding:14px; overflow:auto; }
+      .drawerGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+      .field{
+        padding:10px;
+        border:1px solid var(--border);
+        border-radius:14px;
+        background:rgba(255,255,255,.02);
+      }
+      .field .k{ color:var(--muted2); font-size:12px; }
+      .field .v{ margin-top:4px; font-weight:650; }
+      .drawerFooter{ padding:12px 14px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
+
+      .mobileNav{
+        display:none;
+        position:fixed;
+        left:12px;
+        right:12px;
+        bottom:12px;
+        z-index:60;
+        padding:8px;
+        border-radius:16px;
+        background:rgba(7,8,9,.95);
+        box-shadow:0 18px 30px rgba(0,0,0,.25);
+        border:1px solid rgba(223,191,139,.2);
+      }
+      .mobileNavInner{ display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:6px; }
+      .mobileNav a{
+        color:var(--sidebarInk);
+        justify-content:center;
+        gap:6px;
+        flex-direction:column;
+        min-height:52px;
+        padding:10px 6px;
+        font-size:11px;
+      }
+      .mobileNav a small{ display:none; }
+
+      [data-view]{ display:none; animation:cardIn .28s ease-out; }
+      [data-view].active{ display:block; }
+
+      @keyframes cardIn{
+        from{ opacity:0; transform:translateY(8px); }
+        to{ opacity:1; transform:translateY(0); }
+      }
+      @keyframes splashPulse{
+        0%,100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(214,178,120,.24); }
+        50%{ transform:scale(1.03); box-shadow:0 0 0 8px rgba(214,178,120,0); }
+      }
+      @keyframes splashRise{
+        from{ opacity:0; transform:translateY(10px); }
+        to{ opacity:1; transform:translateY(0); }
+      }
+      @keyframes splashDot{
+        0%,100%{ opacity:.28; transform:translateY(0); }
+        40%{ opacity:1; transform:translateY(-2px); }
+      }
+
+      @media (max-width: 1080px){
+        .heroWrap{ grid-template-columns:1fr; }
+      }
+      @media (max-width: 980px){
+        .app{ grid-template-columns:1fr; }
+        .sidebar{ display:none; }
+        .main{ padding:14px 12px calc(120px + env(safe-area-inset-bottom)); }
+        .topbar{ flex-direction:column; align-items:stretch; }
+        .topbarLeft{ flex-direction:column; align-items:flex-start; gap:4px; }
+        .search{ min-width:220px; width:100%; }
+        .searchRow{ width:100%; flex-wrap:wrap; gap:8px; }
+        .searchRow .btn{ flex:1 1 calc(50% - 4px); }
+        .searchRow .btn.primary{ flex-basis:100%; }
+        .topbar h2{ font-size:26px; }
+        .cardHeader{ flex-wrap:wrap; }
+        .actions{ width:100%; justify-content:stretch; }
+        .actions .btn{ flex:1 1 0; }
+        .table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; white-space:nowrap; }
+        .table th, .table td{ padding:11px 10px; }
+        .twoCol{ grid-template-columns:1fr; }
+        .grid.kpis{ grid-template-columns:repeat(2, 1fr); }
+        .mobileNav{ display:block; }
+      }
+      @media (max-width: 520px){
+        .splashTitle{ font-size:42px; }
+        .splashSub{ letter-spacing:2px; }
+        .splashLoad small{ letter-spacing:1.6px; }
+        .topbar h2{ font-size:22px; }
+        .topbar .subtitle{ font-size:12px; }
+        .heroWrap{ padding:12px; }
+        .hero h3{ font-size:20px; }
+        .hero p{ font-size:13px; }
+        .cardHeader{ padding:12px 12px 8px; }
+        .cardBody{ padding:0 12px 12px; }
+        .field{ padding:9px; }
+        .grid.kpis{ grid-template-columns:1fr; }
+        .drawerGrid{ grid-template-columns:1fr; }
+        .mobileNav{ left:8px; right:8px; bottom:8px; }
+        .mobileNavInner{ gap:4px; }
+        .mobileNav a{ min-height:50px; padding:8px 4px; font-size:10.5px; }
+      }
+      @media (max-width: 400px){
+        .main{ padding-left:10px; padding-right:10px; }
+        .searchRow .btn{ flex-basis:100%; }
+        .kpi .value{ font-size:21px; }
+      }
+      @media (prefers-reduced-motion: reduce){
+        *, *::before, *::after{ animation:none !important; transition:none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="splash" id="splash" aria-live="polite" aria-label="Loading dashboard">
+      <div class="splashCard">
+        <div class="splashMark" aria-hidden="true"></div>
+        <h1 class="splashTitle">Career <strong>Intelligence</strong></h1>
+        <p class="splashSub">CO-OP COMMAND CENTER</p>
+        <div class="splashLoad" aria-hidden="true">
+          <div class="splashDots"><span></span><span></span><span></span></div>
+          <small>INITIALIZING POLICY CORE</small>
+        </div>
+      </div>
+    </div>
+    <div class="app">
+      <aside class="sidebar" aria-label="Sidebar">
+        <div class="brand" role="banner">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Career Intelligence</h1>
+            <p>Co-op Ops & Student Success</p>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Primary">
+          <a href="#dashboard" data-nav="dashboard"><span class="dot" aria-hidden="true"></span><span>Dashboard</span><small class="mono" id="navKpiPending">—</small></a>
+          <a href="#students" data-nav="students"><span class="dot" aria-hidden="true"></span><span>Students</span><small class="mono" id="navKpiStudents">—</small></a>
+          <a href="#employers" data-nav="employers"><span class="dot" aria-hidden="true"></span><span>Employers</span><small class="mono" id="navKpiEmployers">—</small></a>
+          <a href="#career-fairs" data-nav="career-fairs"><span class="dot" aria-hidden="true"></span><span>Career Fairs</span><small class="mono">2/yr</small></a>
+          <a href="#noc" data-nav="noc"><span class="dot" aria-hidden="true"></span><span>NOC Requests</span><small class="mono" id="navKpiNoc">—</small></a>
+          <a href="#placements" data-nav="placements"><span class="dot" aria-hidden="true"></span><span>Placements</span><small class="mono" id="navKpiPlaced">—</small></a>
+          <a href="#analytics" data-nav="analytics"><span class="dot" aria-hidden="true"></span><span>Analytics</span><small class="mono">Live</small></a>
+          <a href="#reports" data-nav="reports"><span class="dot" aria-hidden="true"></span><span>Reports</span><small class="mono">Export</small></a>
+          <a href="#ai" data-nav="ai"><span class="dot" aria-hidden="true"></span><span>AI Assistant</span><small class="mono">Beta</small></a>
+          <a href="#settings" data-nav="settings"><span class="dot" aria-hidden="true"></span><span>Settings</span><small class="mono">RBAC</small></a>
+        </nav>
+
+        <div class="sidebarFooter">
+          <div class="pill" title="Realtime sync (prototype)">
+            <span class="status" aria-hidden="true"></span>
+            <span>Realtime KPI Sync</span>
+          </div>
+          <div class="small" style="margin-top:10px;color:var(--sidebarMuted)">
+            Goal: never lose a student. One-click approvals. Instant executive reporting.
+          </div>
+        </div>
+      </aside>
+
+      <main class="main" aria-label="Main content">
+        <header class="topbar" role="banner">
+          <div class="topbarLeft">
+            <h2 id="pageTitle">Dashboard</h2>
+            <div class="subtitle" id="pageSubtitle">Institution-wide co-op visibility and action queue</div>
+          </div>
+          <div class="searchRow">
+            <div class="search" role="search" aria-label="Global search">
+              <span aria-hidden="true">⌕</span>
+              <input id="globalSearch" type="search" placeholder="Search students, employers, NOC…" autocomplete="off" />
+            </div>
+            <button class="btn ghost" id="btnQuickActions" type="button" title="Quick actions">Quick</button>
+            <button class="btn primary" id="btnNew" type="button">Create</button>
+          </div>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section data-view="dashboard" class="active" aria-label="Dashboard">
+          <div class="hero" aria-label="Mission overview">
+            <div class="heroWrap">
+              <div>
+                <h3>Career Intelligence Platform • RIT Dubai Co-op Command Center</h3>
+                <p>AI powered co-op operations and student success platform. Mission: no student is lost in the co-op journey while approvals, employer management, KPI monitoring, and executive reporting are automated.</p>
+              </div>
+              <div class="heroStats">
+                <div class="field">
+                  <div class="k">Placement KPI</div>
+                  <div class="v mono" id="heroPlacement">—</div>
+                </div>
+                <div class="field">
+                  <div class="k">Pending Approvals</div>
+                  <div class="v mono" id="heroPending">—</div>
+                </div>
+                <div class="field">
+                  <div class="k">Students Tracked</div>
+                  <div class="v mono" id="heroStudents">—</div>
+                </div>
+                <div class="field">
+                  <div class="k">Active Employers</div>
+                  <div class="v mono" id="heroEmployers">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid kpis">
+            <div class="card" style="grid-column: span 3;">
+              <div class="kpi">
+                <div class="label">Eligible Students</div>
+                <div class="value mono" id="kpiEligible">—</div>
+                <div class="delta"><span class="badge success"><span class="bDot"></span>On track</span><span class="muted">Meets prerequisites</span></div>
+              </div>
+            </div>
+            <div class="card" style="grid-column: span 3;">
+              <div class="kpi">
+                <div class="label">Students Searching</div>
+                <div class="value mono" id="kpiSearching">—</div>
+                <div class="delta"><span class="badge warning"><span class="bDot"></span>Needs outreach</span><span class="muted">No offers yet</span></div>
+              </div>
+            </div>
+            <div class="card" style="grid-column: span 3;">
+              <div class="kpi">
+                <div class="label">Students In Co-op</div>
+                <div class="value mono" id="kpiInCoop">—</div>
+                <div class="delta"><span class="badge"><span class="bDot"></span>Active</span><span class="muted">Blocks in progress</span></div>
+              </div>
+            </div>
+            <div class="card" style="grid-column: span 3;">
+              <div class="kpi">
+                <div class="label">Pending Approvals</div>
+                <div class="value mono" id="kpiPending">—</div>
+                <div class="delta"><span class="badge danger"><span class="bDot"></span>Action</span><span class="muted">NOC + docs</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="twoCol" style="margin-top:14px;">
+            <section class="card" aria-label="Action queue">
+              <div class="cardHeader">
+                <div>
+                  <h3>Action Queue</h3>
+                  <div class="meta">Fast approvals, zero student loss</div>
+                </div>
+                <button class="btn" type="button" id="btnBulkNoc">Bulk review</button>
+              </div>
+              <div class="cardBody">
+                <table class="table" aria-label="Queue table">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Owner</th>
+                      <th>Status</th>
+                      <th class="mono">SLA</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="queueBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card" aria-label="KPI progress">
+              <div class="cardHeader">
+                <div>
+                  <h3>75% Co-op Placement KPI</h3>
+                  <div class="meta">Year-to-date progress</div>
+                </div>
+                <span class="badge"><span class="bDot"></span><span class="mono" id="kpiProgress">—</span></span>
+              </div>
+              <div class="cardBody">
+                <svg class="spark" viewBox="0 0 260 60" role="img" aria-label="Placement trend sparkline">
+                  <path id="sparkPath" d="" fill="none" stroke="rgba(59,130,246,.95)" stroke-width="3" stroke-linecap="round"></path>
+                  <path id="sparkArea" d="" fill="rgba(59,130,246,.12)"></path>
+                </svg>
+                <div class="hr"></div>
+                <div class="drawerGrid" style="grid-template-columns: 1fr;">
+                  <div class="field">
+                    <div class="k">Now</div>
+                    <div class="v"><span class="mono" id="kpiPlacedNow">—</span> placed / <span class="mono" id="kpiTotalNow">—</span> eligible</div>
+                  </div>
+                  <div class="field">
+                    <div class="k">Next best actions</div>
+                    <div class="v" id="kpiActions">—</div>
+                  </div>
+                </div>
+                <div class="footerNote">Prototype data. Wire to Supabase for realtime KPIs + audit logs.</div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- STUDENTS -->
+        <section data-view="students" aria-label="Students">
+          <div class="card">
+            <div class="cardHeader">
+              <div>
+                <h3>Students</h3>
+                <div class="meta">Lifecycle tracking, risk scoring, documents</div>
+              </div>
+              <div class="actions">
+                <button class="btn" type="button" id="btnStudentsExport">Export CSV</button>
+                <button class="btn primary" type="button" id="btnStudentAdd">Add student</button>
+              </div>
+            </div>
+            <div class="cardBody">
+              <div style="display:flex;gap:10px;align-items:center;margin: 2px 0 12px;flex-wrap:wrap">
+                <span class="badge"><span class="bDot"></span>Filters</span>
+                <select class="btn" id="filterMajor" aria-label="Filter by major">
+                  <option value="">All majors</option>
+                </select>
+                <select class="btn" id="filterStage" aria-label="Filter by stage">
+                  <option value="">All stages</option>
+                </select>
+                <select class="btn" id="filterRisk" aria-label="Filter by risk">
+                  <option value="">All risk</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+                <span class="small">Click a row to open full profile.</span>
+              </div>
+              <table class="table" aria-label="Students table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Major</th>
+                    <th class="mono">CGPA</th>
+                    <th>Lifecycle</th>
+                    <th>Risk</th>
+                    <th class="mono">NOC</th>
+                    <th class="mono">Docs</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- EMPLOYERS -->
+        <section data-view="employers" aria-label="Employers">
+          <div class="twoCol">
+            <section class="card" aria-label="Employer CRM">
+              <div class="cardHeader">
+                <div>
+                  <h3>Employer CRM</h3>
+                  <div class="meta">Segmentation, interactions, hiring history</div>
+                </div>
+                <button class="btn primary" type="button" id="btnEmployerAdd">Add employer</button>
+              </div>
+              <div class="cardBody">
+                <table class="table" aria-label="Employers table">
+                  <thead>
+                    <tr>
+                      <th>Employer</th>
+                      <th>Industry</th>
+                      <th class="mono">Hires</th>
+                      <th>Relationship</th>
+                      <th>Next touch</th>
+                    </tr>
+                  </thead>
+                  <tbody id="employersBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card" aria-label="Employer insight">
+              <div class="cardHeader">
+                <div>
+                  <h3>Relationship Health</h3>
+                  <div class="meta">Signal-based scoring (prototype)</div>
+                </div>
+                <span class="badge"><span class="bDot"></span>AI-ready</span>
+              </div>
+              <div class="cardBody">
+                <div class="field">
+                  <div class="k">Top partners</div>
+                  <div class="v" id="topPartners">—</div>
+                </div>
+                <div style="height:10px"></div>
+                <div class="field">
+                  <div class="k">At-risk partners</div>
+                  <div class="v" id="riskPartners">—</div>
+                </div>
+                <div class="footerNote">Add interaction logging (emails, meetings, fair attendance) to power accurate partner scoring.</div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- CAREER FAIRS -->
+        <section data-view="career-fairs" aria-label="Career fairs">
+          <div class="card">
+            <div class="cardHeader">
+              <div>
+                <h3>Career Fairs</h3>
+                <div class="meta">Attendance, offers generated, conversion</div>
+              </div>
+              <button class="btn primary" type="button" id="btnFairAdd">Schedule fair</button>
+            </div>
+            <div class="cardBody">
+              <table class="table" aria-label="Career fairs table">
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th class="mono">Date</th>
+                    <th class="mono">Employers</th>
+                    <th class="mono">Students</th>
+                    <th class="mono">Offers</th>
+                    <th class="mono">Conversion</th>
+                  </tr>
+                </thead>
+                <tbody id="fairsBody"></tbody>
+              </table>
+              <div class="footerNote">Prototype: in production, ingest QR check-ins + employer booth scans for accurate attribution.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- NOC -->
+        <section data-view="noc" aria-label="NOC management">
+          <div class="card">
+            <div class="cardHeader">
+              <div>
+                <h3>NOC Requests</h3>
+                <div class="meta">Eligibility engine, one-click approvals, audit trail</div>
+              </div>
+              <div class="actions">
+                <button class="btn" type="button" id="btnNocRules">Eligibility rules</button>
+                <button class="btn primary" type="button" id="btnNocGenerate">Generate NOC PDFs</button>
+              </div>
+            </div>
+            <div class="cardBody">
+              <table class="table" aria-label="NOC requests table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Employer</th>
+                    <th class="mono">CGPA</th>
+                    <th>Prereqs</th>
+                    <th>Status</th>
+                    <th class="mono">Submitted</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="nocBody"></tbody>
+              </table>
+              <div class="footerNote">Approvals are logged to `audit_logs` and produce a verifiable document with QR (prototype placeholder).</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PLACEMENTS -->
+        <section data-view="placements" aria-label="Placements">
+          <div class="twoCol">
+            <section class="card" aria-label="Placement pipeline">
+              <div class="cardHeader">
+                <div>
+                  <h3>Placements</h3>
+                  <div class="meta">Offer → JD → NOC → Registered → Active</div>
+                </div>
+                <button class="btn primary" type="button" id="btnPlacementAdd">Create placement</button>
+              </div>
+              <div class="cardBody">
+                <table class="table" aria-label="Placements table">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Employer</th>
+                      <th>Stage</th>
+                      <th class="mono">Start</th>
+                      <th class="mono">Weeks</th>
+                    </tr>
+                  </thead>
+                  <tbody id="placementsBody"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="card" aria-label="Placement insight">
+              <div class="cardHeader">
+                <div>
+                  <h3>Missing Reports</h3>
+                  <div class="meta">Compliance and close-out</div>
+                </div>
+                <span class="badge warning"><span class="bDot"></span><span id="missingReports" class="mono">—</span></span>
+              </div>
+              <div class="cardBody">
+                <div class="field">
+                  <div class="k">Students to nudge</div>
+                  <div class="v" id="nudgeList">—</div>
+                </div>
+                <div style="height:10px"></div>
+                <div class="field">
+                  <div class="k">Automations</div>
+                  <div class="v">Auto-email reminders at day 3, 7, 14 overdue (configure in Settings → Notifications).</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ANALYTICS -->
+        <section data-view="analytics" aria-label="Analytics">
+          <div class="twoCol">
+            <section class="card" aria-label="Realtime analytics">
+              <div class="cardHeader">
+                <div>
+                  <h3>Realtime Analytics</h3>
+                  <div class="meta">Placement rate, approvals time, employer engagement</div>
+                </div>
+                <button class="btn" type="button" id="btnRefreshAnalytics">Refresh</button>
+              </div>
+              <div class="cardBody">
+                <div class="drawerGrid">
+                  <div class="field">
+                    <div class="k">Placement rate</div>
+                    <div class="v"><span id="aPlacement" class="mono">—</span></div>
+                  </div>
+                  <div class="field">
+                    <div class="k">Median approval time</div>
+                    <div class="v"><span id="aApproval" class="mono">—</span></div>
+                  </div>
+                  <div class="field">
+                    <div class="k">Career fair conversion</div>
+                    <div class="v"><span id="aConversion" class="mono">—</span></div>
+                  </div>
+                  <div class="field">
+                    <div class="k">Employer engagement</div>
+                    <div class="v"><span id="aEngagement" class="mono">—</span></div>
+                  </div>
+                </div>
+                <div class="hr"></div>
+                <div class="field">
+                  <div class="k">Cohort breakdown</div>
+                  <div class="v" id="aCohorts">—</div>
+                </div>
+                <div class="footerNote">Production-ready analytics: materialized views + RLS-safe aggregate endpoints.</div>
+              </div>
+            </section>
+            <section class="card" aria-label="Risk monitoring">
+              <div class="cardHeader">
+                <div>
+                  <h3>AI Risk Monitor</h3>
+                  <div class="meta">Detect students at risk of failing to place</div>
+                </div>
+                <span class="badge danger"><span class="bDot"></span>Watchlist</span>
+              </div>
+              <div class="cardBody">
+                <table class="table" aria-label="Risk watchlist">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Signal</th>
+                      <th>Recommendation</th>
+                    </tr>
+                  </thead>
+                  <tbody id="riskBody"></tbody>
+                </table>
+                <div class="footerNote">Signals: low application activity, missed workshops, repeated rejections, missing prerequisites.</div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- REPORTS -->
+        <section data-view="reports" aria-label="Reports">
+          <div class="twoCol">
+            <section class="card" aria-label="Report builder">
+              <div class="cardHeader">
+                <div>
+                  <h3>Report Builder</h3>
+                  <div class="meta">Executive-ready exports</div>
+                </div>
+                <button class="btn primary" type="button" id="btnGenerateReport">Generate</button>
+              </div>
+              <div class="cardBody">
+                <div style="display:grid;gap:10px;">
+                  <label class="field">
+                    <div class="k">Report type</div>
+                    <div style="margin-top:6px">
+                      <select class="btn" style="width:100%" id="reportType" aria-label="Report type">
+                        <option>Placement Report</option>
+                        <option>KPI Report</option>
+                        <option>Employer Report</option>
+                        <option>Career Fair Report</option>
+                        <option>Compliance Report</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label class="field">
+                    <div class="k">Scope</div>
+                    <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+                      <select class="btn" id="reportMajor" aria-label="Major scope"><option value="">All majors</option></select>
+                      <select class="btn" id="reportTerm" aria-label="Term scope">
+                        <option>2026 Spring</option>
+                        <option>2026 Summer</option>
+                        <option>2026 Fall</option>
+                      </select>
+                      <select class="btn" id="reportFormat" aria-label="Format">
+                        <option>PDF (placeholder)</option>
+                        <option>CSV</option>
+                        <option>JSON</option>
+                      </select>
+                    </div>
+                  </label>
+                  <div class="field">
+                    <div class="k">Includes</div>
+                    <div class="v">
+                      KPI summary • placement funnel • approvals SLA • employer hires • compliance exceptions
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section class="card" aria-label="Report output">
+              <div class="cardHeader">
+                <div>
+                  <h3>Output</h3>
+                  <div class="meta">Preview + download</div>
+                </div>
+                <button class="btn" type="button" id="btnDownloadReport">Download</button>
+              </div>
+              <div class="cardBody">
+                <pre id="reportPreview" style="margin:0;white-space:pre-wrap;word-break:break-word;background:rgba(2,6,23,.02);border:1px solid var(--border);border-radius:14px;padding:12px;min-height:240px;"></pre>
+                <div class="footerNote">Wire this to real data + server-side PDF rendering for compliance-grade exports.</div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- AI -->
+        <section data-view="ai" aria-label="AI assistant">
+          <div class="twoCol">
+            <section class="card" aria-label="AI chat">
+              <div class="cardHeader">
+                <div>
+                  <h3>AI Assistant</h3>
+                  <div class="meta">Ask for insights, drafts, and next best actions</div>
+                </div>
+                <span class="badge"><span class="bDot"></span>Assist</span>
+              </div>
+              <div class="cardBody">
+                <div id="chatLog" style="display:grid;gap:10px;margin-bottom:12px;"></div>
+                <div style="display:flex;gap:10px">
+                  <input id="chatInput" class="btn" style="flex:1" placeholder="e.g., ‘Which students are at risk this week?’" />
+                  <button id="chatSend" class="btn primary" type="button">Send</button>
+                </div>
+                <div class="footerNote">Prototype: uses local heuristics. Replace with your LLM + RLS-safe tools (students, NOC, employers, reports).</div>
+              </div>
+            </section>
+            <section class="card" aria-label="AI features list">
+              <div class="cardHeader">
+                <div>
+                  <h3>AI Features</h3>
+                  <div class="meta">Roadmap-ready modules</div>
+                </div>
+                <button class="btn" type="button" id="btnAiRun">Run checks</button>
+              </div>
+              <div class="cardBody">
+                <div class="field">
+                  <div class="k">AI NOC approval</div>
+                  <div class="v">Auto-check prerequisites, CGPA, docs; draft decision with reasons; require human finalization.</div>
+                </div>
+                <div style="height:10px"></div>
+                <div class="field">
+                  <div class="k">AI risk detection</div>
+                  <div class="v">Rank students by likelihood of not placing; recommend interventions (workshops, mock interviews, faculty escalation).</div>
+                </div>
+                <div style="height:10px"></div>
+                <div class="field">
+                  <div class="k">AI KPI monitoring</div>
+                  <div class="v">Watch KPI drift; alert when placement rate or approvals SLA deviates.</div>
+                </div>
+                <div style="height:10px"></div>
+                <div class="field">
+                  <div class="k">AI reporting</div>
+                  <div class="v">Generate exec summaries and accreditation-ready narratives from live metrics.</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section data-view="settings" aria-label="Settings">
+          <div class="twoCol">
+            <section class="card" aria-label="Role based access control">
+              <div class="cardHeader">
+                <div>
+                  <h3>Access Control (RBAC)</h3>
+                  <div class="meta">Roles, permissions, audit logging</div>
+                </div>
+                <button class="btn primary" type="button" id="btnAddRole">Add role</button>
+              </div>
+              <div class="cardBody">
+                <table class="table" aria-label="Roles table">
+                  <thead>
+                    <tr>
+                      <th>Role</th>
+                      <th>Scope</th>
+                      <th>Key permissions</th>
+                      <th>Audit</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rolesBody"></tbody>
+                </table>
+                <div class="footerNote">Production: enforce with Supabase RLS + policy tests; write all mutations to `audit_logs`.</div>
+              </div>
+            </section>
+            <section class="card" aria-label="System settings">
+              <div class="cardHeader">
+                <div>
+                  <h3>System</h3>
+                  <div class="meta">Notifications, automations, integrations</div>
+                </div>
+                <button class="btn" type="button" id="btnSaveSettings">Save</button>
+              </div>
+              <div class="cardBody">
+                <div style="display:grid;gap:10px;">
+                  <label class="field">
+                    <div class="k">Approval SLA target</div>
+                    <div style="margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                      <input id="slaHours" class="btn" style="width:160px" type="number" min="1" value="48" />
+                      <span class="small">hours</span>
+                    </div>
+                  </label>
+                  <label class="field">
+                    <div class="k">Auto reminders</div>
+                    <div class="v" style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+                      <label class="chip"><span class="cDot" style="background:var(--info)"></span><input type="checkbox" checked /> Missing reports</label>
+                      <label class="chip"><span class="cDot" style="background:var(--warning)"></span><input type="checkbox" checked /> Pending NOC</label>
+                      <label class="chip"><span class="cDot" style="background:var(--success)"></span><input type="checkbox" /> Workshop nudges</label>
+                    </div>
+                  </label>
+                  <div class="field">
+                    <div class="k">Integrations</div>
+                    <div class="v">Symplicity • Email • QR verification • SIS (placeholder)</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <nav class="mobileNav" aria-label="Mobile navigation">
+        <div class="mobileNavInner">
+          <a href="#dashboard" data-nav="dashboard"><span class="dot" aria-hidden="true"></span><span>Dashboard</span></a>
+          <a href="#students" data-nav="students"><span class="dot" aria-hidden="true"></span><span>Students</span></a>
+          <a href="#noc" data-nav="noc"><span class="dot" aria-hidden="true"></span><span>NOC</span></a>
+          <a href="#reports" data-nav="reports"><span class="dot" aria-hidden="true"></span><span>Reports</span></a>
+          <a href="#ai" data-nav="ai"><span class="dot" aria-hidden="true"></span><span>AI</span></a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Drawer -->
+    <div class="drawerBackdrop" id="drawerBackdrop" role="dialog" aria-modal="true" aria-label="Details drawer">
+      <div class="drawer" role="document">
+        <div class="drawerHeader">
+          <div>
+            <h3 id="drawerTitle">Details</h3>
+            <p id="drawerSub">—</p>
+          </div>
+          <button class="btn" type="button" id="drawerClose" aria-label="Close">Close</button>
+        </div>
+        <div class="drawerBody" id="drawerBody"></div>
+        <div class="drawerFooter" id="drawerFooter"></div>
+      </div>
+    </div>
+
+    <script>
+      const state = {
+        nowISO: new Date().toISOString().slice(0,10),
+        slaHours: 48,
+        students: [
+          { id:"S-1042", name:"Aisha Al-Naqbi", major:"CIT", cgpa:3.18, stage:"Searching", risk:"Medium", noc:"Not started", docs:{cv:true,jd:false,offer:false,passport:true}, alerts:["No applications in 10 days"] },
+          { id:"S-1187", name:"Omar Al-Hammadi", major:"CSEC", cgpa:2.31, stage:"Interviewing", risk:"High", noc:"Pending", docs:{cv:true,jd:true,offer:true,passport:true}, alerts:["Prereq missing: NSSA-241"] },
+          { id:"S-0991", name:"Sara Khan", major:"EE", cgpa:3.72, stage:"Offer Received", risk:"Low", noc:"Ready", docs:{cv:true,jd:true,offer:true,passport:true}, alerts:[] },
+          { id:"S-1320", name:"Yousef Abdel", major:"ME", cgpa:2.05, stage:"Searching", risk:"High", noc:"Not started", docs:{cv:false,jd:false,offer:false,passport:true}, alerts:["Missing CV","No workshop attendance"] },
+          { id:"S-1106", name:"Mariam Noor", major:"Finance", cgpa:2.61, stage:"Active Co-op", risk:"Low", noc:"Approved", docs:{cv:true,jd:true,offer:true,passport:true}, alerts:[] },
+          { id:"S-1213", name:"Hassan Saleh", major:"Marketing", cgpa:2.11, stage:"JD Submitted", risk:"Medium", noc:"Pending", docs:{cv:true,jd:true,offer:true,passport:false}, alerts:["Passport copy missing"] },
+          { id:"S-0874", name:"Layla Faris", major:"Psychology", cgpa:3.01, stage:"Eligible", risk:"Low", noc:"Not started", docs:{cv:true,jd:false,offer:false,passport:true}, alerts:[] },
+          { id:"S-1402", name:"Khalid Nasser", major:"IE", cgpa:2.44, stage:"Registered", risk:"Medium", noc:"Approved", docs:{cv:true,jd:true,offer:true,passport:true}, alerts:["Evaluation due soon"] },
+        ],
+        employers: [
+          { id:"E-201", name:"Siemens", industry:"Engineering", hires: 9, relationship:"Strong", next:"Workshop in 14d", notes:["Hosted session Q2","2 offers pending"] },
+          { id:"E-155", name:"KPMG", industry:"Consulting", hires: 6, relationship:"Strong", next:"Career fair booth", notes:["Returning partner","Wants more MIS"] },
+          { id:"E-088", name:"Aramex", industry:"Logistics", hires: 4, relationship:"Stable", next:"Check-in in 30d", notes:["Pipeline for IE","Needs faster NOC"] },
+          { id:"E-274", name:"Startup Lab", industry:"Tech", hires: 1, relationship:"At risk", next:"Re-engage this week", notes:["Slow response","Unfilled reqs"] },
+        ],
+        fairs: [
+          { id:"F-2026-Spring", name:"Spring Career Fair", date:"2026-03-12", employers: 42, students: 510, offers: 64 },
+          { id:"F-2026-Fall", name:"Fall Career Fair", date:"2026-10-08", employers: 48, students: 560, offers: 72 },
+        ],
+        nocRequests: [
+          { id:"NOC-7782", studentId:"S-1187", employer:"Startup Lab", cgpa:2.31, prereqs:"1 issue", status:"Pending Review", submitted:"2026-05-29", reasons:["Prereq mismatch","Needs advisor review"] },
+          { id:"NOC-8120", studentId:"S-1213", employer:"KPMG", cgpa:2.11, prereqs:"OK", status:"Docs Missing", submitted:"2026-05-28", reasons:["Passport copy missing"] },
+          { id:"NOC-8455", studentId:"S-0991", employer:"Siemens", cgpa:3.72, prereqs:"OK", status:"Ready to Approve", submitted:"2026-05-27", reasons:[] },
+        ],
+        placements: [
+          { id:"P-3001", studentId:"S-1106", employer:"KPMG", stage:"Active", start:"2026-05-05", weeks: 12, reportDue:"2026-08-15", reportSubmitted:false },
+          { id:"P-3002", studentId:"S-1402", employer:"Aramex", stage:"Registered", start:"2026-06-10", weeks: 10, reportDue:"2026-09-01", reportSubmitted:false },
+          { id:"P-3003", studentId:"S-0991", employer:"Siemens", stage:"Offer → JD", start:"2026-06-20", weeks: 10, reportDue:"2026-09-10", reportSubmitted:true },
+        ],
+        roles: [
+          { role:"Super Admin", scope:"Institution", perms:"All modules + reporting", audit:"Required" },
+          { role:"Manager", scope:"Co-op office", perms:"Approvals + employer CRM + analytics", audit:"Required" },
+          { role:"Officer", scope:"Operations", perms:"Student tracking + NOC workflows", audit:"Required" },
+          { role:"Faculty", scope:"Advising", perms:"Academic approval + evaluations", audit:"Required" },
+          { role:"Student", scope:"Self", perms:"Apply + upload docs + status", audit:"Limited" },
+          { role:"Employer", scope:"Org", perms:"Post jobs + evaluations", audit:"Limited" },
+        ]
+      };
+
+      const views = [
+        { id:"dashboard", title:"Dashboard", sub:"Institution-wide co-op visibility and action queue" },
+        { id:"students", title:"Students", sub:"Track every student throughout the co-op lifecycle" },
+        { id:"employers", title:"Employers", sub:"Employer CRM and relationship management" },
+        { id:"career-fairs", title:"Career Fairs", sub:"Attendance, offers, conversion tracking" },
+        { id:"noc", title:"NOC Requests", sub:"One-click approvals with eligibility checks" },
+        { id:"placements", title:"Placements", sub:"End-to-end placement pipeline and compliance" },
+        { id:"analytics", title:"Analytics", sub:"Realtime KPIs, trends, cohort breakdowns" },
+        { id:"reports", title:"Reports", sub:"Executive exports and compliance reporting" },
+        { id:"ai", title:"AI Assistant", sub:"Search, insights, and next best actions" },
+        { id:"settings", title:"Settings", sub:"RBAC, notifications, and system configuration" },
+      ];
+
+      const el = (id) => document.getElementById(id);
+      const fmtPct = (x) => (Math.round(x * 10) / 10).toFixed(1) + "%";
+      function animateCount(elementId, nextValue){
+        const node = el(elementId);
+        if (!node) return;
+        const from = Number(node.dataset.value || 0);
+        const to = Number(nextValue);
+        node.dataset.value = String(to);
+        const start = performance.now();
+        const duration = 320;
+        const tick = (now) => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3);
+          node.textContent = String(Math.round(from + (to - from) * eased));
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
+      const download = (filename, text, mime="text/plain") => {
+        const blob = new Blob([text], { type: mime });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+      };
+
+      function navTo(viewId){
+        for (const a of document.querySelectorAll(".nav a, .mobileNav a")) a.removeAttribute("aria-current");
+        for (const activeNav of document.querySelectorAll(`.nav a[data-nav="${viewId}"], .mobileNav a[data-nav="${viewId}"]`)){
+          activeNav.setAttribute("aria-current","page");
+        }
+
+        for (const s of document.querySelectorAll("[data-view]")) s.classList.remove("active");
+        const activeView = document.querySelector(`[data-view="${viewId}"]`);
+        if (activeView) activeView.classList.add("active");
+
+        const meta = views.find(v => v.id === viewId) || views[0];
+        el("pageTitle").textContent = meta.title;
+        el("pageSubtitle").textContent = meta.sub;
+      }
+
+      function compute(){
+        const eligible = state.students.filter(s => ["Eligible","Searching","Interviewing","Offer Received","JD Submitted","Registered","Active Co-op"].includes(s.stage)).length;
+        const searching = state.students.filter(s => s.stage === "Searching").length;
+        const inCoop = state.students.filter(s => s.stage === "Active Co-op").length;
+        const pending = state.nocRequests.filter(n => n.status !== "Approved").length + state.students.filter(s => Object.values(s.docs).some(v => v === false)).length;
+        const placed = state.students.filter(s => ["Active Co-op","Registered"].includes(s.stage)).length;
+        const progress = eligible ? (placed / eligible) * 100 : 0;
+        return { eligible, searching, inCoop, pending, placed, eligibleForKpi: eligible, progress };
+      }
+
+      function renderKpis(){
+        const k = compute();
+        animateCount("kpiEligible", k.eligible);
+        animateCount("kpiSearching", k.searching);
+        animateCount("kpiInCoop", k.inCoop);
+        animateCount("kpiPending", k.pending);
+        el("kpiProgress").textContent = fmtPct(k.progress);
+        animateCount("kpiPlacedNow", k.placed);
+        animateCount("kpiTotalNow", k.eligibleForKpi);
+        el("kpiActions").textContent =
+          k.searching ? `Prioritize outreach for ${k.searching} searching students; run mock-interview workshops.` : "Maintain placement momentum; monitor SLA drift.";
+
+        el("heroPlacement").textContent = fmtPct(k.progress);
+        animateCount("heroPending", k.pending);
+        animateCount("heroStudents", state.students.length);
+        animateCount("heroEmployers", state.employers.length);
+
+        el("navKpiPending").textContent = String(state.nocRequests.filter(n => n.status !== "Approved").length);
+        el("navKpiStudents").textContent = String(state.students.length);
+        el("navKpiEmployers").textContent = String(state.employers.length);
+        el("navKpiNoc").textContent = String(state.nocRequests.length);
+        el("navKpiPlaced").textContent = String(k.placed);
+
+        // Sparkline (fake trend based on progress)
+        const points = [12, 18, 23, 28, 35, 42, 49, Math.max(10, Math.min(75, Math.round(k.progress)))];
+        const w = 260, h = 60, pad = 6;
+        const xStep = (w - pad*2) / (points.length-1);
+        const max = 75, min = 0;
+        const toXY = (i, v) => {
+          const x = pad + i*xStep;
+          const y = pad + (h - pad*2) * (1 - (v - min)/(max-min));
+          return [x,y];
+        };
+        const d = points.map((v,i) => {
+          const [x,y] = toXY(i,v);
+          return (i===0 ? "M" : "L") + x.toFixed(1) + " " + y.toFixed(1);
+        }).join(" ");
+        el("sparkPath").setAttribute("d", d);
+        const last = toXY(points.length-1, points[points.length-1]);
+        const first = toXY(0, points[0]);
+        const area = d + ` L ${last[0].toFixed(1)} ${(h-pad).toFixed(1)} L ${first[0].toFixed(1)} ${(h-pad).toFixed(1)} Z`;
+        el("sparkArea").setAttribute("d", area);
+      }
+
+      function chipForStage(stage){
+        const map = {
+          "Eligible": ["c-eligible","Eligible"],
+          "Searching": ["c-pending","Searching"],
+          "Interviewing": ["c-active","Interviewing"],
+          "Offer Received": ["c-active","Offer"],
+          "JD Submitted": ["c-pending","JD Submitted"],
+          "Registered": ["c-active","Registered"],
+          "Active Co-op": ["c-eligible","Active"],
+          "Completed": ["c-eligible","Completed"],
+        };
+        const [cls,label] = map[stage] || ["","Stage"];
+        return `<span class="chip ${cls}"><span class="cDot"></span>${label}</span>`;
+      }
+
+      function renderQueue(){
+        const items = [
+          { type:"NOC", owner:"Officer", status:"Pending review", sla:"8h", onClick:() => location.hash = "#noc" },
+          { type:"Docs", owner:"Officer", status:"Missing passport", sla:"19h", onClick:() => location.hash = "#students" },
+          { type:"Employer", owner:"Manager", status:"Partner at risk", sla:"3d", onClick:() => location.hash = "#employers" },
+          { type:"Compliance", owner:"Faculty", status:"Evaluation due", sla:"2d", onClick:() => location.hash = "#placements" },
+        ];
+        el("queueBody").innerHTML = items.map(i => `
+          <tr>
+            <td><button class="rowBtn" data-queue="${i.type}">${i.type}</button></td>
+            <td class="muted">${i.owner}</td>
+            <td>${i.status}</td>
+            <td class="mono">${i.sla}</td>
+            <td style="text-align:right"><button class="btn" type="button" data-queuego="${i.type}">Open</button></td>
+          </tr>
+        `).join("");
+        for (const b of document.querySelectorAll("[data-queuego]")){
+          b.addEventListener("click", () => {
+            const type = b.getAttribute("data-queuego");
+            const target = type === "NOC" ? "#noc" : type === "Docs" ? "#students" : type === "Employer" ? "#employers" : "#placements";
+            location.hash = target;
+          });
+        }
+      }
+
+      function renderStudents(){
+        const majors = [...new Set(state.students.map(s => s.major))].sort();
+        const stages = [...new Set(state.students.map(s => s.stage))].sort();
+        const filterMajor = el("filterMajor");
+        const filterStage = el("filterStage");
+        const reportMajor = el("reportMajor");
+        filterMajor.innerHTML = `<option value="">All majors</option>` + majors.map(m => `<option>${m}</option>`).join("");
+        filterStage.innerHTML = `<option value="">All stages</option>` + stages.map(s => `<option>${s}</option>`).join("");
+        reportMajor.innerHTML = `<option value="">All majors</option>` + majors.map(m => `<option>${m}</option>`).join("");
+
+        function apply(){
+          const q = el("globalSearch").value.trim().toLowerCase();
+          const m = filterMajor.value;
+          const st = filterStage.value;
+          const r = el("filterRisk").value;
+          const list = state.students.filter(s => {
+            const matchQ = !q || (s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q) || s.major.toLowerCase().includes(q));
+            const matchM = !m || s.major === m;
+            const matchS = !st || s.stage === st;
+            const matchR = !r || s.risk === r;
+            return matchQ && matchM && matchS && matchR;
+          });
+          el("studentsBody").innerHTML = list.map(s => {
+            const docsCount = Object.values(s.docs).filter(Boolean).length;
+            const docsTotal = Object.values(s.docs).length;
+            const riskBadge =
+              s.risk === "High" ? `<span class="badge danger"><span class="bDot"></span>High</span>` :
+              s.risk === "Medium" ? `<span class="badge warning"><span class="bDot"></span>Medium</span>` :
+              `<span class="badge success"><span class="bDot"></span>Low</span>`;
+            const nocBadge =
+              s.noc === "Approved" ? `<span class="badge success"><span class="bDot"></span>Approved</span>` :
+              s.noc === "Pending" ? `<span class="badge warning"><span class="bDot"></span>Pending</span>` :
+              s.noc === "Ready" ? `<span class="badge"><span class="bDot"></span>Ready</span>` :
+              `<span class="badge"><span class="bDot"></span>${s.noc}</span>`;
+            return `
+              <tr>
+                <td>
+                  <button class="rowBtn" data-student="${s.id}">
+                    <div style="font-weight:700">${s.name}</div>
+                    <div class="small">${s.id}</div>
+                  </button>
+                </td>
+                <td class="muted">${s.major}</td>
+                <td class="mono">${s.cgpa.toFixed(2)}</td>
+                <td>${chipForStage(s.stage)}</td>
+                <td>${riskBadge}</td>
+                <td>${nocBadge}</td>
+                <td class="mono">${docsCount}/${docsTotal}</td>
+              </tr>
+            `;
+          }).join("");
+
+          for (const b of document.querySelectorAll("[data-student]")){
+            b.addEventListener("click", () => openStudent(b.getAttribute("data-student")));
+          }
+        }
+
+        filterMajor.addEventListener("change", apply);
+        filterStage.addEventListener("change", apply);
+        el("filterRisk").addEventListener("change", apply);
+        el("globalSearch").addEventListener("input", () => {
+          // keep active view responsive to search
+          const current = (location.hash || "#dashboard").slice(1);
+          if (current === "students") apply();
+        });
+        apply();
+      }
+
+      function renderEmployers(){
+        el("employersBody").innerHTML = state.employers.map(e => {
+          const relBadge =
+            e.relationship === "Strong" ? `<span class="badge success"><span class="bDot"></span>Strong</span>` :
+            e.relationship === "Stable" ? `<span class="badge"><span class="bDot"></span>Stable</span>` :
+            `<span class="badge danger"><span class="bDot"></span>At risk</span>`;
+          return `
+            <tr>
+              <td><button class="rowBtn" data-employer="${e.id}"><div style="font-weight:700">${e.name}</div><div class="small">${e.id}</div></button></td>
+              <td class="muted">${e.industry}</td>
+              <td class="mono">${e.hires}</td>
+              <td>${relBadge}</td>
+              <td>${e.next}</td>
+            </tr>
+          `;
+        }).join("");
+        for (const b of document.querySelectorAll("[data-employer]")){
+          b.addEventListener("click", () => openEmployer(b.getAttribute("data-employer")));
+        }
+        const top = [...state.employers].sort((a,b) => b.hires - a.hires).slice(0,2).map(e => e.name).join(" • ");
+        const risk = state.employers.filter(e => e.relationship === "At risk").map(e => e.name).join(" • ") || "None";
+        el("topPartners").textContent = top || "—";
+        el("riskPartners").textContent = risk;
+      }
+
+      function renderFairs(){
+        el("fairsBody").innerHTML = state.fairs.map(f => {
+          const conv = f.students ? (f.offers / f.students) * 100 : 0;
+          return `
+            <tr>
+              <td><div style="font-weight:700">${f.name}</div><div class="small">${f.id}</div></td>
+              <td class="mono">${f.date}</td>
+              <td class="mono">${f.employers}</td>
+              <td class="mono">${f.students}</td>
+              <td class="mono">${f.offers}</td>
+              <td class="mono">${fmtPct(conv)}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      function renderNoc(){
+        const studentById = new Map(state.students.map(s => [s.id, s]));
+        el("nocBody").innerHTML = state.nocRequests.map(n => {
+          const s = studentById.get(n.studentId);
+          const statusBadge =
+            n.status === "Approved" ? `<span class="badge success"><span class="bDot"></span>Approved</span>` :
+            n.status === "Ready to Approve" ? `<span class="badge"><span class="bDot"></span>Ready</span>` :
+            n.status === "Docs Missing" ? `<span class="badge warning"><span class="bDot"></span>Docs missing</span>` :
+            `<span class="badge warning"><span class="bDot"></span>Pending</span>`;
+          const prereqBadge =
+            n.prereqs === "OK" ? `<span class="badge success"><span class="bDot"></span>OK</span>` :
+            `<span class="badge danger"><span class="bDot"></span>${n.prereqs}</span>`;
+          return `
+            <tr>
+              <td><button class="rowBtn" data-noc="${n.id}">
+                <div style="font-weight:700">${s ? s.name : n.studentId}</div>
+                <div class="small">${n.id}</div>
+              </button></td>
+              <td class="muted">${n.employer}</td>
+              <td class="mono">${n.cgpa.toFixed(2)}</td>
+              <td>${prereqBadge}</td>
+              <td>${statusBadge}</td>
+              <td class="mono">${n.submitted}</td>
+              <td style="text-align:right">
+                <div class="actions">
+                  <button class="btn" type="button" data-noc-approve="${n.id}">Approve</button>
+                  <button class="btn" type="button" data-noc-reject="${n.id}">Reject</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        for (const b of document.querySelectorAll("[data-noc]")){
+          b.addEventListener("click", () => openNoc(b.getAttribute("data-noc")));
+        }
+        for (const b of document.querySelectorAll("[data-noc-approve]")){
+          b.addEventListener("click", () => setNocStatus(b.getAttribute("data-noc-approve"), "Approved"));
+        }
+        for (const b of document.querySelectorAll("[data-noc-reject]")){
+          b.addEventListener("click", () => setNocStatus(b.getAttribute("data-noc-reject"), "Rejected"));
+        }
+      }
+
+      function renderPlacements(){
+        const studentById = new Map(state.students.map(s => [s.id, s]));
+        el("placementsBody").innerHTML = state.placements.map(p => {
+          const s = studentById.get(p.studentId);
+          const stageChip = chipForStage(p.stage === "Active" ? "Active Co-op" : p.stage);
+          return `
+            <tr>
+              <td><div style="font-weight:700">${s ? s.name : p.studentId}</div><div class="small">${p.id}</div></td>
+              <td class="muted">${p.employer}</td>
+              <td>${stageChip}</td>
+              <td class="mono">${p.start}</td>
+              <td class="mono">${p.weeks}</td>
+            </tr>
+          `;
+        }).join("");
+        const missing = state.placements.filter(p => !p.reportSubmitted).length;
+        el("missingReports").textContent = String(missing);
+        const nudge = state.placements
+          .filter(p => !p.reportSubmitted)
+          .map(p => {
+            const s = studentById.get(p.studentId);
+            return s ? s.name : p.studentId;
+          })
+          .slice(0, 3)
+          .join(" • ") || "—";
+        el("nudgeList").textContent = nudge;
+      }
+
+      function renderAnalytics(){
+        const k = compute();
+        const placement = k.eligibleForKpi ? (k.placed / k.eligibleForKpi) : 0;
+        el("aPlacement").textContent = fmtPct(placement * 100);
+        el("aApproval").textContent = (Math.round(state.slaHours * 0.52)) + "h";
+        const conv = state.fairs.reduce((acc,f) => acc + (f.students ? (f.offers/f.students) : 0), 0) / Math.max(1, state.fairs.length);
+        el("aConversion").textContent = fmtPct(conv * 100);
+        const engagement = Math.min(100, 35 + state.employers.filter(e => e.relationship === "Strong").length * 18);
+        el("aEngagement").textContent = engagement + "/100";
+        const cohorts = [
+          ["Engineering", state.students.filter(s => ["EE","ME","IE"].includes(s.major)).length],
+          ["Computing", state.students.filter(s => ["CIT","CSEC"].includes(s.major)).length],
+          ["Business", state.students.filter(s => ["Finance","Marketing"].includes(s.major)).length],
+          ["Other", state.students.filter(s => ["Psychology"].includes(s.major)).length],
+        ].filter(x => x[1] > 0).map(x => `${x[0]}: ${x[1]}`).join(" • ");
+        el("aCohorts").textContent = cohorts || "—";
+
+        const riskList = state.students
+          .filter(s => s.risk === "High")
+          .slice(0, 5)
+          .map(s => ({
+            student: s.name,
+            signal: s.alerts[0] || "Low activity",
+            rec: "Schedule 1:1 + mock interview + faculty check-in"
+          }));
+        el("riskBody").innerHTML = riskList.map(r => `
+          <tr>
+            <td style="font-weight:700">${r.student}</td>
+            <td class="muted">${r.signal}</td>
+            <td>${r.rec}</td>
+          </tr>
+        `).join("") || `<tr><td colspan="3" class="muted">No high-risk students currently flagged.</td></tr>`;
+      }
+
+      function renderRoles(){
+        el("rolesBody").innerHTML = state.roles.map(r => `
+          <tr>
+            <td style="font-weight:700">${r.role}</td>
+            <td class="muted">${r.scope}</td>
+            <td>${r.perms}</td>
+            <td class="muted">${r.audit}</td>
+          </tr>
+        `).join("");
+      }
+
+      function setNocStatus(nocId, status){
+        const n = state.nocRequests.find(x => x.id === nocId);
+        if (!n) return;
+        n.status = status === "Approved" ? "Approved" : "Pending Review";
+        renderNoc();
+        renderKpis();
+        toast(status === "Approved" ? `Approved ${nocId} (audit logged)` : `Sent ${nocId} for follow-up`);
+      }
+
+      function drawerOpen(title, sub, bodyHTML, footerButtonsHTML){
+        el("drawerTitle").textContent = title;
+        el("drawerSub").textContent = sub;
+        el("drawerBody").innerHTML = bodyHTML;
+        el("drawerFooter").innerHTML = footerButtonsHTML || `<button class="btn" type="button" id="drawerClose2">Close</button>`;
+        el("drawerBackdrop").style.display = "flex";
+        const closeBtns = [el("drawerClose"), document.getElementById("drawerClose2")].filter(Boolean);
+        closeBtns.forEach(b => b.addEventListener("click", drawerClose));
+        setTimeout(() => el("drawerClose").focus(), 0);
+      }
+      function drawerClose(){
+        el("drawerBackdrop").style.display = "none";
+        el("drawerBody").innerHTML = "";
+        el("drawerFooter").innerHTML = "";
+      }
+
+      function openStudent(studentId){
+        const s = state.students.find(x => x.id === studentId);
+        if (!s) return;
+        const docs = Object.entries(s.docs).map(([k,v]) => {
+          const badge = v ? `<span class="badge success"><span class="bDot"></span>OK</span>` : `<span class="badge warning"><span class="bDot"></span>Missing</span>`;
+          return `<div class="field"><div class="k">${k.toUpperCase()}</div><div class="v">${badge}</div></div>`;
+        }).join("");
+        const alerts = s.alerts.length ? s.alerts.map(a => `<li>${a}</li>`).join("") : `<li class="muted">No alerts</li>`;
+        drawerOpen(
+          s.name,
+          `${s.id} • ${s.major} • CGPA ${s.cgpa.toFixed(2)}`,
+          `
+            <div class="drawerGrid">
+              <div class="field"><div class="k">Lifecycle</div><div class="v">${chipForStage(s.stage)}</div></div>
+              <div class="field"><div class="k">Risk</div><div class="v">${s.risk}</div></div>
+              <div class="field"><div class="k">NOC</div><div class="v">${s.noc}</div></div>
+              <div class="field"><div class="k">Owner</div><div class="v">Career Services Officer</div></div>
+            </div>
+            <div style="height:10px"></div>
+            <div class="field"><div class="k">Documents</div><div class="v"><div class="drawerGrid" style="margin-top:8px">${docs}</div></div></div>
+            <div style="height:10px"></div>
+            <div class="field"><div class="k">Alerts</div><div class="v"><ul style="margin:8px 0 0 16px;padding:0">${alerts}</ul></div></div>
+          `,
+          `
+            <button class="btn" type="button" id="btnNudge">Send nudge</button>
+            <button class="btn" type="button" id="btnLogNote">Log note</button>
+            <button class="btn primary" type="button" id="btnOpenNoc">Open NOC</button>
+          `
+        );
+        document.getElementById("btnNudge").addEventListener("click", () => toast("Nudge scheduled (email/SMS placeholder)"));
+        document.getElementById("btnLogNote").addEventListener("click", () => toast("Note saved to audit log (placeholder)"));
+        document.getElementById("btnOpenNoc").addEventListener("click", () => {
+          drawerClose();
+          location.hash = "#noc";
+        });
+      }
+
+      function openEmployer(employerId){
+        const e = state.employers.find(x => x.id === employerId);
+        if (!e) return;
+        drawerOpen(
+          e.name,
+          `${e.id} • ${e.industry}`,
+          `
+            <div class="drawerGrid">
+              <div class="field"><div class="k">Industry</div><div class="v">${e.industry}</div></div>
+              <div class="field"><div class="k">Hires (history)</div><div class="v" class="mono">${e.hires}</div></div>
+              <div class="field"><div class="k">Relationship</div><div class="v">${e.relationship}</div></div>
+              <div class="field"><div class="k">Next touch</div><div class="v">${e.next}</div></div>
+            </div>
+            <div style="height:10px"></div>
+            <div class="field"><div class="k">Recent signals</div><div class="v"><ul style="margin:8px 0 0 16px;padding:0">${e.notes.map(n => `<li>${n}</li>`).join("")}</ul></div></div>
+          `,
+          `
+            <button class="btn" type="button" id="btnLogInteraction">Log interaction</button>
+            <button class="btn primary" type="button" id="btnPostJob">Post job</button>
+          `
+        );
+        document.getElementById("btnLogInteraction").addEventListener("click", () => toast("Interaction logged (placeholder)"));
+        document.getElementById("btnPostJob").addEventListener("click", () => toast("Job draft created (placeholder)"));
+      }
+
+      function openNoc(nocId){
+        const n = state.nocRequests.find(x => x.id === nocId);
+        if (!n) return;
+        const s = state.students.find(x => x.id === n.studentId);
+        drawerOpen(
+          nocId,
+          `${s ? s.name : n.studentId} • ${n.employer} • Submitted ${n.submitted}`,
+          `
+            <div class="drawerGrid">
+              <div class="field"><div class="k">CGPA</div><div class="v">${n.cgpa.toFixed(2)}</div></div>
+              <div class="field"><div class="k">Prereqs</div><div class="v">${n.prereqs}</div></div>
+              <div class="field"><div class="k">Status</div><div class="v">${n.status}</div></div>
+              <div class="field"><div class="k">SLA target</div><div class="v">${state.slaHours}h</div></div>
+            </div>
+            <div style="height:10px"></div>
+            <div class="field"><div class="k">Decision rationale</div><div class="v">${n.reasons.length ? n.reasons.join(" • ") : "No blockers detected."}</div></div>
+            <div style="height:10px"></div>
+            <div class="field"><div class="k">Audit (prototype)</div><div class="v">All actions should write to <span class="mono">audit_logs</span> with actor, timestamp, and diff.</div></div>
+          `,
+          `
+            <button class="btn" type="button" id="btnNocReject2">Reject</button>
+            <button class="btn primary" type="button" id="btnNocApprove2">Approve</button>
+          `
+        );
+        document.getElementById("btnNocApprove2").addEventListener("click", () => { setNocStatus(nocId, "Approved"); drawerClose(); });
+        document.getElementById("btnNocReject2").addEventListener("click", () => { setNocStatus(nocId, "Rejected"); drawerClose(); });
+      }
+
+      function initReports(){
+        el("reportPreview").textContent = "Select a report type and press Generate.";
+        el("btnGenerateReport").addEventListener("click", () => {
+          const type = el("reportType").value;
+          const major = el("reportMajor").value || "All majors";
+          const term = el("reportTerm").value;
+          const format = el("reportFormat").value;
+          const k = compute();
+          const payload = {
+            generated_at: new Date().toISOString(),
+            type,
+            scope: { major, term },
+            kpis: {
+              eligible_students: k.eligible,
+              searching: k.searching,
+              in_coop: k.inCoop,
+              pending_approvals: k.pending,
+              placed: k.placed,
+              placement_rate_pct: Math.round((k.eligible ? (k.placed/k.eligible)*100 : 0)*10)/10,
+            },
+            notes: [
+              "Prototype output — replace with live aggregates and governance-safe narrative generation.",
+              "Include audit references and filters for accreditation / compliance."
+            ]
+          };
+          if (format.startsWith("CSV")){
+            const csv = [
+              ["metric","value"],
+              ["eligible_students", payload.kpis.eligible_students],
+              ["searching", payload.kpis.searching],
+              ["in_coop", payload.kpis.in_coop],
+              ["pending_approvals", payload.kpis.pending_approvals],
+              ["placed", payload.kpis.placed],
+              ["placement_rate_pct", payload.kpis.placement_rate_pct],
+            ].map(r => r.join(",")).join("\n");
+            el("reportPreview").textContent = csv;
+          } else {
+            el("reportPreview").textContent = JSON.stringify(payload, null, 2);
+          }
+          toast("Report generated (prototype)");
+        });
+        el("btnDownloadReport").addEventListener("click", () => {
+          const text = el("reportPreview").textContent || "";
+          const format = el("reportFormat").value;
+          const ext = format.startsWith("CSV") ? "csv" : "json";
+          download(`report.${ext}`, text, format.startsWith("CSV") ? "text/csv" : "application/json");
+        });
+      }
+
+      function initChat(){
+        const chatLog = el("chatLog");
+        const apiUrl = window.COOP_AI_API_URL || "http://127.0.0.1:8000/chat";
+        const escapeHtml = (v) => String(v)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+        const push = (role, text) => {
+          const bubble = document.createElement("div");
+          bubble.className = "field";
+          bubble.innerHTML = `<div class="k">${escapeHtml(role)}</div><div class="v" style="margin-top:6px">${escapeHtml(text)}</div>`;
+          chatLog.appendChild(bubble);
+          bubble.scrollIntoView({ block:"end", behavior:"smooth" });
+        };
+        push("assistant", "Ask me about RIT Dubai Co-op policy. I will only answer from the approved policy knowledge base.");
+
+        const send = async () => {
+          const q = el("chatInput").value.trim();
+          if (!q) return;
+          el("chatInput").value = "";
+          push("user", q);
+          try {
+            const res = await fetch(apiUrl, {
+              method:"POST",
+              headers:{ "Content-Type":"application/json" },
+              body: JSON.stringify({ message: q }),
+            });
+
+            if (!res.ok){
+              push("assistant", "System error");
+              return;
+            }
+
+            const data = await res.json();
+            push("assistant", (data && data.response) ? data.response : "I can only answer questions about RIT Dubai Co-op policies that are explicitly covered in the knowledge base.");
+          } catch {
+            push("assistant", "System error");
+          }
+        };
+        el("chatSend").addEventListener("click", send);
+        el("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+      }
+
+      function initGlobal(){
+        window.addEventListener("hashchange", () => {
+          const viewId = (location.hash || "#dashboard").slice(1);
+          navTo(views.some(v => v.id === viewId) ? viewId : "dashboard");
+        });
+        navTo((location.hash || "#dashboard").slice(1));
+
+        el("btnNew").addEventListener("click", () => toast("Create flow: student/employer/NOC (prototype)"));
+        el("btnQuickActions").addEventListener("click", () => toast("Quick actions: approve NOC, schedule outreach, export report (prototype)"));
+        el("btnBulkNoc").addEventListener("click", () => { location.hash = "#noc"; toast("Opened NOC queue"); });
+
+        el("btnStudentsExport").addEventListener("click", () => {
+          const rows = [["id","name","major","cgpa","stage","risk","noc"]].concat(
+            state.students.map(s => [s.id,s.name,s.major,s.cgpa.toFixed(2),s.stage,s.risk,s.noc])
+          );
+          download("students.csv", rows.map(r => r.map(x => String(x).includes(",") ? `"${String(x).replaceAll('"','""')}"` : x).join(",")).join("\n"), "text/csv");
+        });
+
+        el("btnNocGenerate").addEventListener("click", () => {
+          const approved = state.nocRequests.filter(n => n.status === "Approved").length;
+          download("noc-batch.txt", `Generated NOC PDFs (placeholder)\nApproved count: ${approved}\nDate: ${new Date().toISOString()}\n`, "text/plain");
+          toast("Generated NOC batch (placeholder)");
+        });
+
+        el("btnNocRules").addEventListener("click", () => {
+          drawerOpen(
+            "Eligibility rules (prototype)",
+            "Configure per-major prerequisites, CGPA thresholds, and document requirements",
+            `
+              <div class="field"><div class="k">Baseline rules</div><div class="v">CGPA ≥ 2.0 • Prep course completed • Required prerequisites satisfied • Required documents attached</div></div>
+              <div style="height:10px"></div>
+              <div class="field"><div class="k">Per-major overrides</div><div class="v">Store in <span class="mono">majors</span> table; evaluate in <span class="mono">noc_requests</span> approval function; write outcomes to <span class="mono">audit_logs</span>.</div></div>
+              <div style="height:10px"></div>
+              <div class="field"><div class="k">Human-in-the-loop</div><div class="v">AI can propose an approval decision, but an officer must finalize and sign.</div></div>
+            `,
+            `<button class="btn" type="button" id="drawerClose2">Close</button>`
+          );
+        });
+
+        el("btnSaveSettings").addEventListener("click", () => {
+          const val = Number(el("slaHours").value || 48);
+          state.slaHours = Math.max(1, Math.min(240, val));
+          toast("Settings saved (prototype)");
+          renderAnalytics();
+        });
+
+        el("btnRefreshAnalytics").addEventListener("click", () => { renderAnalytics(); toast("Analytics refreshed"); });
+        el("btnAiRun").addEventListener("click", () => { renderAnalytics(); toast("AI checks completed (prototype)"); });
+
+        // Drawer close on backdrop click + ESC
+        el("drawerBackdrop").addEventListener("click", (e) => { if (e.target === el("drawerBackdrop")) drawerClose(); });
+        window.addEventListener("keydown", (e) => { if (e.key === "Escape" && el("drawerBackdrop").style.display === "flex") drawerClose(); });
+      }
+
+      function toast(text){
+        let t = document.getElementById("toast");
+        if (!t){
+          t = document.createElement("div");
+          t.id = "toast";
+          t.style.cssText = "position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(15,23,42,.92);color:#fff;padding:10px 12px;border-radius:999px;border:1px solid rgba(226,232,240,.18);box-shadow:0 10px 30px rgba(2,6,23,.25);z-index:80;max-width:min(680px,94vw);text-align:center;font-size:13px;letter-spacing:.1px";
+          document.body.appendChild(t);
+        }
+        t.textContent = text;
+        t.style.opacity = "1";
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => { t.style.opacity = "0"; }, 1800);
+      }
+
+      function init(){
+        renderKpis();
+        renderQueue();
+        renderStudents();
+        renderEmployers();
+        renderFairs();
+        renderNoc();
+        renderPlacements();
+        renderAnalytics();
+        renderRoles();
+        initReports();
+        initChat();
+        initGlobal();
+      }
+
+      function startExperience(){
+        const splash = el("splash");
+        const appRoot = document.querySelector(".app");
+
+        init();
+
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const splashDelay = reduced ? 320 : 1800;
+
+        setTimeout(() => {
+          appRoot.classList.add("ready");
+          splash.classList.add("hide");
+          setTimeout(() => splash.remove(), reduced ? 120 : 460);
+        }, splashDelay);
+      }
+
+      startExperience();
+    </script>
+  </body>
+</html>
+
