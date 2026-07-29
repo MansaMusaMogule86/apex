@@ -1,3 +1,11 @@
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  type User as FirebaseUser,
+} from 'firebase/auth'
+import { auth } from '@/lib/firebase'
+
 export interface AuthenticatedUser {
   id: string
   fullName: string
@@ -10,11 +18,6 @@ export interface AuthenticatedUser {
 
 export interface CurrentUserResponse {
   user: AuthenticatedUser
-  session: {
-    organizationId: string
-    userId: string
-    role: string
-  }
   bypass: boolean
 }
 
@@ -30,39 +33,55 @@ export interface LoginPayload {
   organizationSlug: string
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-    ...init,
-  })
+function mapFirebaseUser(user: FirebaseUser | null): AuthenticatedUser | null {
+  if (!user) return null
 
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(text || `Request failed (${response.status})`)
+  const emailName = user.email?.split('@')[0] ?? 'Workspace User'
+  const displayName = user.displayName?.trim() || emailName
+
+  return {
+    id: user.uid,
+    fullName: displayName,
+    email: user.email ?? '',
+    role: 'admin',
+    organizationId: 'firebase-demo-org',
+    organizationSlug: 'firebase-demo',
+    organizationName: 'Firebase Demo Workspace',
   }
-
-  return response.json() as Promise<T>
 }
 
 export function fetchCurrentUser() {
-  return request<CurrentUserResponse>('/api/auth/current-user')
-}
+  return new Promise<CurrentUserResponse>((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe()
+      const mapped = mapFirebaseUser(user)
+      if (!mapped) {
+        reject(new Error('No authenticated user'))
+        return
+      }
 
-export function fetchOrganizations() {
-  return request<OrganizationOption[]>('/api/auth/organizations')
-}
-
-export function login(payload: LoginPayload) {
-  return request<{ user: AuthenticatedUser; session: { id: string; expiresAt: string } }>('/api/auth/login', {
-    method: 'POST',
-    body: JSON.stringify(payload),
+      resolve({ user: mapped, bypass: false })
+    }, reject)
   })
 }
 
+export function fetchOrganizations() {
+  return Promise.resolve<OrganizationOption[]>([
+    {
+      id: 'firebase-demo-org',
+      slug: 'firebase-demo',
+      name: 'Firebase Demo Workspace',
+    },
+  ])
+}
+
+export function login(payload: LoginPayload) {
+  return signInWithEmailAndPassword(auth, payload.email, payload.password).then((result) => ({
+    user: mapFirebaseUser(result.user) as AuthenticatedUser,
+    session: { id: result.user.uid, expiresAt: new Date().toISOString() },
+  }))
+}
+
 export async function logout() {
-  await request<{ ok: boolean }>('/api/auth/logout', { method: 'POST' })
+  await signOut(auth)
 }

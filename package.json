@@ -1,0 +1,14 @@
+{
+  "name": "apex-revenue-os-root",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix app run build",
+    "dev": "npm --prefix app run dev",
+    "dev:api": "npm --prefix app run dev:api",
+    "dev:api:bypass": "npm --prefix app run dev:api:bypass",
+    "dev:full": "npm --prefix app run dev:full",
+    "lint": "npm --prefix app run lint",
+    "test": "npm --prefix app run test",
+    "preview": "npm --prefix app run preview"
+  }
+}
