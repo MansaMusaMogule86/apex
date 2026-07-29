@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" width="240" height="64" role="img" aria-label="APEX Revenue OS">
+  <!-- Monogram: geometric ascending "A" — two rising bars meeting at a sharp peak (skyline read) -->
+  <g fill="none" stroke="#0B5D4A" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M16 52 L32 12 L48 52"/>
+    <path d="M24.5 36 H39.5"/>
+  </g>
+  <!-- Wordmark: APEX in spaced geometric capitals, single-weight strokes -->
+  <g fill="none" stroke="#0B5D4A" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter">
+    <!-- A -->
+    <path d="M84 44 L93 22 L102 44 M87.75 36 H98.25"/>
+    <!-- P -->
+    <path d="M116 44 V22 H124 A6 6 0 0 1 124 34 H116"/>
+    <!-- E -->
+    <path d="M152 22 H138 V44 H152 M138 33 H148"/>
+    <!-- X -->
+    <path d="M162 22 L180 44 M180 22 L162 44"/>
+  </g>
+  <!-- Micro-caps -->
+  <text x="85" y="57.5" font-family="Inter, 'Helvetica Neue', Arial, sans-serif" font-size="6.8" font-weight="600" letter-spacing="2.7" fill="#6E6F68">REVENUE OS</text>
+</svg>

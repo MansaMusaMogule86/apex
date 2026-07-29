@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 480" width="1920" height="480" fill="none" role="img" aria-label="Dubai skyline line art">
+  <g stroke="#3FA984" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- ground line -->
+    <path d="M0 420 H1920"/>
+    <!-- marina low-rise blocks -->
+    <path d="M24 420 V368 H84 V388 H128 V420"/>
+    <path d="M48 368 V356 M72 368 V356"/>
+    <path d="M148 420 V336 H196 V420"/>
+    <path d="M158 356 H186 M158 376 H186 M158 396 H186"/>
+    <!-- twisted tower (Cayan read) -->
+    <path d="M212 420 V150 Q212 118 250 116 Q288 118 288 150 V420"/>
+    <path d="M216 396 Q252 352 284 318"/>
+    <path d="M216 330 Q252 286 284 252"/>
+    <path d="M216 264 Q252 220 284 186"/>
+    <path d="M216 198 Q244 162 284 150"/>
+    <!-- mid cluster with spire -->
+    <path d="M308 420 V300 H348 V268 H392 V420"/>
+    <path d="M370 268 V236"/>
+    <path d="M412 420 V260 H456 V420"/>
+    <path d="M420 286 H448 M420 312 H448 M420 338 H448"/>
+    <path d="M476 420 V340 H524 V300 H560 V420"/>
+    <!-- address curves -->
+    <path d="M588 420 C588 260 616 176 688 158 L700 158 V420"/>
+    <path d="M640 420 C646 300 664 232 700 214"/>
+    <path d="M716 420 V210 C716 178 760 162 792 176 C812 186 820 206 820 230 V420"/>
+    <!-- podium -->
+    <path d="M840 420 V372 H884 V420"/>
+    <!-- burj khalifa -->
+    <path d="M896 420 V352 H916 V296 H932 V244 H946 V198 H958 V156 H968 V116 H976 V84 H982 L985 32 L988 84 H994 V116 H1002 V156 H1012 V198 H1024 V244 H1038 V296 H1054 V352 H1074 V420"/>
+    <path d="M916 352 H1054 M932 296 H1038 M946 244 H1024 M958 198 H1012"/>
+    <!-- downtown mid-rises -->
+    <path d="M1094 420 V316 H1138 V280 H1174 V420"/>
+    <path d="M1104 340 H1128 M1104 364 H1128 M1104 388 H1128"/>
+    <path d="M1194 420 V300 H1246 V420"/>
+    <path d="M1220 300 V272 M1213 272 H1227"/>
+    <!-- curved tower -->
+    <path d="M1272 420 V250 C1272 206 1308 182 1344 190 C1372 197 1388 222 1388 254 V420"/>
+    <path d="M1292 250 H1368 M1292 290 H1380 M1292 330 H1380"/>
+    <!-- low blocks -->
+    <path d="M1412 420 V352 H1468 V380 H1512 V420"/>
+    <path d="M1430 372 H1450 M1430 392 H1450"/>
+    <!-- ain dubai wheel -->
+    <circle cx="1662" cy="252" r="148"/>
+    <circle cx="1662" cy="252" r="14"/>
+    <path d="M1662 104 V118 M1662 386 V400 M1514 252 H1528 M1796 252 H1810 M1557.5 147.5 L1567.5 157.5 M1756.5 346.5 L1766.5 356.5 M1766.5 147.5 L1756.5 157.5 M1567.5 346.5 L1557.5 356.5"/>
+    <path d="M1662 252 L1662 118 M1662 252 L1662 386 M1662 252 L1528 252 M1662 252 L1796 252 M1662 252 L1567.5 157.5 M1662 252 L1756.5 346.5 M1662 252 L1756.5 157.5 M1662 252 L1567.5 346.5"/>
+    <circle cx="1662" cy="104" r="6"/>
+    <circle cx="1796" cy="252" r="6"/>
+    <circle cx="1662" cy="400" r="6"/>
+    <circle cx="1528" cy="252" r="6"/>
+    <circle cx="1766.5" cy="147.5" r="6"/>
+    <circle cx="1557.5" cy="356.5" r="6"/>
+    <circle cx="1766.5" cy="356.5" r="6"/>
+    <circle cx="1557.5" cy="147.5" r="6"/>
+    <path d="M1596 420 L1652 266 M1728 420 L1672 266"/>
+    <!-- far right low rise -->
+    <path d="M1780 420 V384 H1832 V420 M1852 420 V396 H1896 V420"/>
+  </g>
+</svg>

@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* APEX app (light) tokens — design.md §3.1 */
+    --bg-base: #FAFAF7;
+    --bg-surface: #FFFFFF;
+    --bg-sunken: #F3F3EE;
+    --ink-900: #171816;
+    --ink-700: #3D3E3A;
+    --ink-500: #6E6F68;
+    --ink-400: #9B9C94;
+    --line: #E7E7E0;
+    --line-strong: #D8D8CF;
+    --palm-700: #0A4A3B;
+    --palm-600: #0B5D4A;
+    --palm-400: #3FA984;
+    --palm-100: #E7F1ED;
+    --palm-50: #F2F7F5;
+    --gold-600: #A97B1F;
+    --gold-500: #C08A2D;
+    --gold-400: #D9A441;
+    --gold-100: #F7EFDD;
+    --red-600: #B4372A;
+    --red-100: #F9E9E6;
+    --amber-600: #A36A0F;
+    --amber-100: #F8F0DC;
+    --teal-600: #1F6E6B;
+    --wa-green: #1FA855;
+    --mail-slate: #5B6B7A;
+
+    /* APEX ink (dark) tokens — design.md §3.2 */
+    --ink-bg: #101311;
+    --ink-surface: #171B18;
+    --ink-raised: #1E2320;
+    --ink-line: #262C28;
+    --ink-text: #F4F4F0;
+    --ink-muted: #9BA19B;
+
+    /* shadcn bridge (mapped to APEX palette) */
+    --background: 60 20% 97%;
+    --foreground: 60 4% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 60 4% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 60 4% 9%;
+    --primary: 161 79% 20%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 60 9% 94%;
+    --secondary-foreground: 60 4% 9%;
+    --muted: 60 9% 94%;
+    --muted-foreground: 75 3% 42%;
+    --accent: 150 33% 93%;
+    --accent-foreground: 161 79% 20%;
+    --destructive: 6 63% 44%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 60 12% 89%;
+    --input: 60 9% 83%;
+    --ring: 161 79% 20%;
+    --radius: 0.625rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 161 79% 20%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 161 79% 20%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    @apply bg-base text-ink-900 font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--palm-100);
+    color: var(--palm-700);
+  }
+
+  /* Global slim scrollbars — 8px, line-strong thumb, transparent track */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-400);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  /* Fraunces stylistic set */
+  .font-display {
+    font-feature-settings: "ss01";
+    font-optical-sizing: auto;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--palm-600);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Tabular numerals for numeric UI */
+  .tnum {
+    font-feature-settings: "tnum";
+  }
+  /* Landing hero fine grid: 1px ink-line 40% opacity, 72px cells */
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, rgb(38 44 40 / 0.4) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(38 44 40 / 0.4) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+  /* Marquee edge fade mask (gray ramp, not color) */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  }
+  .marquee-pause:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+  .underline-sweep {
+    position: relative;
+  }
+  .underline-sweep::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 2px;
+    width: 100%;
+    background: var(--palm-400);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 180ms cubic-bezier(.2,.8,.2,1);
+  }
+  .underline-sweep:hover::after {
+    transform: scaleX(1);
+  }
+}

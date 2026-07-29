@@ -1,0 +1,1864 @@
+{
+  "document": {
+    "title": "APEX Revenue OS",
+    "subtitle": "AI-Native Revenue Operating System for Dubai Real Estate Teams",
+    "document_type": "Product Requirements Document",
+    "format_version": "1.0.0",
+    "product_version": "MVP 1.0",
+    "status": "build_ready",
+    "created_date": "2026-07-19",
+    "market": "United Arab Emirates",
+    "primary_vertical": "Dubai Real Estate",
+    "language": "English",
+    "currency": "AED"
+  },
+  "executive_summary": {
+    "vision": "Build the most intelligent WhatsApp-native revenue operating system for Dubai real estate teams.",
+    "product_promise": "Every lead, message, viewing, follow-up, document, and deal is captured in one intelligent workspace that updates itself and recommends the next best action.",
+    "positioning": "APEX is not a generic CRM. It is an AI-assisted revenue operating system designed around real estate workflows, customer conversations, property matching, controlled automation, and management visibility.",
+    "primary_outcome": "Increase lead response speed, reduce lost follow-ups, improve buyer-property matching, improve deal visibility, and reduce manual CRM administration.",
+    "mvp_strategy": "Launch a focused real estate product first. Treat creator economy, fintech, crypto, agent marketplace, and unrestricted app generation as future platform extensions."
+  },
+  "problem_statement": {
+    "core_problem": "Real estate teams lose revenue because leads, messages, viewing details, documents, property preferences, and follow-ups are fragmented across WhatsApp, email, spreadsheets, portals, and individual agents.",
+    "pain_points": [
+      "Leads are not consistently entered into the CRM.",
+      "WhatsApp conversations are disconnected from contact and deal records.",
+      "Agents forget follow-ups or update records too late.",
+      "Managers cannot see accurate pipeline health.",
+      "Buyer requirements are stored as unstructured notes.",
+      "Property matching is manual and inconsistent.",
+      "Viewing outcomes are not captured systematically.",
+      "Commission calculations are handled in spreadsheets.",
+      "Documents are scattered across email, cloud storage, and messaging apps.",
+      "Existing CRMs require excessive manual data entry.",
+      "AI features generate text but do not reliably execute operational workflows."
+    ]
+  },
+  "goals": {
+    "business_goals": [
+      "Acquire the first 5 pilot brokerages in the UAE.",
+      "Achieve weekly active usage above 70 percent among onboarded agents.",
+      "Reduce median first-response time by at least 40 percent.",
+      "Reduce overdue follow-ups by at least 50 percent.",
+      "Increase qualified viewing bookings per active agent.",
+      "Create a repeatable onboarding process that can complete within 5 business days."
+    ],
+    "product_goals": [
+      "Create a complete customer timeline across WhatsApp, email, calls, notes, tasks, viewings, offers, and files.",
+      "Automatically extract buyer requirements and update structured fields.",
+      "Provide next-best-action recommendations with human approval controls.",
+      "Match buyers to available properties using deterministic and AI-assisted ranking.",
+      "Provide managers with trustworthy pipeline, activity, response, and forecast dashboards.",
+      "Support real estate deal stages from initial inquiry to handover.",
+      "Maintain complete auditability for AI and user actions."
+    ],
+    "non_goals_mvp": [
+      "General-purpose CRM for every industry.",
+      "Native cryptocurrency wallet.",
+      "Smart-contract commission settlement.",
+      "Unrestricted AI application generation.",
+      "Autonomous voice calling.",
+      "TikTok, LinkedIn, and Discord inbox ingestion.",
+      "Creator economy workflows.",
+      "Full accounting or ERP replacement.",
+      "Native iOS and Android applications.",
+      "AI-only interface with no traditional screens."
+    ]
+  },
+  "target_users": {
+    "primary_personas": [
+      {
+        "id": "brokerage_owner",
+        "name": "Brokerage Owner",
+        "needs": [
+          "Revenue visibility",
+          "Agent performance",
+          "Pipeline forecasting",
+          "Lead-source attribution",
+          "Commission visibility",
+          "Compliance and audit controls"
+        ]
+      },
+      {
+        "id": "sales_manager",
+        "name": "Sales Manager",
+        "needs": [
+          "Team pipeline monitoring",
+          "Lead assignment",
+          "Follow-up enforcement",
+          "Viewing and offer tracking",
+          "Risk alerts",
+          "Coaching insights"
+        ]
+      },
+      {
+        "id": "property_advisor",
+        "name": "Property Advisor",
+        "needs": [
+          "Fast lead capture",
+          "WhatsApp and email synchronization",
+          "Automatic reminders",
+          "Property matching",
+          "Viewing scheduling",
+          "Follow-up drafting",
+          "Document access"
+        ]
+      },
+      {
+        "id": "listing_agent",
+        "name": "Listing Agent",
+        "needs": [
+          "Property inventory management",
+          "Owner communication",
+          "Listing status updates",
+          "Inquiry routing",
+          "Viewing coordination"
+        ]
+      },
+      {
+        "id": "transaction_coordinator",
+        "name": "Transaction Coordinator",
+        "needs": [
+          "MOU and SPA milestone tracking",
+          "Document checklists",
+          "Compliance status",
+          "Payment milestone tracking",
+          "Handover coordination"
+        ]
+      },
+      {
+        "id": "administrator",
+        "name": "System Administrator",
+        "needs": [
+          "User provisioning",
+          "Role configuration",
+          "Integration management",
+          "Audit logs",
+          "Data import and export",
+          "Security configuration"
+        ]
+      }
+    ],
+    "external_personas": [
+      {
+        "id": "buyer",
+        "name": "Buyer",
+        "portal_access": true,
+        "needs": [
+          "View shortlisted properties",
+          "Confirm viewing times",
+          "Upload documents",
+          "Review offers and milestones"
+        ]
+      },
+      {
+        "id": "seller_landlord",
+        "name": "Seller or Landlord",
+        "portal_access": true,
+        "needs": [
+          "View listing performance",
+          "Review inquiries and viewings",
+          "Approve pricing or offers",
+          "Access documents"
+        ]
+      }
+    ]
+  },
+  "product_principles": [
+    "AI-first, not AI-only.",
+    "Human approval for high-risk actions.",
+    "Every automated action must be explainable and auditable.",
+    "WhatsApp-native and conversation-centered.",
+    "Minimal manual data entry.",
+    "Stable operational screens with an AI command layer.",
+    "Real estate terminology and workflows by default.",
+    "Multi-tenant security from the first release.",
+    "Official APIs only for communication channels.",
+    "Progressive autonomy based on organization policy."
+  ],
+  "success_metrics": {
+    "north_star_metric": "Qualified opportunities actively progressed per advisor per month.",
+    "activation_metrics": [
+      "Organization created",
+      "At least 3 users invited",
+      "WhatsApp or email connected",
+      "At least 100 contacts imported",
+      "At least 10 properties imported",
+      "First lead assigned",
+      "First AI-generated follow-up approved",
+      "First viewing scheduled"
+    ],
+    "engagement_metrics": [
+      "Weekly active users",
+      "Daily active advisors",
+      "Messages synchronized per organization",
+      "Tasks completed",
+      "AI recommendations reviewed",
+      "Properties shortlisted",
+      "Viewings scheduled"
+    ],
+    "revenue_metrics": [
+      "Monthly recurring revenue",
+      "Average revenue per organization",
+      "Expansion revenue",
+      "Pilot-to-paid conversion rate",
+      "Logo retention",
+      "Gross margin after communication and AI costs"
+    ],
+    "quality_metrics": [
+      "Message synchronization success rate above 99 percent",
+      "Webhook processing success above 99.5 percent",
+      "Duplicate contact rate below 2 percent",
+      "AI extraction precision above 90 percent for required buyer fields",
+      "Critical authorization defects equal zero",
+      "Audit log coverage at 100 percent for sensitive actions"
+    ]
+  },
+  "scope": {
+    "mvp_modules": [
+      "Authentication and multi-tenancy",
+      "Role-based access control",
+      "Contacts and companies",
+      "Lead intake and assignment",
+      "Unified conversation timeline",
+      "WhatsApp integration",
+      "Email integration",
+      "Deals and real estate pipelines",
+      "Properties and inventory",
+      "Buyer requirements",
+      "Property matching",
+      "Tasks and reminders",
+      "Viewings",
+      "Offers and transaction milestones",
+      "Documents",
+      "Commission tracking",
+      "Dashboards and reporting",
+      "AI assistant and recommendations",
+      "Workflow automation",
+      "Customer portals",
+      "Notifications",
+      "Audit logs",
+      "Administration and integrations"
+    ],
+    "future_modules": [
+      "Creator economy vertical",
+      "White-label agency edition",
+      "AI agent marketplace",
+      "Advanced portal generator",
+      "Embedded payments",
+      "Stablecoin payments",
+      "Social publishing",
+      "Advertising optimization",
+      "Native mobile applications",
+      "Advanced customer service suite"
+    ]
+  },
+  "information_architecture": {
+    "global_navigation": [
+      {
+        "label": "Command",
+        "route": "/command",
+        "description": "AI command center and natural-language search."
+      },
+      {
+        "label": "Dashboard",
+        "route": "/dashboard"
+      },
+      {
+        "label": "Inbox",
+        "route": "/inbox"
+      },
+      {
+        "label": "Relationships",
+        "route": "/relationships"
+      },
+      {
+        "label": "Deal Flow",
+        "route": "/deals"
+      },
+      {
+        "label": "Properties",
+        "route": "/properties"
+      },
+      {
+        "label": "Viewings",
+        "route": "/viewings"
+      },
+      {
+        "label": "Tasks",
+        "route": "/tasks"
+      },
+      {
+        "label": "Documents",
+        "route": "/documents"
+      },
+      {
+        "label": "Reports",
+        "route": "/reports"
+      },
+      {
+        "label": "Automations",
+        "route": "/automations"
+      },
+      {
+        "label": "Administration",
+        "route": "/admin"
+      }
+    ],
+    "record_pages": [
+      "/relationships/contacts/:contactId",
+      "/relationships/companies/:companyId",
+      "/deals/:dealId",
+      "/properties/:propertyId",
+      "/viewings/:viewingId",
+      "/documents/:documentId",
+      "/automations/:workflowId"
+    ],
+    "portal_routes": [
+      "/portal/:organizationSlug/buyer/:accessToken",
+      "/portal/:organizationSlug/owner/:accessToken"
+    ]
+  },
+  "functional_requirements": {
+    "authentication_and_tenancy": {
+      "priority": "P0",
+      "requirements": [
+        "Users can sign in with email and password.",
+        "Organizations are isolated tenants.",
+        "Users may belong to multiple organizations.",
+        "Organization context is required for all business data operations.",
+        "MFA must be available for owners and administrators.",
+        "Sessions must support secure revocation.",
+        "Invitations expire and can be revoked."
+      ],
+      "acceptance_criteria": [
+        "A user cannot access records from an organization where they have no membership.",
+        "Switching organizations updates all visible data and permissions.",
+        "All tenant-sensitive queries are protected server-side.",
+        "Owners can revoke active sessions for organization members."
+      ]
+    },
+    "rbac": {
+      "priority": "P0",
+      "default_roles": [
+        "platform_admin",
+        "organization_owner",
+        "organization_admin",
+        "sales_manager",
+        "property_advisor",
+        "listing_agent",
+        "transaction_coordinator",
+        "finance",
+        "viewer"
+      ],
+      "permission_domains": [
+        "organization",
+        "users",
+        "contacts",
+        "companies",
+        "conversations",
+        "deals",
+        "properties",
+        "viewings",
+        "offers",
+        "documents",
+        "commissions",
+        "reports",
+        "automations",
+        "integrations",
+        "audit_logs",
+        "ai_actions"
+      ],
+      "permission_actions": [
+        "create",
+        "read",
+        "update",
+        "delete",
+        "assign",
+        "export",
+        "approve",
+        "execute",
+        "configure"
+      ],
+      "requirements": [
+        "Permissions are enforced at API and database layers.",
+        "Managers can be restricted to assigned teams.",
+        "Advisors can be restricted to assigned records.",
+        "Sensitive financial and document permissions are separately configurable.",
+        "Custom roles can be created after MVP phase 1."
+      ]
+    },
+    "contacts_and_companies": {
+      "priority": "P0",
+      "requirements": [
+        "Create, edit, merge, archive, search, filter, import, and export contacts.",
+        "Store multiple phone numbers, email addresses, nationalities, languages, and communication preferences.",
+        "Link contacts to companies and households.",
+        "Identify buyer, seller, landlord, tenant, investor, partner, and referral relationships.",
+        "Detect likely duplicates using phone, email, normalized name, and external channel identifiers.",
+        "Display a complete relationship timeline.",
+        "Support custom fields using an approved field-definition system."
+      ]
+    },
+    "lead_intake_and_assignment": {
+      "priority": "P0",
+      "sources": [
+        "manual",
+        "website_form",
+        "whatsapp",
+        "email",
+        "property_portal",
+        "csv_import",
+        "api",
+        "referral"
+      ],
+      "requirements": [
+        "Create leads automatically from connected sources.",
+        "Apply assignment rules by team, language, location, property, source, workload, and round robin.",
+        "Detect and merge duplicate inquiries.",
+        "Start response-time SLA timers.",
+        "Notify the assigned advisor and manager.",
+        "Escalate unaccepted leads after a configurable period."
+      ]
+    },
+    "unified_inbox": {
+      "priority": "P0",
+      "mvp_channels": [
+        "whatsapp_business",
+        "email",
+        "internal_note"
+      ],
+      "future_channels": [
+        "sms",
+        "telegram",
+        "instagram_business",
+        "voice_call"
+      ],
+      "requirements": [
+        "Display messages in a single conversation timeline per contact.",
+        "Support assignment, status, priority, tags, internal notes, and mentions.",
+        "Link conversations to contacts, deals, properties, and viewings.",
+        "Support approved templates where required by channel policy.",
+        "Track delivery, read, failure, and response status when available.",
+        "Store provider message identifiers for deduplication.",
+        "Allow AI drafting but require policy-based approval."
+      ]
+    },
+    "deals_and_pipelines": {
+      "priority": "P0",
+      "default_pipelines": {
+        "buyer_sales": [
+          "new_inquiry",
+          "qualified",
+          "requirements_confirmed",
+          "properties_shortlisted",
+          "viewing_scheduled",
+          "viewing_completed",
+          "offer_made",
+          "negotiation",
+          "mou_signed",
+          "spa_executed",
+          "payment_in_progress",
+          "handover",
+          "won",
+          "lost"
+        ],
+        "seller_listing": [
+          "prospecting",
+          "owner_contacted",
+          "valuation",
+          "listing_agreement",
+          "listing_published",
+          "inquiries_received",
+          "viewings",
+          "offer_received",
+          "negotiation",
+          "sold",
+          "withdrawn"
+        ],
+        "leasing": [
+          "new_inquiry",
+          "qualified",
+          "shortlisted",
+          "viewing",
+          "offer",
+          "tenancy_contract",
+          "move_in",
+          "won",
+          "lost"
+        ]
+      },
+      "requirements": [
+        "Support Kanban, list, and table views.",
+        "Allow stage movement with validation rules.",
+        "Track stage history and time in stage.",
+        "Associate contacts, properties, conversations, tasks, viewings, offers, documents, and commissions.",
+        "Calculate weighted forecast using configurable probability.",
+        "Require loss reasons when deals are closed lost.",
+        "Trigger automations on stage changes."
+      ]
+    },
+    "properties": {
+      "priority": "P0",
+      "requirements": [
+        "Create and import property inventory.",
+        "Support sale and rental listings.",
+        "Store project, developer, community, building, unit, property type, bedrooms, bathrooms, size, price, status, furnishing, completion status, and availability.",
+        "Store media, brochures, floor plans, location, and portal links.",
+        "Track listing ownership, source, exclusivity, and expiry.",
+        "Maintain price and status history.",
+        "Support internal, private, draft, and published visibility.",
+        "Detect duplicate units."
+      ]
+    },
+    "buyer_requirements": {
+      "priority": "P0",
+      "fields": [
+        "transaction_type",
+        "budget_min",
+        "budget_max",
+        "preferred_communities",
+        "preferred_projects",
+        "property_types",
+        "bedrooms_min",
+        "bedrooms_max",
+        "size_min_sqft",
+        "completion_preference",
+        "purpose",
+        "financing_status",
+        "purchase_timeline",
+        "nationality",
+        "preferred_language",
+        "must_have_features",
+        "excluded_features"
+      ],
+      "requirements": [
+        "Requirements can be entered manually or extracted from conversations.",
+        "AI-extracted values display confidence and source evidence.",
+        "Users can approve, reject, or edit extracted values.",
+        "Changes are versioned.",
+        "Requirements can be associated with one or more active deals."
+      ]
+    },
+    "property_matching": {
+      "priority": "P0",
+      "requirements": [
+        "Use deterministic filters for hard constraints.",
+        "Use weighted ranking for soft preferences.",
+        "Explain why each property matched.",
+        "Allow advisors to shortlist, reject, hide, and share matches.",
+        "Prevent unavailable properties from being recommended.",
+        "Record customer reactions and use them to improve subsequent ranking.",
+        "Support manager-defined matching weights."
+      ],
+      "default_weights": {
+        "budget_fit": 0.3,
+        "location_fit": 0.2,
+        "property_type_fit": 0.15,
+        "bedroom_fit": 0.1,
+        "size_fit": 0.1,
+        "timeline_fit": 0.05,
+        "feature_fit": 0.1
+      }
+    },
+    "tasks_and_reminders": {
+      "priority": "P0",
+      "requirements": [
+        "Create personal and assigned tasks.",
+        "Link tasks to contacts, deals, properties, conversations, and viewings.",
+        "Support due dates, priorities, reminders, recurrence, status, and dependencies.",
+        "Extract action items from conversations.",
+        "Require user confirmation before creating low-confidence AI tasks.",
+        "Escalate overdue high-priority tasks."
+      ]
+    },
+    "viewings": {
+      "priority": "P0",
+      "requirements": [
+        "Schedule single or multi-property viewings.",
+        "Assign advisor and attendees.",
+        "Capture meeting point, access instructions, and property contact.",
+        "Send confirmations and reminders through approved channels.",
+        "Record outcome, feedback, objections, interest score, and next step.",
+        "Update related deal stage based on configured rules.",
+        "Support calendar synchronization."
+      ]
+    },
+    "offers_and_transactions": {
+      "priority": "P1",
+      "requirements": [
+        "Create offers linked to deals and properties.",
+        "Track offer amount, deposit, conditions, expiry, status, counteroffers, and approval.",
+        "Track MOU, SPA, NOC, mortgage, payment, and handover milestones.",
+        "Provide configurable checklists by transaction type.",
+        "Alert users to overdue transaction milestones."
+      ]
+    },
+    "documents": {
+      "priority": "P0",
+      "document_types": [
+        "passport",
+        "emirates_id",
+        "proof_of_funds",
+        "mortgage_preapproval",
+        "form_a",
+        "form_b",
+        "form_f",
+        "mou",
+        "spa",
+        "noc",
+        "title_deed",
+        "tenancy_contract",
+        "invoice",
+        "receipt",
+        "other"
+      ],
+      "requirements": [
+        "Upload, categorize, preview, download, version, and archive documents.",
+        "Link files to contacts, deals, properties, offers, and viewings.",
+        "Apply access restrictions by role and document type.",
+        "Record upload, view, download, replacement, and deletion events.",
+        "Support expiring-document reminders.",
+        "Use signed URLs for private access."
+      ]
+    },
+    "commission_tracking": {
+      "priority": "P1",
+      "requirements": [
+        "Calculate gross commission from transaction value or fixed amount.",
+        "Support advisor splits, team splits, referral fees, brokerage share, VAT, overrides, and clawbacks.",
+        "Track estimated, approved, invoiced, received, and paid states.",
+        "Require finance approval before final payout status.",
+        "Store a complete calculation breakdown."
+      ]
+    },
+    "dashboards_and_reports": {
+      "priority": "P0",
+      "dashboards": [
+        "owner_overview",
+        "manager_team_performance",
+        "advisor_workspace",
+        "pipeline_forecast",
+        "lead_response_sla",
+        "viewing_performance",
+        "source_attribution",
+        "commission_overview",
+        "integration_health"
+      ],
+      "requirements": [
+        "Reports must respect user permissions.",
+        "Metrics must support date, team, advisor, source, pipeline, stage, project, community, and property filters.",
+        "Dashboard figures must link to underlying records.",
+        "Exports must be logged.",
+        "Forecast logic must be configurable and explainable."
+      ]
+    },
+    "ai_command_center": {
+      "priority": "P0",
+      "requirements": [
+        "Support natural-language CRM search.",
+        "Generate filtered views from user requests.",
+        "Summarize contacts, deals, teams, conversations, and pipeline risk.",
+        "Draft messages and follow-ups.",
+        "Extract structured fields from conversations and documents.",
+        "Recommend next actions.",
+        "Create tasks and workflows only within granted permissions.",
+        "Display sources used for generated answers.",
+        "Never bypass role permissions.",
+        "Require confirmation before destructive, financial, bulk, or external communication actions."
+      ],
+      "example_commands": [
+        "Show all buyers with budgets above AED 5 million who have not been contacted in three days.",
+        "Which deals are at risk this month and why?",
+        "Draft a WhatsApp follow-up for buyers who completed a viewing but gave no response.",
+        "Find three available two-bedroom properties in Downtown Dubai under AED 3 million.",
+        "Create tasks for all overdue viewing follow-ups, but show me the list before saving."
+      ]
+    },
+    "workflow_automation": {
+      "priority": "P1",
+      "trigger_types": [
+        "record_created",
+        "record_updated",
+        "stage_changed",
+        "message_received",
+        "message_not_answered",
+        "task_overdue",
+        "viewing_scheduled",
+        "viewing_completed",
+        "document_expiring",
+        "scheduled_time"
+      ],
+      "action_types": [
+        "create_task",
+        "assign_record",
+        "update_field",
+        "add_tag",
+        "send_internal_notification",
+        "draft_message",
+        "send_approved_template",
+        "create_portal_update",
+        "call_webhook"
+      ],
+      "requirements": [
+        "Workflows use versioned definitions.",
+        "Every execution is logged.",
+        "Actions are idempotent.",
+        "Failed runs support retries and dead-letter handling.",
+        "Organizations can configure approval requirements.",
+        "Bulk workflow activation requires administrator approval."
+      ]
+    },
+    "customer_portals": {
+      "priority": "P1",
+      "portal_types": [
+        "buyer_portal",
+        "seller_landlord_portal"
+      ],
+      "requirements": [
+        "Provide secure token-based or authenticated access.",
+        "Allow buyers to review shortlists, confirm viewings, comment, and upload documents.",
+        "Allow sellers and landlords to view listing activity, inquiries, viewings, offers, and reports.",
+        "Brand portals per organization.",
+        "Log every external user action.",
+        "Allow portal access to be revoked immediately."
+      ]
+    },
+    "notifications": {
+      "priority": "P0",
+      "channels": [
+        "in_app",
+        "email",
+        "whatsapp_template"
+      ],
+      "events": [
+        "new_lead",
+        "lead_unaccepted",
+        "message_received",
+        "task_due",
+        "task_overdue",
+        "viewing_confirmed",
+        "viewing_reminder",
+        "offer_received",
+        "document_expiring",
+        "deal_risk_detected",
+        "workflow_failed",
+        "integration_disconnected"
+      ]
+    },
+    "audit_logs": {
+      "priority": "P0",
+      "requirements": [
+        "Log authentication, access, record mutation, export, integration, workflow, AI, financial, permission, and document events.",
+        "Audit records are immutable to organization users.",
+        "Each log includes actor, organization, action, target, timestamp, IP where available, request identifier, and before-after metadata.",
+        "Sensitive values must be redacted.",
+        "Audit logs must be searchable and exportable by authorized users."
+      ]
+    }
+  },
+  "ai_governance": {
+    "autonomy_levels": [
+      {
+        "level": 0,
+        "name": "disabled",
+        "description": "AI does not process or act on the selected feature."
+      },
+      {
+        "level": 1,
+        "name": "observe",
+        "description": "AI analyzes data but does not create recommendations."
+      },
+      {
+        "level": 2,
+        "name": "recommend",
+        "description": "AI proposes actions and explains them."
+      },
+      {
+        "level": 3,
+        "name": "draft",
+        "description": "AI creates drafts or pending actions requiring approval."
+      },
+      {
+        "level": 4,
+        "name": "policy_execute",
+        "description": "AI executes pre-approved low-risk actions inside organization policy."
+      }
+    ],
+    "default_level": 3,
+    "mandatory_human_approval": [
+      "Bulk external communication",
+      "Discount or pricing changes",
+      "Financial commitments",
+      "Commission approval",
+      "Document deletion",
+      "Permission changes",
+      "Data export",
+      "Lead reassignment across teams",
+      "Workflow activation affecting more than 100 records"
+    ],
+    "controls": [
+      "Confidence thresholds",
+      "Source citations",
+      "Prompt injection filtering",
+      "PII redaction where required",
+      "Organization-specific model policy",
+      "Per-user and per-organization cost budgets",
+      "Action allowlists",
+      "Rate limits",
+      "Kill switch",
+      "Rollback where technically possible",
+      "Full AI action audit trail"
+    ],
+    "model_routing": {
+      "strategy": "Route tasks by sensitivity, latency, quality, and cost.",
+      "classes": {
+        "classification": "low_cost_model",
+        "field_extraction": "structured_output_model",
+        "summarization": "balanced_model",
+        "high_risk_reasoning": "high_quality_model",
+        "embeddings": "embedding_model",
+        "local_fallback": "optional_ollama_model"
+      }
+    }
+  },
+  "data_model": {
+    "database": "PostgreSQL",
+    "extension_strategy": "Relational core with JSONB metadata and typed custom-field definitions.",
+    "vector_search": "pgvector",
+    "primary_entities": {
+      "organizations": {
+        "fields": [
+          "id",
+          "name",
+          "slug",
+          "country_code",
+          "timezone",
+          "currency",
+          "status",
+          "settings_json",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "users": {
+        "fields": [
+          "id",
+          "email",
+          "display_name",
+          "phone",
+          "avatar_url",
+          "status",
+          "last_login_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "organization_memberships": {
+        "fields": [
+          "id",
+          "organization_id",
+          "user_id",
+          "role_id",
+          "team_id",
+          "status",
+          "invited_at",
+          "joined_at"
+        ]
+      },
+      "roles": {
+        "fields": [
+          "id",
+          "organization_id",
+          "name",
+          "is_system_role",
+          "permissions_json"
+        ]
+      },
+      "teams": {
+        "fields": [
+          "id",
+          "organization_id",
+          "name",
+          "manager_user_id",
+          "status"
+        ]
+      },
+      "contacts": {
+        "fields": [
+          "id",
+          "organization_id",
+          "owner_user_id",
+          "first_name",
+          "last_name",
+          "display_name",
+          "primary_email",
+          "primary_phone",
+          "nationality",
+          "preferred_language",
+          "relationship_types",
+          "lead_source",
+          "status",
+          "custom_data_json",
+          "created_at",
+          "updated_at",
+          "archived_at"
+        ]
+      },
+      "contact_channels": {
+        "fields": [
+          "id",
+          "organization_id",
+          "contact_id",
+          "channel_type",
+          "channel_value",
+          "provider",
+          "external_id",
+          "is_primary",
+          "consent_status"
+        ]
+      },
+      "companies": {
+        "fields": [
+          "id",
+          "organization_id",
+          "name",
+          "website",
+          "industry",
+          "company_type",
+          "owner_user_id",
+          "custom_data_json"
+        ]
+      },
+      "conversations": {
+        "fields": [
+          "id",
+          "organization_id",
+          "contact_id",
+          "deal_id",
+          "channel_type",
+          "status",
+          "assigned_user_id",
+          "last_message_at",
+          "unread_count"
+        ]
+      },
+      "messages": {
+        "fields": [
+          "id",
+          "organization_id",
+          "conversation_id",
+          "sender_type",
+          "sender_user_id",
+          "direction",
+          "provider",
+          "provider_message_id",
+          "content_text",
+          "content_json",
+          "delivery_status",
+          "sent_at",
+          "received_at",
+          "created_at"
+        ]
+      },
+      "pipelines": {
+        "fields": [
+          "id",
+          "organization_id",
+          "name",
+          "pipeline_type",
+          "status"
+        ]
+      },
+      "pipeline_stages": {
+        "fields": [
+          "id",
+          "pipeline_id",
+          "name",
+          "position",
+          "probability",
+          "stage_type",
+          "requirements_json"
+        ]
+      },
+      "deals": {
+        "fields": [
+          "id",
+          "organization_id",
+          "pipeline_id",
+          "stage_id",
+          "title",
+          "primary_contact_id",
+          "owner_user_id",
+          "team_id",
+          "deal_type",
+          "value_amount",
+          "currency",
+          "probability",
+          "expected_close_date",
+          "status",
+          "loss_reason",
+          "custom_data_json",
+          "created_at",
+          "updated_at",
+          "closed_at"
+        ]
+      },
+      "deal_stage_history": {
+        "fields": [
+          "id",
+          "organization_id",
+          "deal_id",
+          "from_stage_id",
+          "to_stage_id",
+          "changed_by_user_id",
+          "changed_at"
+        ]
+      },
+      "properties": {
+        "fields": [
+          "id",
+          "organization_id",
+          "listing_reference",
+          "transaction_type",
+          "property_type",
+          "project_name",
+          "developer_name",
+          "community",
+          "building",
+          "unit_number",
+          "bedrooms",
+          "bathrooms",
+          "size_sqft",
+          "price_amount",
+          "currency",
+          "furnishing",
+          "completion_status",
+          "availability_status",
+          "listing_status",
+          "owner_contact_id",
+          "listing_agent_user_id",
+          "latitude",
+          "longitude",
+          "custom_data_json",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "property_media": {
+        "fields": [
+          "id",
+          "organization_id",
+          "property_id",
+          "media_type",
+          "storage_key",
+          "display_order",
+          "is_primary"
+        ]
+      },
+      "buyer_requirements": {
+        "fields": [
+          "id",
+          "organization_id",
+          "contact_id",
+          "deal_id",
+          "transaction_type",
+          "budget_min",
+          "budget_max",
+          "preferred_communities_json",
+          "preferred_projects_json",
+          "property_types_json",
+          "bedrooms_min",
+          "bedrooms_max",
+          "size_min_sqft",
+          "completion_preference",
+          "purpose",
+          "financing_status",
+          "purchase_timeline",
+          "must_have_features_json",
+          "excluded_features_json",
+          "version",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "property_matches": {
+        "fields": [
+          "id",
+          "organization_id",
+          "buyer_requirement_id",
+          "property_id",
+          "score",
+          "reason_json",
+          "status",
+          "advisor_feedback",
+          "customer_feedback",
+          "created_at"
+        ]
+      },
+      "tasks": {
+        "fields": [
+          "id",
+          "organization_id",
+          "title",
+          "description",
+          "assigned_user_id",
+          "created_by_user_id",
+          "priority",
+          "status",
+          "due_at",
+          "completed_at",
+          "related_entity_type",
+          "related_entity_id",
+          "source_type",
+          "source_id"
+        ]
+      },
+      "viewings": {
+        "fields": [
+          "id",
+          "organization_id",
+          "deal_id",
+          "contact_id",
+          "advisor_user_id",
+          "scheduled_start_at",
+          "scheduled_end_at",
+          "timezone",
+          "status",
+          "meeting_point",
+          "instructions",
+          "outcome",
+          "interest_score",
+          "feedback_text",
+          "next_step"
+        ]
+      },
+      "viewing_properties": {
+        "fields": [
+          "id",
+          "viewing_id",
+          "property_id",
+          "display_order",
+          "status",
+          "feedback_text",
+          "interest_score"
+        ]
+      },
+      "offers": {
+        "fields": [
+          "id",
+          "organization_id",
+          "deal_id",
+          "property_id",
+          "contact_id",
+          "amount",
+          "currency",
+          "deposit_amount",
+          "conditions_json",
+          "status",
+          "expires_at",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "transaction_milestones": {
+        "fields": [
+          "id",
+          "organization_id",
+          "deal_id",
+          "milestone_type",
+          "status",
+          "due_at",
+          "completed_at",
+          "assigned_user_id",
+          "metadata_json"
+        ]
+      },
+      "documents": {
+        "fields": [
+          "id",
+          "organization_id",
+          "document_type",
+          "filename",
+          "storage_key",
+          "mime_type",
+          "size_bytes",
+          "version",
+          "visibility",
+          "expires_at",
+          "uploaded_by_user_id",
+          "created_at",
+          "archived_at"
+        ]
+      },
+      "document_links": {
+        "fields": [
+          "id",
+          "organization_id",
+          "document_id",
+          "entity_type",
+          "entity_id"
+        ]
+      },
+      "commission_records": {
+        "fields": [
+          "id",
+          "organization_id",
+          "deal_id",
+          "gross_commission",
+          "currency",
+          "status",
+          "calculation_json",
+          "approved_by_user_id",
+          "approved_at"
+        ]
+      },
+      "workflow_definitions": {
+        "fields": [
+          "id",
+          "organization_id",
+          "name",
+          "version",
+          "status",
+          "trigger_json",
+          "conditions_json",
+          "actions_json",
+          "approval_policy_json"
+        ]
+      },
+      "workflow_runs": {
+        "fields": [
+          "id",
+          "organization_id",
+          "workflow_definition_id",
+          "trigger_event_id",
+          "status",
+          "attempt_count",
+          "started_at",
+          "completed_at",
+          "error_json"
+        ]
+      },
+      "ai_actions": {
+        "fields": [
+          "id",
+          "organization_id",
+          "user_id",
+          "action_type",
+          "model_provider",
+          "model_name",
+          "input_reference_json",
+          "output_json",
+          "confidence",
+          "approval_status",
+          "approved_by_user_id",
+          "executed_at",
+          "cost_amount",
+          "created_at"
+        ]
+      },
+      "integration_connections": {
+        "fields": [
+          "id",
+          "organization_id",
+          "provider",
+          "connection_type",
+          "status",
+          "encrypted_credentials_reference",
+          "settings_json",
+          "last_sync_at",
+          "last_error_at"
+        ]
+      },
+      "audit_logs": {
+        "fields": [
+          "id",
+          "organization_id",
+          "actor_user_id",
+          "action",
+          "target_type",
+          "target_id",
+          "request_id",
+          "ip_address",
+          "before_json",
+          "after_json",
+          "metadata_json",
+          "created_at"
+        ]
+      }
+    },
+    "custom_fields": {
+      "entities": [
+        "custom_field_definitions",
+        "custom_field_options",
+        "custom_field_values"
+      ],
+      "supported_types": [
+        "text",
+        "long_text",
+        "number",
+        "currency",
+        "boolean",
+        "date",
+        "datetime",
+        "single_select",
+        "multi_select",
+        "user_reference",
+        "contact_reference",
+        "property_reference",
+        "url",
+        "email",
+        "phone"
+      ]
+    }
+  },
+  "api_specification": {
+    "style": "REST for product APIs, webhooks for external events, asynchronous jobs for long-running work.",
+    "base_path": "/api/v1",
+    "authentication": "Secure session cookies for web clients and scoped API tokens for integrations.",
+    "core_endpoints": [
+      "POST /auth/login",
+      "POST /auth/logout",
+      "POST /auth/mfa/verify",
+      "GET /organizations",
+      "POST /organizations",
+      "GET /organizations/:organizationId/members",
+      "POST /organizations/:organizationId/invitations",
+      "GET /contacts",
+      "POST /contacts",
+      "GET /contacts/:contactId",
+      "PATCH /contacts/:contactId",
+      "POST /contacts/merge",
+      "POST /contacts/import",
+      "GET /conversations",
+      "GET /conversations/:conversationId/messages",
+      "POST /conversations/:conversationId/messages/draft",
+      "POST /conversations/:conversationId/messages/send",
+      "GET /deals",
+      "POST /deals",
+      "PATCH /deals/:dealId",
+      "POST /deals/:dealId/move-stage",
+      "GET /properties",
+      "POST /properties",
+      "PATCH /properties/:propertyId",
+      "POST /properties/import",
+      "POST /buyer-requirements",
+      "POST /buyer-requirements/:id/matches/generate",
+      "GET /buyer-requirements/:id/matches",
+      "POST /viewings",
+      "PATCH /viewings/:viewingId",
+      "POST /viewings/:viewingId/complete",
+      "POST /offers",
+      "PATCH /offers/:offerId",
+      "POST /documents/upload-url",
+      "POST /documents",
+      "GET /reports/:reportKey",
+      "POST /ai/query",
+      "POST /ai/actions/:actionId/approve",
+      "POST /ai/actions/:actionId/reject",
+      "GET /workflows",
+      "POST /workflows",
+      "POST /workflows/:workflowId/activate",
+      "GET /audit-logs"
+    ],
+    "webhook_endpoints": [
+      "POST /webhooks/whatsapp/:connectionId",
+      "POST /webhooks/email/:connectionId",
+      "POST /webhooks/calendar/:connectionId",
+      "POST /webhooks/property-portal/:connectionId"
+    ],
+    "api_requirements": [
+      "All mutation endpoints require idempotency keys where duplicates would be harmful.",
+      "Every request receives a request identifier.",
+      "Pagination uses cursor-based pagination.",
+      "Validation errors use a consistent machine-readable format.",
+      "Rate limits apply per user, organization, token, and integration.",
+      "Webhook signatures must be verified.",
+      "Webhook events must be stored before processing.",
+      "Failed webhook processing must be retryable."
+    ]
+  },
+  "integrations": {
+    "mvp": [
+      {
+        "name": "WhatsApp Business Platform",
+        "purpose": "Message synchronization, templates, delivery events, and customer communication.",
+        "integration_policy": "Official API only."
+      },
+      {
+        "name": "Google Workspace Gmail",
+        "purpose": "Email synchronization and sending."
+      },
+      {
+        "name": "Microsoft Outlook",
+        "purpose": "Email synchronization and sending."
+      },
+      {
+        "name": "Google Calendar",
+        "purpose": "Viewing and meeting synchronization."
+      },
+      {
+        "name": "Microsoft Calendar",
+        "purpose": "Viewing and meeting synchronization."
+      },
+      {
+        "name": "Cloud object storage",
+        "purpose": "Private document and property media storage."
+      },
+      {
+        "name": "Transactional email provider",
+        "purpose": "Invitations, alerts, and system notifications."
+      }
+    ],
+    "phase_2_candidates": [
+      "Property Finder lead ingestion",
+      "Bayut lead ingestion",
+      "Dubizzle lead ingestion",
+      "DocuSign",
+      "PandaDoc",
+      "Stripe",
+      "Twilio voice",
+      "Meta Instagram Messaging"
+    ]
+  },
+  "technical_architecture": {
+    "frontend": {
+      "framework": "Next.js current stable App Router release",
+      "language": "TypeScript",
+      "ui": "Tailwind CSS and accessible component primitives",
+      "state_strategy": "Server-first data loading with client state only where required",
+      "real_time": "WebSocket or managed realtime channel for inbox and notifications"
+    },
+    "backend": {
+      "primary_api": "FastAPI or Next.js server architecture selected during technical spike",
+      "language": "Python for AI and data services; TypeScript permitted for product APIs",
+      "background_jobs": "Durable worker queue",
+      "event_model": "Transactional outbox with asynchronous consumers",
+      "api_contract": "OpenAPI"
+    },
+    "data": {
+      "primary_database": "PostgreSQL",
+      "vector_extension": "pgvector",
+      "cache": "Redis only when justified by workload",
+      "object_storage": "S3-compatible private storage",
+      "search": "PostgreSQL full-text initially"
+    },
+    "ai": {
+      "provider_abstraction": true,
+      "primary_strategy": "Use external models through a provider abstraction with optional Ollama fallback.",
+      "structured_outputs": true,
+      "retrieval": "Tenant-filtered retrieval with source references",
+      "observability": "Prompt, response, latency, token, cost, confidence, and action logging"
+    },
+    "infrastructure": {
+      "containerization": "Docker",
+      "environments": [
+        "local",
+        "development",
+        "staging",
+        "production"
+      ],
+      "deployment": "Managed cloud or hardened VPS architecture",
+      "cdn_and_security": "Cloudflare or equivalent",
+      "secrets": "Managed secrets service",
+      "monitoring": "Application errors, logs, traces, uptime, queue health, integration health"
+    }
+  },
+  "security_and_compliance": {
+    "standards_and_laws": [
+      "UAE Personal Data Protection Law",
+      "GDPR where applicable",
+      "Provider-specific messaging policies",
+      "Call recording consent requirements where applicable"
+    ],
+    "security_requirements": [
+      "Encryption in transit and at rest.",
+      "Strict tenant isolation.",
+      "Server-side authorization for every operation.",
+      "MFA for privileged users.",
+      "Secure invitation and password-reset flows.",
+      "Short-lived signed document URLs.",
+      "Encrypted integration credentials.",
+      "PII-aware logs and redaction.",
+      "Rate limiting and abuse detection.",
+      "Automated dependency and secret scanning.",
+      "Daily backups and tested restore procedures.",
+      "Incident response plan.",
+      "Data export and deletion workflows.",
+      "Configurable retention policies.",
+      "Audit logging for all sensitive operations."
+    ],
+    "data_residency": {
+      "requirement": "Select hosting region and subprocessors based on customer contracts and UAE data requirements.",
+      "decision_status": "technical_and_legal_review_required"
+    },
+    "row_level_security": {
+      "required": true,
+      "policy_basis": [
+        "organization_id",
+        "membership_status",
+        "role_permissions",
+        "team_scope",
+        "record_ownership",
+        "explicit_sharing"
+      ]
+    }
+  },
+  "non_functional_requirements": {
+    "performance": [
+      "Primary application pages should reach usable state within 2.5 seconds under normal broadband conditions.",
+      "Search responses should return within 1 second for standard filtered queries.",
+      "Inbox updates should appear within 3 seconds of provider webhook receipt.",
+      "Standard API requests should maintain p95 latency below 500 milliseconds excluding third-party dependencies.",
+      "Long-running AI or import jobs must be asynchronous."
+    ],
+    "availability": [
+      "MVP target availability of 99.9 percent excluding scheduled maintenance.",
+      "Graceful degradation when AI providers are unavailable.",
+      "Queued recovery for temporary integration failures."
+    ],
+    "scalability": [
+      "Support at least 100 organizations, 5,000 users, 5 million messages, and 1 million contacts without redesign.",
+      "Partition or archive high-volume message and audit data when thresholds require it."
+    ],
+    "accessibility": [
+      "Target WCAG 2.2 AA for core workflows.",
+      "Keyboard-accessible navigation and forms.",
+      "Clear focus states and semantic labeling."
+    ],
+    "localization": [
+      "English-first MVP.",
+      "Architecture must support Arabic and right-to-left interfaces.",
+      "Store all timestamps in UTC and display in organization timezone.",
+      "Support AED formatting by default."
+    ]
+  },
+  "ux_requirements": {
+    "design_direction": "Premium, high-trust, operational, fast, and calm. Avoid decorative complexity that slows daily work.",
+    "desktop_first": true,
+    "responsive": true,
+    "minimum_supported_width": 390,
+    "core_patterns": [
+      "Persistent global command bar",
+      "Configurable left navigation",
+      "Table, Kanban, calendar, and timeline views",
+      "Record side panel for fast editing",
+      "Clear AI source and confidence indicators",
+      "Approval queue for pending AI actions",
+      "Visible sync and integration status",
+      "Empty states with guided setup",
+      "Undo for reversible actions"
+    ],
+    "critical_workflows": [
+      "New lead to first response",
+      "WhatsApp conversation to qualified deal",
+      "Buyer requirement extraction and approval",
+      "Property matching and shortlist sharing",
+      "Viewing scheduling and confirmation",
+      "Viewing completion and next-action creation",
+      "Offer and transaction milestone progression",
+      "Manager pipeline review",
+      "AI recommendation review and approval"
+    ]
+  },
+  "analytics_and_observability": {
+    "product_events": [
+      "organization_created",
+      "integration_connected",
+      "contact_created",
+      "lead_received",
+      "lead_assigned",
+      "lead_accepted",
+      "message_received",
+      "message_sent",
+      "ai_draft_created",
+      "ai_draft_approved",
+      "ai_draft_rejected",
+      "buyer_requirements_extracted",
+      "property_match_generated",
+      "property_shortlisted",
+      "viewing_scheduled",
+      "viewing_completed",
+      "offer_created",
+      "deal_stage_changed",
+      "deal_won",
+      "deal_lost",
+      "workflow_executed",
+      "workflow_failed"
+    ],
+    "operational_dashboards": [
+      "API latency and errors",
+      "Webhook volume and failures",
+      "Queue depth and retry rate",
+      "Message delivery failures",
+      "Integration disconnections",
+      "AI latency, cost, and failure rate",
+      "Database health",
+      "Storage growth",
+      "Authentication anomalies"
+    ]
+  },
+  "delivery_plan": {
+    "phase_0_discovery": {
+      "duration_weeks": 2,
+      "deliverables": [
+        "Validated workflows with 3 to 5 UAE brokerages",
+        "Integration feasibility matrix",
+        "Final MVP scope",
+        "Security and data-residency decision",
+        "Clickable prototype",
+        "Architecture decision records"
+      ]
+    },
+    "phase_1_foundation": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "Authentication",
+        "Organizations",
+        "Memberships",
+        "RBAC",
+        "Contacts",
+        "Companies",
+        "Teams",
+        "Audit logs",
+        "Core design system",
+        "CI/CD and environments"
+      ]
+    },
+    "phase_2_revenue_core": {
+      "duration_weeks": 5,
+      "deliverables": [
+        "Lead intake",
+        "Assignment",
+        "Pipelines",
+        "Deals",
+        "Tasks",
+        "Properties",
+        "Buyer requirements",
+        "Property matching",
+        "Core dashboards"
+      ]
+    },
+    "phase_3_communications": {
+      "duration_weeks": 5,
+      "deliverables": [
+        "WhatsApp integration",
+        "Email integration",
+        "Unified inbox",
+        "Conversation linking",
+        "Notifications",
+        "SLA tracking",
+        "Integration health"
+      ]
+    },
+    "phase_4_ai_and_viewings": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "AI command center",
+        "Summaries",
+        "Field extraction",
+        "Follow-up drafts",
+        "Next-action recommendations",
+        "Viewings",
+        "Calendar sync",
+        "Approval queue"
+      ]
+    },
+    "phase_5_transactions_and_portals": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "Offers",
+        "Transaction milestones",
+        "Documents",
+        "Commission estimates",
+        "Buyer portal",
+        "Seller portal",
+        "Workflow templates"
+      ]
+    },
+    "phase_6_pilot_and_hardening": {
+      "duration_weeks": 4,
+      "deliverables": [
+        "Pilot onboarding",
+        "Data migration",
+        "Security testing",
+        "Performance testing",
+        "Bug fixing",
+        "Training",
+        "Operational runbooks",
+        "Production launch"
+      ]
+    }
+  },
+  "testing_strategy": {
+    "required_test_types": [
+      "Unit tests",
+      "Integration tests",
+      "API contract tests",
+      "Database authorization tests",
+      "End-to-end tests",
+      "Webhook replay tests",
+      "Queue retry and idempotency tests",
+      "AI structured-output validation",
+      "Prompt injection tests",
+      "Cross-tenant isolation tests",
+      "Accessibility tests",
+      "Performance tests",
+      "Backup restore tests",
+      "User acceptance testing"
+    ],
+    "release_gates": [
+      "Zero open critical security defects.",
+      "Zero known cross-tenant data leaks.",
+      "All P0 acceptance criteria passed.",
+      "Webhook replay and deduplication verified.",
+      "Audit coverage verified.",
+      "Rollback procedure tested.",
+      "Pilot customers approve critical workflows."
+    ]
+  },
+  "risks": [
+    {
+      "risk": "WhatsApp platform restrictions or onboarding delays",
+      "impact": "high",
+      "mitigation": "Use official APIs, build provider abstraction, provide email fallback, and begin business verification during discovery."
+    },
+    {
+      "risk": "Poor CRM data quality",
+      "impact": "high",
+      "mitigation": "Provide import validation, duplicate detection, normalization, and guided data cleanup."
+    },
+    {
+      "risk": "AI hallucinations or incorrect field extraction",
+      "impact": "high",
+      "mitigation": "Use structured outputs, confidence thresholds, evidence display, approval controls, and evaluation datasets."
+    },
+    {
+      "risk": "Over-automation damages customer relationships",
+      "impact": "high",
+      "mitigation": "Default to draft mode, restrict autonomous actions, use organization policies, and log every action."
+    },
+    {
+      "risk": "Scope expansion delays launch",
+      "impact": "high",
+      "mitigation": "Lock MVP non-goals and require product approval for new P0 requirements."
+    },
+    {
+      "risk": "Third-party property portal access is unavailable",
+      "impact": "medium",
+      "mitigation": "Support CSV, email parsing, web forms, and public APIs where officially available."
+    },
+    {
+      "risk": "Communication and AI usage costs exceed pricing",
+      "impact": "high",
+      "mitigation": "Meter usage, enforce budgets, route models by task, and separate pass-through communication charges."
+    }
+  ],
+  "pricing_hypothesis": {
+    "principle": "Charge a platform subscription plus included usage. Do not promise unlimited expensive communication or AI processing.",
+    "plans": [
+      {
+        "name": "Starter",
+        "monthly_price_aed": 349,
+        "target": "Small teams",
+        "included_users": 3,
+        "included_ai_credits": 2000,
+        "included_channels": [
+          "email"
+        ]
+      },
+      {
+        "name": "Growth",
+        "monthly_price_aed": 1099,
+        "target": "Growing brokerages",
+        "included_users": 10,
+        "included_ai_credits": 10000,
+        "included_channels": [
+          "email",
+          "whatsapp"
+        ]
+      },
+      {
+        "name": "Business",
+        "monthly_price_aed": 2999,
+        "target": "Established brokerages",
+        "included_users": 30,
+        "included_ai_credits": 35000,
+        "included_channels": [
+          "email",
+          "whatsapp"
+        ]
+      },
+      {
+        "name": "Enterprise",
+        "monthly_price_aed": null,
+        "target": "Large groups and white-label deployments",
+        "included_users": "custom",
+        "included_ai_credits": "custom",
+        "included_channels": [
+          "custom"
+        ]
+      }
+    ],
+    "additional_charges": [
+      "WhatsApp provider and template usage",
+      "SMS and voice usage",
+      "Additional AI credits",
+      "Premium data enrichment",
+      "Implementation and data migration",
+      "White-label configuration"
+    ],
+    "validation_status": "hypothesis_requires_customer_interviews"
+  },
+  "launch_criteria": {
+    "product": [
+      "All P0 modules operational.",
+      "At least one official communication integration working in production.",
+      "Lead-to-viewing workflow fully functional.",
+      "AI drafting and field extraction include approval and evidence.",
+      "Manager dashboards use production data."
+    ],
+    "security": [
+      "Independent security review completed.",
+      "Tenant-isolation tests passed.",
+      "MFA available for privileged users.",
+      "Backup restore completed successfully.",
+      "Incident response contacts and procedure documented."
+    ],
+    "operations": [
+      "Onboarding checklist completed.",
+      "Customer support workflow operational.",
+      "Integration failure alerts configured.",
+      "Usage and cost monitoring configured.",
+      "Pilot training materials available."
+    ],
+    "commercial": [
+      "Pricing approved.",
+      "Pilot agreement approved.",
+      "Data processing terms approved.",
+      "At least 3 pilot organizations committed."
+    ]
+  },
+  "definition_of_done": {
+    "feature": [
+      "Requirements and acceptance criteria implemented.",
+      "Permissions enforced server-side.",
+      "Audit events implemented.",
+      "Unit and integration tests passing.",
+      "Responsive behavior verified.",
+      "Accessibility checks passed.",
+      "Error and loading states implemented.",
+      "Analytics events implemented.",
+      "Documentation updated."
+    ],
+    "release": [
+      "All release gates passed.",
+      "Production migration reviewed.",
+      "Monitoring dashboards live.",
+      "Rollback plan verified.",
+      "Pilot users trained.",
+      "Known limitations documented."
+    ]
+  }
+}
