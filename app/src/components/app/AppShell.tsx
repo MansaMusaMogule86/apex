@@ -2,7 +2,7 @@
  * App Shell (all product routes).
  * Renders the product navigation chrome and an <Outlet/> for nested routes.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import {
   BarChart3,
@@ -138,6 +138,7 @@ function ShellNav({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () =>
 
 export default function AppShell() {
   const location = useLocation()
+  const mainContentRef = useRef<HTMLElement | null>(null)
   const [commandOpen, setCommandOpen] = useState(false)
   const [mobileNavRoute, setMobileNavRoute] = useState<string | null>(null)
   const [collapsed, setCollapsed] = useState(() => {
@@ -164,10 +165,14 @@ export default function AppShell() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
+  useEffect(() => {
+    mainContentRef.current?.scrollTo({ top: 0, behavior: 'auto' })
+  }, [location.pathname])
+
   const pageTitle = resolvePageTitle(location.pathname)
 
   return (
-    <div className="min-h-screen bg-base text-ink-900">
+    <div className="flex h-screen overflow-hidden bg-base text-ink-900">
       <CommandBar open={commandOpen} onClose={() => setCommandOpen(false)} />
 
       <aside
@@ -264,8 +269,8 @@ export default function AppShell() {
         </div>
       ) : null}
 
-      <div className={cn('min-h-screen md:pl-[272px]', collapsed && 'md:pl-[88px]')}>
-        <header className="sticky top-0 z-30 border-b border-line bg-white/92 backdrop-blur">
+      <div className={cn('flex min-h-0 flex-1 flex-col md:pl-[272px]', collapsed && 'md:pl-[88px]')}>
+        <header className="sticky top-0 z-30 shrink-0 border-b border-line bg-white/92 backdrop-blur">
           <div className="flex h-16 items-center gap-3 px-4 md:px-6">
             <button
               type="button"
@@ -323,7 +328,7 @@ export default function AppShell() {
           </div>
         </header>
 
-        <main className="px-4 py-5 md:px-6 md:py-6">
+        <main ref={mainContentRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 md:px-6 md:py-6">
           <Outlet />
         </main>
       </div>

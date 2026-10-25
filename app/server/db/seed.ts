@@ -4,21 +4,20 @@ import { runMigrations } from './migrate'
 import { hashPassword } from '../auth/crypto'
 import { advisorProfiles, companies, organizations, pipelines, pipelineStages, properties, userCredentials, users } from './schema'
 
-const demoOrgId = 'org_apex_demo'
-const otherOrgId = 'org_other_brokerage'
-const buyerPipelineId = 'pipe_buyer_leads_uhnw'
-const buyerStages = [
-  'New Inquiry',
-  'AI Qualified',
-  'Property Shortlist Sent',
-  'Viewing Scheduled',
-  'Offer Submitted',
-  'SPA Signed',
-  'Handover Complete',
-  'Long-Term Nurture',
+const demoOrgId = 'org_nexus_demo'
+const otherOrgId = 'org_other_company'
+const salesPipelineId = 'pipe_sales_standard'
+const salesStages = [
+  'New Lead',
+  'Qualified',
+  'Proposal Sent',
+  'Negotiation',
+  'Closed Won',
+  'Closed Lost',
+  'On Hold',
 ]
 
-const defaultSeedPassword = process.env.APEX_SEED_PASSWORD ?? 'dev-only-password'
+const defaultSeedPassword = process.env.NEXUS_SEED_PASSWORD ?? 'dev-only-password'
 let cachedSeedPasswordHash: string | null = null
 
 async function getSeedPasswordHash() {
@@ -31,49 +30,49 @@ export async function seedDatabase(database = getDatabaseContext()) {
   runMigrations(database)
 
   await database.db.insert(organizations).values([
-    { id: demoOrgId, name: 'APEX Demo Realty', slug: 'apex-demo-realty' },
-    { id: otherOrgId, name: 'Other Brokerage', slug: 'other-brokerage' },
+    { id: demoOrgId, name: 'Nexus Demo Company', slug: 'nexus-demo-company' },
+    { id: otherOrgId, name: 'Other Company', slug: 'other-company' },
   ]).onConflictDoNothing()
 
   await database.db.insert(users).values([
     {
-      id: 'user_dalila',
+      id: 'user_admin',
       organizationId: demoOrgId,
-      fullName: 'Dalila Laaribi',
-      email: 'dalila@apex-demo.local',
+      fullName: 'Alex Admin',
+      email: 'admin@nexus-demo.local',
       role: 'admin',
       primaryLanguage: 'English',
     },
     {
-      id: 'user_camelia',
+      id: 'user_manager',
       organizationId: demoOrgId,
-      fullName: 'Camelia Gharbi',
-      email: 'camelia@apex-demo.local',
+      fullName: 'Morgan Manager',
+      email: 'manager@nexus-demo.local',
       role: 'manager',
-      primaryLanguage: 'French',
+      primaryLanguage: 'English',
     },
     {
-      id: 'user_sultan',
+      id: 'user_sales',
       organizationId: demoOrgId,
-      fullName: 'Sultan Karabekov',
-      email: 'sultan@apex-demo.local',
+      fullName: 'Sam Sales',
+      email: 'sales@nexus-demo.local',
       role: 'advisor',
-      primaryLanguage: 'Russian',
+      primaryLanguage: 'English',
     },
     {
       id: 'user_other',
       organizationId: otherOrgId,
-      fullName: 'Other Org Advisor',
-      email: 'advisor@other.local',
+      fullName: 'Other User',
+      email: 'user@other.local',
       role: 'manager',
       primaryLanguage: 'English',
     },
   ]).onConflictDoNothing()
 
   const credentialSeed = [
-    'user_dalila',
-    'user_camelia',
-    'user_sultan',
+    'user_admin',
+    'user_manager',
+    'user_sales',
     'user_other',
   ]
 
@@ -88,165 +87,139 @@ export async function seedDatabase(database = getDatabaseContext()) {
 
   await database.db.insert(advisorProfiles).values([
     {
-      userId: 'user_dalila',
+      userId: 'user_admin',
       organizationId: demoOrgId,
-      specialtiesJson: JSON.stringify(['uhnw', 'buyer']),
-      languagesJson: JSON.stringify(['English', 'Arabic']),
-      focusLocationsJson: JSON.stringify(['Palm Jumeirah', 'Downtown Dubai']),
+      specialtiesJson: JSON.stringify(['sales', 'management']),
+      languagesJson: JSON.stringify(['English']),
+      focusLocationsJson: JSON.stringify(['Global']),
+      maxBudgetAed: 100000000,
+      roundRobinWeight: 1,
+    },
+    {
+      userId: 'user_manager',
+      organizationId: demoOrgId,
+      specialtiesJson: JSON.stringify(['account_management', 'strategy']),
+      languagesJson: JSON.stringify(['English']),
+      focusLocationsJson: JSON.stringify(['Global']),
       maxBudgetAed: 50000000,
       roundRobinWeight: 1,
     },
     {
-      userId: 'user_camelia',
+      userId: 'user_sales',
       organizationId: demoOrgId,
-      specialtiesJson: JSON.stringify(['investor', 'off-plan']),
-      languagesJson: JSON.stringify(['English', 'French']),
-      focusLocationsJson: JSON.stringify(['Dubai Marina', 'Business Bay']),
-      maxBudgetAed: 15000000,
-      roundRobinWeight: 1,
-    },
-    {
-      userId: 'user_sultan',
-      organizationId: demoOrgId,
-      specialtiesJson: JSON.stringify(['investor', 'buyer']),
-      languagesJson: JSON.stringify(['English', 'Russian']),
-      focusLocationsJson: JSON.stringify(['Palm Jumeirah', 'Bluewaters Island']),
-      maxBudgetAed: 25000000,
-      roundRobinWeight: 1,
-    },
-    {
-      userId: 'user_other',
-      organizationId: otherOrgId,
-      specialtiesJson: JSON.stringify(['buyer']),
+      specialtiesJson: JSON.stringify(['outbound', 'closing']),
       languagesJson: JSON.stringify(['English']),
-      focusLocationsJson: JSON.stringify(['Downtown Dubai']),
-      maxBudgetAed: 5000000,
+      focusLocationsJson: JSON.stringify(['Global']),
+      maxBudgetAed: 10000000,
       roundRobinWeight: 1,
     },
   ]).onConflictDoNothing()
 
   await database.db.insert(pipelines).values([
-    { id: buyerPipelineId, organizationId: demoOrgId, pipelineKey: 'buyer_leads_uhnw', name: 'Buyer Leads — UHNW' },
-    { id: 'pipe_other', organizationId: otherOrgId, pipelineKey: 'buyer_leads_uhnw', name: 'Buyer Leads — UHNW' },
+    { id: salesPipelineId, organizationId: demoOrgId, pipelineKey: 'sales_standard', name: 'Standard Sales Pipeline' },
+    { id: 'pipe_other', organizationId: otherOrgId, pipelineKey: 'other', name: 'Other Pipeline' },
   ]).onConflictDoNothing()
 
-  await database.db.insert(pipelineStages).values(
-    buyerStages.flatMap((name, index) => [
-      {
-        id: `stage_demo_${index + 1}`,
-        organizationId: demoOrgId,
-        pipelineId: buyerPipelineId,
-        stageKey: name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''),
-        name,
-        sortOrder: index + 1,
-      },
-      {
-        id: `stage_other_${index + 1}`,
-        organizationId: otherOrgId,
-        pipelineId: 'pipe_other',
-        stageKey: name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''),
-        name,
-        sortOrder: index + 1,
-      },
-    ]),
-  ).onConflictDoNothing()
+  await database.db.insert(pipelineStages).values([
+    ...salesStages.map((name, index) => ({
+      id: `stage_sales_${index + 1}`,
+      organizationId: demoOrgId,
+      pipelineId: salesPipelineId,
+      stageKey: name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''),
+      name,
+      sortOrder: index + 1,
+    })),
+    ...['Lead', 'Contacted', 'Proposal', 'Won', 'Lost'].map((name, index) => ({
+      id: `stage_other_${index + 1}`,
+      organizationId: otherOrgId,
+      pipelineId: 'pipe_other',
+      stageKey: name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''),
+      name,
+      sortOrder: index + 1,
+    })),
+  ]).onConflictDoNothing()
 
   await database.db.insert(companies).values([
     {
       id: 'company_demo_1',
       organizationId: demoOrgId,
-      name: 'Luxe Properties',
-      kind: 'developer',
+      name: 'Acme Corporation',
+      kind: 'customer',
     },
     {
       id: 'company_demo_2',
       organizationId: demoOrgId,
-      name: 'Bluewater Holdings',
-      kind: 'investor',
+      name: 'TechStart Inc',
+      kind: 'prospect',
     },
     {
       id: 'company_other_1',
       organizationId: otherOrgId,
-      name: 'Other Brokerage Group',
-      kind: 'brokerage',
+      name: 'Other Company Group',
+      kind: 'partner',
     },
   ]).onConflictDoNothing()
 
   await database.db.insert(properties).values([
     {
-      id: 'prop_palm_penthouse',
+      id: 'prod_enterprise_plan',
       organizationId: demoOrgId,
-      propertyRef: 'APEX-P1',
-      name: 'Palm Jumeirah Sky Residence',
-      community: 'Palm Jumeirah',
-      propertyType: 'Penthouse',
-      developer: 'Nakheel',
-      beds: 4,
-      baths: 5,
-      sizeSqft: 4200,
-      priceAed: 23500000,
+      propertyRef: 'NEXUS-EP',
+      name: 'Enterprise Plan',
+      community: 'Software',
+      propertyType: 'Subscription',
+      developer: 'Nexus',
+      beds: 0,
+      baths: 0,
+      sizeSqft: 0,
+      priceAed: 990000,
       status: 'available',
-      completion: 'Ready',
+      completion: 'Active',
     },
     {
-      id: 'prop_downtown_2br',
+      id: 'prod_pro_plan',
       organizationId: demoOrgId,
-      propertyRef: 'APEX-D2',
-      name: 'Address Residences Downtown 2BR',
-      community: 'Downtown Dubai',
-      propertyType: 'Apartment',
-      developer: 'Emaar',
-      beds: 2,
-      baths: 2,
-      sizeSqft: 1380,
-      priceAed: 2950000,
+      propertyRef: 'NEXUS-PP',
+      name: 'Professional Plan',
+      community: 'Software',
+      propertyType: 'Subscription',
+      developer: 'Nexus',
+      beds: 0,
+      baths: 0,
+      sizeSqft: 0,
+      priceAed: 290000,
       status: 'available',
-      completion: 'Ready',
+      completion: 'Active',
     },
     {
-      id: 'prop_marina_2br',
+      id: 'prod_starter_plan',
       organizationId: demoOrgId,
-      propertyRef: 'APEX-M2',
-      name: 'Marina Gate Tower 2BR',
-      community: 'Dubai Marina',
-      propertyType: 'Apartment',
-      developer: 'Select Group',
-      beds: 2,
-      baths: 2,
-      sizeSqft: 1310,
-      priceAed: 3100000,
+      propertyRef: 'NEXUS-SP',
+      name: 'Starter Plan',
+      community: 'Software',
+      propertyType: 'Subscription',
+      developer: 'Nexus',
+      beds: 0,
+      baths: 0,
+      sizeSqft: 0,
+      priceAed: 99000,
       status: 'available',
-      completion: 'Ready',
+      completion: 'Active',
     },
     {
-      id: 'prop_bluewaters_3br',
-      organizationId: demoOrgId,
-      propertyRef: 'APEX-B3',
-      name: 'Bluewaters Residences 3BR',
-      community: 'Bluewaters Island',
-      propertyType: 'Apartment',
-      developer: 'Meraas',
-      beds: 3,
-      baths: 4,
-      sizeSqft: 2100,
-      priceAed: 8900000,
-      status: 'available',
-      completion: 'Ready',
-    },
-    {
-      id: 'prop_other_org',
+      id: 'prod_other_org',
       organizationId: otherOrgId,
       propertyRef: 'OTHER-1',
-      name: 'Other Org Listing',
-      community: 'Downtown Dubai',
-      propertyType: 'Apartment',
-      developer: 'Emaar',
-      beds: 1,
-      baths: 1,
-      sizeSqft: 820,
-      priceAed: 1500000,
+      name: 'Other Org Product',
+      community: 'Services',
+      propertyType: 'Service',
+      developer: 'Other',
+      beds: 0,
+      baths: 0,
+      sizeSqft: 0,
+      priceAed: 500000,
       status: 'available',
-      completion: 'Ready',
+      completion: 'Active',
     },
   ]).onConflictDoNothing()
 
@@ -261,3 +234,11 @@ if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, '/')}`) {
     console.log(`Seeded database for ${orgId} at ${context.filePath}`)
   })
 }
+
+
+
+
+
+
+
+

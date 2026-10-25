@@ -40,6 +40,12 @@ import type {
 /*  Reactive store                                                            */
 /* -------------------------------------------------------------------------- */
 
+function parseUsd(value: string) {
+  const numeric = Number(value.replace(/[^0-9.]/g, ''))
+  const multiplier = value.includes('M') ? 1_000_000 : value.includes('K') ? 1_000 : 1
+  return Math.round(numeric * multiplier)
+}
+
 type Listener = () => void
 const listeners = new Set<Listener>()
 const cache = new Map<string, unknown>()
@@ -378,11 +384,11 @@ function buildDealRows(): DealRow[] {
     const prob = stageIdx >= 0 ? Math.min(100, stageIdx * 8 + 10) : 50
     return {
       id: i + 1,
-      title: `${d.contact} — ${d.property ?? d.value}`,
+      title: `${d.contact} — ${d.product ?? d.value}`,
       contactName: d.contact,
       contactId: i + 1,
-      propertyId: d.property ? i + 1 : null,
-      propertyLine: d.property ?? null,
+      propertyId: d.product ? i + 1 : null,
+      propertyLine: d.product ?? null,
       valueAed,
       stage: d.stage,
       probability: prob,
@@ -390,7 +396,7 @@ function buildDealRows(): DealRow[] {
       nextAction: d.atRisk ? 'Follow up required' : 'Review next step',
       atRisk: d.atRisk ?? false,
       riskNote: d.atRisk ? 'No activity in 12+ days' : null,
-      outcome: d.stage === 'Won' ? 'won' : 'open',
+      outcome: d.stage === 'Closed Won' ? 'won' : 'open',
       ownerId: (i % team.length) + 1,
       updatedAgo: `${(i % 7) + 1}d ago`,
       createdAt: new Date(Date.now() - (i + 1) * 86400000).toISOString(),
@@ -476,23 +482,23 @@ function buildContactRows(): ContactRow[] {
 function buildProperties(): PropertyRow[] {
   return properties.map((p, i) => ({
     id: i + 1,
-    ref: p.code,
-    propertyRef: p.code,
+    ref: p.id,
+    propertyRef: p.id,
     name: p.name,
-    community: p.community,
-    developer: p.developer,
-    propertyType: p.spec.startsWith('1BR') ? 'Apartment' : p.spec.startsWith('2BR') ? 'Apartment' : p.spec.startsWith('3BR') ? 'Apartment' : p.spec.startsWith('4BR') || p.spec.startsWith('5BR') ? 'Villa' : 'Apartment',
-    beds: Number(p.spec.match(/(\d+)BR/)?.[1] ?? 2),
-    baths: Number(p.spec.match(/(\d+)BA/)?.[1] ?? 2),
-    sizeSqft: Number(p.size.replace(/[^0-9]/g, '')),
-    priceAed: p.price,
+    community: p.category,
+    developer: 'Nexus',
+    propertyType: p.category,
+    beds: 0,
+    baths: 0,
+    sizeSqft: 0,
+    priceAed: parseUsd(p.price),
     status: p.status,
-    completion: p.readiness,
-    offPlan: p.readiness.startsWith('Off-plan'),
+    completion: 'Active',
+    offPlan: false,
     agentId: (i % team.length) + 1,
-    image: p.photo,
-    portals: ['Property Finder', 'Bayut'],
-    features: ['Balcony', 'Central A/C', 'Built-in Wardrobes', 'Covered Parking'],
+    image: '',
+    portals: ['Website', 'LinkedIn'],
+    features: [],
     createdAt: new Date(Date.now() - (i + 1) * 43200000).toISOString(),
   }))
 }

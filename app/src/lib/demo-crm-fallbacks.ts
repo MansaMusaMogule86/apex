@@ -24,25 +24,21 @@ function parseRelativeAge(value: string) {
   if (hourMatch) return Number(hourMatch[1]) * 60
   const dayMatch = normalized.match(/^(\d+)d ago$/)
   if (dayMatch) return Number(dayMatch[1]) * 24 * 60
+  const hotMatch = normalized.match(/hot/i)
+  if (hotMatch) return 10
   return 12 * 60
 }
 
 function stageProbability(stageName: string) {
   const stage = toStageKey(stageName)
   const probabilities: Record<string, number> = {
-    new_inquiry: 10,
+    new_lead: 10,
     qualified: 20,
-    requirements_confirmed: 30,
-    properties_shortlisted: 40,
-    viewing_scheduled: 50,
-    viewing_completed: 60,
-    offer_made: 70,
-    negotiation: 75,
-    mou_signed: 85,
-    spa_executed: 90,
-    payment_in_progress: 95,
-    handover: 98,
-    won: 100,
+    proposal_sent: 40,
+    negotiation: 70,
+    closed_won: 100,
+    closed_lost: 0,
+    on_hold: 10,
   }
   return probabilities[stage] ?? 25
 }
@@ -62,7 +58,9 @@ function demoOpportunityId(dealId: string) {
 function estimateBudget(contactType: string) {
   const budgetChunk = contactType.split('·')[1]?.trim() ?? ''
   const [minRaw, maxRaw] = budgetChunk
-    .replace('AED', '')
+    .replace('USD', '')
+    .replace('EUR', '')
+    .replace('GBP', '')
     .replace('/unit', '')
     .split('–')
     .map((part) => part.trim())
@@ -84,7 +82,7 @@ function demoTimelineEntry(id: string, title: string, body: string, minutesAgo: 
 }
 
 export function buildDemoDashboardSnapshot(): DashboardSnapshot {
-  const openDeals = deals.filter((deal) => deal.stage !== 'Won')
+  const openDeals = deals.filter((deal) => deal.stage !== 'Closed Won' && deal.stage !== 'Closed Lost')
   const pipelineValue = openDeals.reduce((sum, deal) => sum + parseAed(deal.value), 0)
   const leadsBySource = Object.entries(
     contacts.reduce<Record<string, number>>((acc, contact) => {
@@ -93,16 +91,11 @@ export function buildDemoDashboardSnapshot(): DashboardSnapshot {
     }, {}),
   ).map(([label, value]) => ({ label, value }))
 
-  const opportunitiesByStage = pipelineStages.map((stage) => ({
-    label: stage,
-    value: deals.filter((deal) => deal.stage === stage).length,
-  }))
-
   return {
     metrics: {
       totalContacts: contacts.length,
       newLeads: kpis.newLeadsWeek,
-      qualifiedLeads: deals.filter((deal) => !['New Inquiry', 'Qualified'].includes(deal.stage)).length,
+      qualifiedLeads: deals.filter((deal) => deal.stage === 'Qualified').length,
       openOpportunities: openDeals.length,
       pipelineValue,
       wonRevenue: 0,
@@ -116,8 +109,79 @@ export function buildDemoDashboardSnapshot(): DashboardSnapshot {
     charts: {
       leadsBySource,
       leadsByStatus: [{ label: 'active', value: contacts.length }],
-      opportunitiesByPipeline: [{ label: 'buyer_sales', value: deals.length }],
-      opportunitiesByStage,
+      opportunitiesByPipeline: [{ label: 'sales_standard', value: deals.length }],
+      opportunitiesByStage: pipelineStages.map((stage) => ({
+        label: stage,
+        value: deals.filter((deal) => deal.stage === stage).length,
+      })),
+    },
+    recentActivity: [
+      { id: 'act-1', eventType: 'deal_created', title: 'New deal created', body: 'ScaleUp Co — Starter Plan (USD 99K)', createdAt: isoMinutesAgo(30) },
+      { id: 'act-2', eventType: 'deal_won', title: 'Deal won', body: 'GlobalTech Solutions — Professional Plan (USD 350K)', createdAt: isoMinutesAgo(120) },
+      { id: 'act-3', eventType: 'contact_created', title: 'New contact', body: 'Quantum Dynamics added', createdAt: isoMinutesAgo(240) },
+    ],
+    upcomingTasks: [
+      {
+        id: 'demo_task_1',
+        title: 'Follow up on at-risk opportunities',
+        dueAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        priority: 'high',
+        status: 'pending',
+      },
+    ],
+    upcomingAppointments: {
+      available: false,
+      reason: 'Calendar integration is not connected in demo mode.',
+      items: [],
+    },
+    integrations: [
+      { name: 'Meta (Facebook/Instagram)', status: 'degraded', detail: 'Demo mode active. Start API server for live sync status.' },
+      { name: 'LinkedIn', status: 'degraded', detail: 'Demo mode active. Start API server for persisted health checks.' },
+      { name: 'Email', status: 'degraded', detail: 'Demo mode active. Start API server for persisted health checks.' },
+    ],
+    filters: {
+      sources: [...new Set(contacts.map((contact) => contact.source))],
+      owners: [...new Set(contacts.map((contact) => contact.owner))],
+      statuses: ['active'],
+      stages: [...pipelineStages],
+      pipelines: ['sales_standard'],
+    },
+  }
+}
+
+export function buildDemoReportsSnapshot(): DashboardSnapshot {
+  const openDeals = deals.filter((deal) => deal.stage !== 'Closed Won' && deal.stage !== 'Closed Lost')
+  const pipelineValue = openDeals.reduce((sum, deal) => sum + parseAed(deal.value), 0)
+  const leadsBySource = Object.entries(
+    contacts.reduce<Record<string, number>>((acc, contact) => {
+      acc[contact.source] = (acc[contact.source] ?? 0) + 1
+      return acc
+    }, {}),
+  ).map(([label, value]) => ({ label, value }))
+
+  return {
+    metrics: {
+      totalContacts: contacts.length,
+      newLeads: kpis.newLeadsWeek,
+      qualifiedLeads: deals.filter((deal) => deal.stage === 'Qualified').length,
+      openOpportunities: openDeals.length,
+      pipelineValue,
+      wonRevenue: 0,
+      lostOpportunities: 0,
+      conversionRate: 0,
+      overdueFollowUps: kpis.overdueFollowUps,
+      unassignedLeads: 0,
+      failedSubmissions: null,
+      pendingRetries: null,
+    },
+    charts: {
+      leadsBySource,
+      leadsByStatus: [{ label: 'active', value: contacts.length }],
+      opportunitiesByPipeline: [{ label: 'sales_standard', value: deals.length }],
+      opportunitiesByStage: pipelineStages.map((stage) => ({
+        label: stage,
+        value: deals.filter((deal) => deal.stage === stage).length,
+      })),
     },
     recentActivity: [
       {
@@ -143,7 +207,8 @@ export function buildDemoDashboardSnapshot(): DashboardSnapshot {
       items: [],
     },
     integrations: [
-      { name: 'WhatsApp Business', status: 'degraded', detail: 'Demo mode active. Start API server for live sync status.' },
+      { name: 'Meta (Facebook/Instagram)', status: 'degraded', detail: 'Demo mode active. Start API server for live sync status.' },
+      { name: 'LinkedIn', status: 'degraded', detail: 'Demo mode active. Start API server for persisted health checks.' },
       { name: 'Email', status: 'degraded', detail: 'Demo mode active. Start API server for persisted health checks.' },
     ],
     filters: {
@@ -151,7 +216,7 @@ export function buildDemoDashboardSnapshot(): DashboardSnapshot {
       owners: [...new Set(contacts.map((contact) => contact.owner))],
       statuses: ['active'],
       stages: [...pipelineStages],
-      pipelines: ['buyer_sales'],
+      pipelines: ['sales_standard'],
     },
   }
 }
@@ -191,18 +256,18 @@ export function buildDemoCrmContactSnapshot(contactId: string): CrmLeadSnapshot 
     ? {
         id: demoOpportunityId(deal.id),
         title: `${contact.name} opportunity`,
-        pipelineKey: 'buyer_sales',
+        pipelineKey: 'sales_standard',
         stageKey: toStageKey(deal.stage),
         status: 'open',
         expectedValueAed: parseAed(deal.value),
         probability: stageProbability(deal.stage),
-        advisorUserId: ownerRecord(contact.owner)?.id ?? 'u-omar',
+        advisorUserId: ownerRecord(contact.owner)?.id ?? 'u-admin',
       }
     : null
 
   const pickedMatches = properties
     .slice()
-    .sort((a, b) => Math.abs(a.price - (budget.max ?? a.price)) - Math.abs(b.price - (budget.max ?? b.price)))
+    .sort((a, b) => Math.abs(parseAed(a.price) - (budget.max ?? parseAed(a.price))) - Math.abs(parseAed(b.price) - (budget.max ?? parseAed(b.price))))
     .slice(0, 3)
 
   return {
@@ -220,9 +285,9 @@ export function buildDemoCrmContactSnapshot(contactId: string): CrmLeadSnapshot 
     requirement: {
       budgetMinAed: budget.min,
       budgetMaxAed: budget.max,
-      locations: [contact.type.includes('Investor') ? 'Downtown Dubai' : 'Dubai Marina'],
-      propertyTypes: ['Apartment'],
-      timeline: 'Within 30 days',
+      locations: ['Global'],
+      propertyTypes: ['Software', 'Services'],
+      timeline: 'Within 90 days',
       financing: 'Cash',
       notes: `Derived from demo contact profile ${contact.id}.`,
       confidence: 0.68,
@@ -240,7 +305,7 @@ export function buildDemoCrmContactSnapshot(contactId: string): CrmLeadSnapshot 
           id: `demo_draft_${deal.id}`,
           body: `Hi ${contact.name}, sharing a shortlist aligned to your preferences. Confirm your preferred viewing windows and we will proceed.`,
           status: 'pending_approval',
-          channel: 'whatsapp',
+          channel: 'email',
           deliveryMode: 'advisor_send',
         }
       : null,
@@ -254,18 +319,18 @@ export function buildDemoCrmContactSnapshot(contactId: string): CrmLeadSnapshot 
         }
       : null,
     matches: pickedMatches.map((property, index) => ({
-      id: `demo_match_${contact.id}_${property.id}`,
+      id: `demo_match_${contact.id}_${index}`,
       matchScore: Math.max(70, 94 - index * 6),
-      reasons: ['Budget aligned', 'Community preference overlap', 'Ready inventory available'],
+      reasons: ['Budget aligned', 'Category preference overlap', 'Active status'],
       property: {
         id: property.id,
-        propertyRef: property.code,
+        propertyRef: property.id,
         name: property.name,
-        community: property.community,
-        propertyType: property.spec.includes('Villa') ? 'Villa' : 'Apartment',
-        priceAed: property.price,
-        beds: Number(property.spec.match(/(\d+)BR/)?.[1] ?? '2'),
-        completion: property.readiness,
+        community: property.category,
+        propertyType: property.category,
+        priceAed: parseAed(property.price),
+        beds: 0,
+        completion: property.status,
       },
     })),
     timeline: [

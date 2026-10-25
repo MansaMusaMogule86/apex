@@ -4,13 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**APEX Revenue OS** is a full-stack SaaS MVP for Dubai real estate teams. It's an AI-native revenue operating system that unifies leads, conversations, deals, properties, viewings, and tasks in one workspace. The deliverable is a React + Vite + TypeScript SPA with a real Hono/tRPC backend, MySQL database (SQLite locally), and premium operational UX (think Linear/Attio grade).
+**Nexus AI Business OS** is a full-stack SaaS MVP for modern businesses. It's an AI-native business operating system that unifies CRM, ERP, social media management, marketing automation, and analytics in one workspace. The deliverable is a React + Vite + TypeScript SPA with a real Hono/tRPC backend, SQLite database (PostgreSQL/MySQL for production), and premium operational UX (think Linear/Attio grade).
 
 **Tech Stack:**
 - Frontend: React 19 + TypeScript + Vite 7 + Tailwind CSS + shadcn/ui + React Router
-- Backend: Hono + tRPC + Drizzle ORM + better-sqlite3 (SQLite locally)
+- Backend: Hono + tRPC + Drizzle ORM + better-sqlite3 (SQLite locally, PostgreSQL for production)
 - Build/Dev: ESLint, Vitest, tsx, concurrently, Vite
 - Additional: framer-motion, GSAP, recharts, React Hook Form, Zod, dnd-kit
+- Integrations: Social media APIs (Meta, LinkedIn, Twitter, TikTok), Email (SendGrid, Mailgun), SMS (Twilio), Calendar (Google, Outlook)
 
 ## Essential Commands
 
@@ -19,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev:full              # Start both frontend (Vite) and backend (tsx watch) concurrently
 npm run dev                   # Frontend only (Vite dev server, HMR on port 5173)
 npm run dev:api              # Backend only (Hono + tRPC, watch mode)
-npm run dev:api:bypass       # Backend with APEX_ENABLE_DEV_AUTH_BYPASS=true for testing without auth
+npm run dev:api:bypass        # Backend with NEXUS_ENABLE_DEV_AUTH_BYPASS=true for testing without auth
 ```
 
 ### Build & Production
@@ -31,7 +32,7 @@ npm run preview              # Preview production build locally
 ### Database
 ```bash
 npm run db:migrate           # Run Drizzle migrations against the database
-npm run db:seed              # Seed demo data (contacts, properties, deals, etc.)
+npm run db:seed              # Seed demo data (contacts, companies, deals, products, etc.)
 ```
 
 ### Quality & Testing
@@ -50,10 +51,13 @@ npm run test                 # Vitest (run tests once, not watch)
   - `command/` — AI Command Center UI, answer blocks, approval queue
   - `crm/` — Contact timeline, matching panel, contact drawer
   - `deals/` — Deal Kanban, deal card, stage columns
-  - `pages/` — Page-level components for each route (Dashboard, Inbox, Deals, Properties, etc.)
+  - `pages/` — Page-level components for each route (Dashboard, Inbox, Deals, Products, etc.)
+  - `social/` — Social media integration components (post composer, calendar, analytics)
+  - `erp/` — ERP components (inventory, accounting, HR, projects)
+  - `marketing/` — Marketing automation (campaigns, funnels, email builder)
 - **`hooks/`** — Custom React hooks
 - **`types/`** — TypeScript type definitions and domain models
-- **`sections/`** — Page sections (per info.md)
+- **`sections/`** — Page sections
 - **`main.tsx`** — Entry point for React
 - **`index.css`** & **`App.css`** — Global and app-specific styles
 
@@ -61,7 +65,7 @@ npm run test                 # Vitest (run tests once, not watch)
 - **`index.ts`** — Hono app entry point, middleware, route mounting
 - **`app.ts`** — Main Hono app instance (may combine with index.ts)
 - **`db/`** — Database layer
-  - `schema.ts` — Drizzle schema (contacts, companies, deals, properties, requirements, matches, tasks, messages, viewings, audit)
+  - `schema.ts` — Drizzle schema (organizations, users, contacts, companies, deals, products, tasks, messages, social_accounts, campaigns, automations, inventory, accounting, hr, projects, audit)
   - `migrate.ts` — Migration runner (Drizzle auto-migrations)
   - `seed.ts` — Seed script for demo data
   - `context.ts` — Database connection & context helpers
@@ -69,9 +73,21 @@ npm run test                 # Vitest (run tests once, not watch)
   - `service.ts` — Auth logic (login, token validation, session)
   - `crypto.ts` — Encryption/hashing utilities
   - `permissions.ts` — Permission checks
-- **Routes** — tRPC routers organized by domain
-  - `deals-store.ts`, `inbox-store.ts`, etc. — Logic for each feature
-  - `slice/intake-service.ts`, etc. — Specialized services
+- **`routes/`** — tRPC routers organized by domain
+  - `crm/` — Contacts, companies, deals, pipelines
+  - `erp/` — Products, inventory, accounting, HR, projects
+  - `social/` — Social accounts, posts, analytics, scheduling
+  - `marketing/` — Campaigns, funnels, email/SMS, automations
+  - `analytics/` — Reports, dashboards, AI insights
+- **`integrations/`** — External API integrations
+  - `meta/` — Facebook, Instagram, WhatsApp Business
+  - `linkedin/` — LinkedIn API
+  - `twitter/` — X/Twitter API
+  - `tiktok/` — TikTok API
+  - `email/` — SendGrid, Mailgun, SMTP
+  - `sms/` — Twilio, Plivo
+  - `calendar/` — Google Calendar, Outlook
+  - `storage/` — S3, Google Drive, Dropbox
 - **`*.test.ts`, `*.integration.test.ts`, `*.e2e.test.ts`** — Vitest test files
 
 ### Config Files
@@ -86,7 +102,7 @@ npm run test                 # Vitest (run tests once, not watch)
 ## Key Patterns & Conventions
 
 ### Frontend
-1. **Routing** — React Router (routes: `/dashboard`, `/deals`, `/properties`, `/inbox`, `/relationships`, `/command`, `/viewings`, `/tasks`, `/reports`, `/automations`, `/admin`, `/documents`)
+1. **Routing** — React Router (routes: `/dashboard`, `/deals`, `/products`, `/inbox`, `/relationships`, `/command`, `/tasks`, `/reports`, `/automations`, `/admin`, `/documents`, `/social`, `/erp`, `/marketing`)
 2. **Component structure** — Prefer functional components with hooks. Use shadcn/ui for base UI.
 3. **Styling** — Tailwind CSS utility classes; no inline CSS. Use CVA (class-variance-authority) for component variants.
 4. **Forms** — React Hook Form + Zod for validation. Example pattern: `useForm()` + `<input {...register(...)}` + `zod().parse(data)`

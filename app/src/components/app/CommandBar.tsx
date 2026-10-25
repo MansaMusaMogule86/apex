@@ -96,14 +96,14 @@ export function CommandBar({ open, onClose }: { open: boolean; onClose: () => vo
           (p) =>
             !q ||
             p.name.toLowerCase().includes(q) ||
-            p.community.toLowerCase().includes(q) ||
-            p.developer.toLowerCase().includes(q),
+            p.category.toLowerCase().includes(q) ||
+            p.status.toLowerCase().includes(q),
         )
         .slice(0, q ? 5 : 3)
         .forEach((p) =>
           items.push({
             id: `p-${p.id}`, group: 'Properties', icon: Building2, title: p.name,
-            meta: `${p.community} · ${p.priceCompact}`, to: `/properties/${p.id}`,
+            meta: `${p.category} · ${p.price}`, to: `/properties/${p.id}`,
           }),
         )
     }

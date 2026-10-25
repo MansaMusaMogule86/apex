@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useNavigate } from 'react-router'
 import { AlertTriangle, ArrowLeft, CheckCircle2, Clock3, FileText, MessageCircle, Sparkles, Target } from 'lucide-react'
 import { toast } from 'sonner'
 import { EmptyState } from '@/components/app/EmptyState'
 import { fetchCrmContact, type CrmLeadSnapshot } from '@/lib/crm-api'
+import { buildDemoCrmContactSnapshot } from '@/lib/demo-crm-fallbacks'
 import { useResilientLiveData } from '@/hooks/useResilientLiveData'
 
 function currency(value?: number | null) {
@@ -13,6 +14,7 @@ function currency(value?: number | null) {
 
 export default function ContactDetail() {
   const { id = '' } = useParams()
+  const navigate = useNavigate()
   const onLiveConnected = useCallback(() => {
     toast.success('Live data connected')
   }, [])
@@ -25,6 +27,7 @@ export default function ContactDetail() {
     retryLiveData,
   } = useResilientLiveData<CrmLeadSnapshot>({
     loadPersisted: () => fetchCrmContact(id),
+    buildDemoData: () => buildDemoCrmContactSnapshot(id),
     isEmpty: () => false,
     onLiveConnected,
   })
@@ -33,10 +36,17 @@ export default function ContactDetail() {
     void loadLiveData()
   }, [loadLiveData])
 
+  // If contact not found (404), redirect to relationships list
+  useEffect(() => {
+    if (mode === 'error' && recoverableError?.includes('404')) {
+      navigate('/relationships', { replace: true })
+    }
+  }, [mode, recoverableError, navigate])
+
   if (mode === 'loading') return <div className="space-y-3">{Array.from({ length: 5 }).map((_, index) => <div key={index} className="h-24 animate-pulse rounded-2xl border border-line bg-white" />)}</div>
 
   if (mode === 'error' || !snapshot) {
-    return <EmptyState icon={AlertTriangle} title="Contact unavailable" description={recoverableError ?? 'The contact could not be loaded.'} primaryCta={{ label: 'Retry live data', onClick: () => { void retryLiveData() } }} secondaryCta={{ label: 'Back to Relationships', onClick: () => { window.location.href = '/relationships' } }} />
+    return <EmptyState icon={AlertTriangle} title="Contact unavailable" description={recoverableError ?? 'The contact could not be loaded.'} primaryCta={{ label: 'Retry live data', onClick: () => { void retryLiveData() } }} secondaryCta={{ label: 'Back to Relationships', onClick: () => { navigate('/relationships') } }} />
   }
 
   return (

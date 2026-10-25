@@ -61,7 +61,7 @@ export default function Login() {
         <Logo className="justify-center text-ink-text" />
         <h1 className="mt-6 text-center text-[20px] font-semibold leading-7 tracking-[-0.01em] text-ink-text">Sign in</h1>
         <p className="mt-2 text-[13px] leading-5 text-ink-muted">
-          Sign in to your APEX workspace with Firebase Authentication.
+          Sign in to your APEX workspace.
         </p>
 
         <div className="mt-6 space-y-3">
@@ -120,7 +120,7 @@ export default function Login() {
         </button>
 
         <p className="mt-3 text-center text-[11px] text-ink-muted">
-          Use a Firebase-authenticated account to continue.
+          Use your APEX credentials to continue.
         </p>
 
         <Link to="/" className="mt-4 inline-block text-[12.5px] text-ink-muted transition-colors hover:text-ink-text">

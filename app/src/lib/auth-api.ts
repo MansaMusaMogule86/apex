@@ -1,11 +1,3 @@
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  type User as FirebaseUser,
-} from 'firebase/auth'
-import { auth } from '@/lib/firebase'
-
 export interface AuthenticatedUser {
   id: string
   fullName: string
@@ -33,55 +25,42 @@ export interface LoginPayload {
   organizationSlug: string
 }
 
-function mapFirebaseUser(user: FirebaseUser | null): AuthenticatedUser | null {
-  if (!user) return null
-
-  const emailName = user.email?.split('@')[0] ?? 'Workspace User'
-  const displayName = user.displayName?.trim() || emailName
-
-  return {
-    id: user.uid,
-    fullName: displayName,
-    email: user.email ?? '',
-    role: 'admin',
-    organizationId: 'firebase-demo-org',
-    organizationSlug: 'firebase-demo',
-    organizationName: 'Firebase Demo Workspace',
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers)
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
   }
-}
 
-export function fetchCurrentUser() {
-  return new Promise<CurrentUserResponse>((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe()
-      const mapped = mapFirebaseUser(user)
-      if (!mapped) {
-        reject(new Error('No authenticated user'))
-        return
-      }
-
-      resolve({ user: mapped, bypass: false })
-    }, reject)
+  const response = await fetch(path, {
+    ...init,
+    headers,
+    credentials: 'include',
   })
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(error || response.statusText)
+  }
+  return response.json() as Promise<T>
 }
 
-export function fetchOrganizations() {
-  return Promise.resolve<OrganizationOption[]>([
-    {
-      id: 'firebase-demo-org',
-      slug: 'firebase-demo',
-      name: 'Firebase Demo Workspace',
-    },
-  ])
+export function fetchCurrentUser(): Promise<CurrentUserResponse> {
+  return request<CurrentUserResponse>('/api/auth/current-user')
+}
+
+export function fetchOrganizations(): Promise<OrganizationOption[]> {
+  return request<OrganizationOption[]>('/api/auth/organizations')
 }
 
 export function login(payload: LoginPayload) {
-  return signInWithEmailAndPassword(auth, payload.email, payload.password).then((result) => ({
-    user: mapFirebaseUser(result.user) as AuthenticatedUser,
-    session: { id: result.user.uid, expiresAt: new Date().toISOString() },
-  }))
+  return request<{
+    user: AuthenticatedUser
+    session: { id: string; expiresAt: string }
+  }>('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
 }
 
 export async function logout() {
-  await signOut(auth)
+  await request('/api/auth/logout', { method: 'POST' })
 }

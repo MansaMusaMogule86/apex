@@ -1,5 +1,5 @@
 {
-  "name": "apex-revenue-os-root",
+  "name": "nexus-ai-business-os-root",
   "private": true,
   "scripts": {
     "build": "npm --prefix app run build",
