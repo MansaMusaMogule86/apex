@@ -10,3 +10,4 @@ dist/
 **/*.sqlite-shm
 **/*.sqlite-wal
 app/server/data/
+.vercel
